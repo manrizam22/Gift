@@ -476,9 +476,14 @@ font-size: 13px;
 ​.calc-total strong { color: var(--green); font-size: 16px; }
 ​.modal-actions {
 display: grid;
-grid-template-columns: 1fr;
+grid-template-columns: 1fr 1fr;
 gap: 10px;
 margin-top: 16px;
+}
+​.modal-actions .btn-rent {
+grid-column: 1 / -1;
+padding: 13px;
+font-size: 14px;
 }
 ​/* ---------- Toast ---------- */
 .toast {
@@ -515,6 +520,7 @@ transition: .3s;
 .price-value { font-size: 11px; }
 .telegram-fee { font-size: 8px; }
 .duration { font-size: 9px; }
+.card-actions { grid-template-columns: 1fr; }
 }
 ​@media(max-width: 360px) {
 .grid { gap: 8px; }
@@ -623,8 +629,8 @@ Telegram Gifts Marketplace · تمامی حقوق محفوظ است
 </div>
 ​<div class="modal-actions">
 <a class="btn btn-rent" id="modalRentLink" target="_blank" rel="noopener">ارسال درخواست اجاره به پشتیبانی</a>
-<a class="btn btn-tg" id="modalTgLink" target="_blank" rel="noopener">مشاهده در تلگرام</a>
 <button type="button" class="btn btn-view" id="modalBackBtn">بازگشت به لیست</button>
+<a class="btn btn-tg" id="modalTgLink" target="_blank" rel="noopener">مشاهده در تلگرام</a>
 </div>
 </div>
 </div>
@@ -843,7 +849,9 @@ return apiGet("/gifts", params);
 function nameKey(name) {
 return String(name || "")
 .toLowerCase()
-.replace(/[^a-z0-9]/g, "");
+.replace(/[^a-z]/g, "")
+.replace(/ies$/, "y")
+.replace(/s/g, "");
 }
 ​async function loadCollections() {
 const payload = await apiGet("/collections");
@@ -871,7 +879,7 @@ if (!gift._backdrop) return;
 counts.set(gift._backdrop, (counts.get(gift._backdrop) || 0) + 1);
 });
 ​const current = el.backdrop.value;
-el.backdrop.innerHTML = '<option value="">همه رنگ‌ها</option>';
+​el.backdrop.innerHTML = '<option value="">همه رنگ‌ها</option>';
 ​[...counts.entries()]
 .sort((a, b) => a[0].localeCompare(b[0]))
 .forEach(([name, count]) => {
@@ -882,26 +890,24 @@ el.backdrop.appendChild(option);
 });
 ​el.backdrop.value = counts.has(current) ? current : "";
 }
-​// اصلاح امن و درست برای تطبیق کالکشن‌ها مثل Swiss Watch
-function resolveCollection(gift) {
+​function resolveCollection(gift) {
 const address =
 gift.collection_address ||
 (gift.collection && (gift.collection.address || gift.collection.collection_address));
 ​let found = address ? collectionByAddress.get(address) : null;
-​if (!found) {
-const baseName = getGiftBaseName(gift);
-const key = nameKey(baseName);
-found = collectionByKey.get(key);
-​if (!found) {
-for (const [colKey, colObj] of collectionByKey.entries()) {
-if (colKey.includes(key) || key.includes(colKey)) {
-found = colObj;
+​const baseName = getGiftBaseName(gift);
+if (!found) found = collectionByKey.get(nameKey(baseName));
+​// انطباق هوشمند برای کالکشن‌هایی مثل Swiss Watch
+if (!found) {
+const cleanBase = nameKey(baseName);
+for (const [key, col] of collectionByKey.entries()) {
+if (cleanBase.includes(key) || key.includes(cleanBase)) {
+found = col;
 break;
 }
 }
 }
-}
-​gift.collection_name = found ? found.name : getGiftBaseName(gift);
+​gift.collection_name = found ? found.name : baseName;
 gift.collection_address = found ? found.address : "";
 }
 ​function prepareGift(gift, previous, isNew) {
