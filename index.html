@@ -306,7 +306,7 @@
 
     .card-actions {
       display: grid;
-      grid-template-columns: 1fr 1.5fr;
+      grid-template-columns: 1fr;
       gap: 8px;
       margin-top: 12px;
     }
@@ -568,6 +568,13 @@
       margin-top: 16px;
     }
 
+    /* دکمه ارسال درخواست به صورت تمام عرض نمایش داده می‌شود */
+    .modal-actions .btn-rent {
+      grid-column: 1 / -1;
+      padding: 13px;
+      font-size: 14px;
+    }
+
     /* ---------- Toast ---------- */
     .toast {
       position: fixed;
@@ -739,9 +746,11 @@
         </div>
       </div>
 
+      <!-- دکمه‌های جدید: ارسال درخواست بزرگ و تمام عرض است -->
       <div class="modal-actions">
+        <a class="btn btn-rent" id="modalRentLink" target="_blank" rel="noopener">ارسال درخواست اجاره به پشتیبانی</a>
+        <button type="button" class="btn btn-view" id="modalBackBtn">بازگشت به لیست</button>
         <a class="btn btn-tg" id="modalTgLink" target="_blank" rel="noopener">مشاهده در تلگرام</a>
-        <a class="btn btn-rent" id="modalRentLink" target="_blank" rel="noopener">درخواست اجاره</a>
       </div>
     </div>
   </div>
@@ -816,6 +825,7 @@
       modalDuration: $("modalDuration"),
       modalTgLink: $("modalTgLink"),
       modalRentLink: $("modalRentLink"),
+      modalBackBtn: $("modalBackBtn"),
       rentCalculator: $("rentCalculator"),
     };
 
@@ -1276,11 +1286,9 @@
           </div>
 
           <div class="card-actions">
-            <button class="btn btn-view" type="button"
-                    data-view="${escapeHtml(gift.nft_address)}">مشاهده</button>
-            <!-- این دکمه حالا بجای لینک رفتن به تلگرام، مودال را باز می‌کند -->
+            <!-- یک دکمه واحد برای مشاهده و اجاره -->
             <button class="btn btn-rent" type="button"
-                    data-rent="${escapeHtml(gift.nft_address)}">درخواست اجاره</button>
+                    data-view="${escapeHtml(gift.nft_address)}">مشاهده و اجاره</button>
           </div>
         </div>
       </article>`;
@@ -1572,28 +1580,13 @@
     el.calcMinus.addEventListener("click", () => stepDays(-1));
     el.calcPlus.addEventListener("click", () => stepDays(1));
 
-    // تغییر یافته برای بررسی هر دو دکمه مشاهده و اجاره
     el.grid.addEventListener("click", event => {
       const viewBtn = event.target.closest("[data-view]");
-      const rentBtn = event.target.closest("[data-rent]");
-      
       if (viewBtn) openModal(viewBtn.dataset.view);
-      
-      // اگر کاربر دکمه اجاره روی کارت را زد
-      if (rentBtn) {
-        openModal(rentBtn.dataset.rent);
-        
-        // یک مکث کوتاه می‌دهیم تا انیمیشن باز شدن مودال تمام شود و سپس به بخش ماشین‌حساب اسکرول می‌کنیم
-        setTimeout(() => {
-          el.modalBox.scrollTo({
-            top: el.rentCalculator.offsetTop - 20, 
-            behavior: 'smooth'
-          });
-        }, 150);
-      }
     });
 
     $("modalClose").addEventListener("click", closeModal);
+    el.modalBackBtn.addEventListener("click", closeModal);
 
     el.modal.addEventListener("click", event => {
       if (event.target === el.modal) closeModal();
