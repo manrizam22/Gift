@@ -806,4 +806,849 @@
       backdrop: $("backdropFilter"),
       showing: $("showingText"),
       toast: $("toast"),
-   
+      modal: $("giftModal"),
+      modalBox: $("modalBox"),
+      modalStage: $("modalStage"),
+      modalTitle: $("modalTitle"),
+      modalCollection: $("modalCollection"),
+      modalTraits: $("modalTraits"),
+      modalPrice: $("modalPrice"),
+      modalFee: $("modalFee"),
+      calcDays: $("calcDays"),
+      calcMinus: $("calcMinus"),
+      calcPlus: $("calcPlus"),
+      calcHint: $("calcHint"),
+      calcRentLabel: $("calcRentLabel"),
+      calcRent: $("calcRent"),
+      calcFee: $("calcFee"),
+      calcTotal: $("calcTotal"),
+      modalDuration: $("modalDuration"),
+      modalTgLink: $("modalTgLink"),
+      modalRentLink: $("modalRentLink"),
+      modalBackBtn: $("modalBackBtn"),
+      rentCalculator: $("rentCalculator"),
+    };
+
+    /* ===================== توابع کمکی ===================== */
+    function normalizeText(value) {
+      return String(value ?? "")
+        .toLowerCase()
+        .replace(/ي/g, "ی")
+        .replace(/ك/g, "ک")
+        .replace(/\u200c/g, " ")
+        .trim();
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+      })[char]);
+    }
+
+    function toNumber(value) {
+      if (value === null || value === undefined || value === "") return null;
+      const number = Number(value);
+      return Number.isFinite(number) ? number : null;
+    }
+
+    function formatDuration(seconds) {
+      const value = Number(seconds);
+      if (!Number.isFinite(value) || value <= 0) return "نامشخص";
+
+      const days = Math.floor(value / 86400);
+      if (days >= 1) return `${days.toLocaleString("fa-IR")} روز`;
+
+      const hours = Math.floor(value / 3600);
+      if (hours >= 1) return `${hours.toLocaleString("fa-IR")} ساعت`;
+
+      return "کمتر از یک ساعت";
+    }
+
+    function getAttributes(gift) {
+      const result = {};
+      if (!Array.isArray(gift.attributes)) return result;
+
+      gift.attributes.forEach(attribute => {
+        if (!attribute || !attribute.trait_type) return;
+        result[attribute.trait_type] = attribute.value;
+      });
+      return result;
+    }
+
+    // رنگ بک‌گراند گیفت؛ درصد کمیابی داخل پرانتز حذف می‌شود
+    // مثال: "Onyx Black (0.5%)" -> "Onyx Black"
+    function getBackdrop(gift) {
+      const attrs = getAttributes(gift);
+      const key = Object.keys(attrs).find(k => /backdrop|background|بک/i.test(k));
+      if (!key) return "";
+      return String(attrs[key] ?? "").replace(/\s*\(.*?\)\s*$/, "").trim();
+    }
+
+    function getGiftNumber(gift) {
+      const match = String(gift.nft_name || "").match(/#(\d+)/);
+      return match ? Number(match[1]) : null;
+    }
+
+    function getGiftBaseName(gift) {
+      const match = String(gift.nft_name || "").match(/^(.*?)\s*#\d+/);
+      return match ? match[1].trim() : String(gift.nft_name || "").trim();
+    }
+
+    function getTelegramSlug(gift) {
+      const match = String(gift.nft_name || "").match(/^(.*?)\s*#(\d+)/);
+      if (!match) return null;
+
+      const base = match[1].replace(/[^A-Za-z0-9]/g, "");
+      return base ? `${base}-${match[2]}` : null;
+    }
+
+    function getTelegramUrl(gift) {
+      const slug = getTelegramSlug(gift);
+      return slug ? `https://t.me/nft/${slug}` : "https://t.me/";
+    }
+
+    function getFragmentSlug(gift) {
+      const slug = getTelegramSlug(gift);
+      return slug ? slug.toLowerCase() : null;
+    }
+
+    function getImageCandidates(gift) {
+      const list = [
+        gift.image, gift.image_url, gift.thumbnail,
+        gift.preview, gift.nft_image,
+        gift.metadata && gift.metadata.image
+      ].filter(url => typeof url === "string" && /^https?:\/\//.test(url));
+
+      const slug = getFragmentSlug(gift);
+
+      if (slug) {
+        list.push(
+          `https://nft.fragment.com/gift/${slug}.medium.jpg`,
+          `https://nft.fragment.com/gift/${slug}.webp`
+        );
+      }
+      return list;
+    }
+
+    function getAnimationCandidates(gift) {
+      const list = [
+        gift.lottie, gift.lottie_url, gift.animation, gift.animation_url
+      ].filter(url => typeof url === "string" && /^https?:\/\/.+\.json/.test(url));
+
+      const slug = getFragmentSlug(gift);
+      if (slug) list.push(`https://nft.fragment.com/gift/${slug}.lottie.json`);
+
+      return list;
+    }
+
+    /* ===================== قیمت (تومان) ===================== */
+    function getPriceTon(gift) {
+      const raw = toNumber(gift.price_per_day);
+      return raw === null ? null : raw / 1e9;
+    }
+
+    // زیر 0.01 TON: هر تون 900 هزار تومان | 0.01 TON و بالاتر: هر تون 600 هزار تومان
+    function getPriceToman(gift) {
+      const raw = toNumber(gift.price_per_day);   // نانوتون
+      if (raw === null) return null;
+
+      const rate = raw < CONFIG.LOW_PRICE_LIMIT_NANO
+        ? CONFIG.TON_TO_TOMAN_LOW
+        : CONFIG.TON_TO_TOMAN_HIGH;
+
+      return Math.round((raw / 1e9) * rate);
+    }
+
+    function formatToman(value) {
+      if (value === null) return "نامشخص";
+      return `${value.toLocaleString("fa-IR")} تومان`;
+    }
+
+    function formatFeeNote() {
+      return `+ ${CONFIG.TELEGRAM_FEE_TOMAN.toLocaleString("fa-IR")} تومان کارمزد تلگرام به مبلغ کل اضافه می‌شود`;
+    }
+
+    /* ===================== ارتباط با API ===================== */
+    async function apiGet(path, params = {}) {
+      const query = new URLSearchParams(params).toString();
+      const url = `${CONFIG.API_BASE}${path}${query ? "?" + query : ""}`;
+
+      const response = await fetch(url, { cache: "no-store" });
+      if (!response.ok) throw new Error(`HTTP ${response.status} (${path})`);
+
+      return response.json();
+    }
+
+    function extractRecords(payload) {
+      if (Array.isArray(payload)) return payload;
+      if (!payload || typeof payload !== "object") return [];
+
+      for (const key of ["items", "results", "gifts", "collections", "data"]) {
+        const value = payload[key];
+        if (Array.isArray(value)) return value;
+        if (value && typeof value === "object") {
+          const inner = extractRecords(value);
+          if (inner.length) return inner;
+        }
+      }
+      return [];
+    }
+
+    function getNextCursor(payload, current) {
+      if (!payload || typeof payload !== "object") return null;
+
+      const candidates = [
+        payload.next_cursor, payload.next, payload.next_page, payload.cursor,
+        payload.pagination && payload.pagination.next_cursor,
+        payload.pagination && payload.pagination.next,
+        payload.page_info && payload.page_info.next_cursor,
+        payload.page_info && payload.page_info.end_cursor,
+      ];
+
+      for (const value of candidates) {
+        if (value === null || value === undefined || value === false || value === "") continue;
+        if (typeof value === "string" || typeof value === "number") {
+          if (String(value) !== String(current || "")) return String(value);
+        }
+      }
+      return null;
+    }
+
+    function fetchGiftsPage(cursor) {
+      const params = { limit: CONFIG.LIMIT };
+      if (cursor) params.cursor = cursor;
+      return apiGet("/gifts", params);
+    }
+
+    /* ===================== کالکشن‌ها ===================== */
+    function nameKey(name) {
+      return String(name || "")
+        .toLowerCase()
+        .replace(/[^a-z]/g, "")
+        .replace(/ies$/, "y")
+        .replace(/s/g, "");
+    }
+
+    async function loadCollections() {
+      const payload = await apiGet("/collections");
+      const list = extractRecords(payload).filter(c => c && c.address && c.name);
+
+      collections = list.sort((a, b) => a.name.localeCompare(b.name));
+      collectionByAddress = new Map(collections.map(c => [c.address, c]));
+      collectionByKey = new Map(collections.map(c => [nameKey(c.name), c]));
+
+      fillCollectionSelect();
+    }
+
+    function fillCollectionSelect() {
+      const current = el.collection.value;
+      el.collection.innerHTML = '<option value="">همه کالکشن‌ها</option>';
+
+      collections.forEach(collection => {
+        const option = document.createElement("option");
+        option.value = collection.address;
+        option.textContent = collection.name;
+        el.collection.appendChild(option);
+      });
+
+      el.collection.value = current;
+    }
+
+    // لیست رنگ‌ها را از گیفت‌های بارگذاری‌شده می‌سازد (همراه با تعداد)
+    function fillBackdropSelect() {
+      const counts = new Map();
+
+      giftMap.forEach(gift => {
+        if (!gift._backdrop) return;
+        counts.set(gift._backdrop, (counts.get(gift._backdrop) || 0) + 1);
+      });
+
+      const current = el.backdrop.value;
+
+      el.backdrop.innerHTML = '<option value="">همه رنگ‌ها</option>';
+
+      [...counts.entries()]
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .forEach(([name, count]) => {
+          const option = document.createElement("option");
+          option.value = name;
+          option.textContent = `${name} (${count.toLocaleString("fa-IR")})`;
+          el.backdrop.appendChild(option);
+        });
+
+      // اگر رنگ انتخاب‌شده هنوز وجود دارد، حفظ شود
+      el.backdrop.value = counts.has(current) ? current : "";
+    }
+
+    function resolveCollection(gift) {
+      const address =
+        gift.collection_address ||
+        (gift.collection && (gift.collection.address || gift.collection.collection_address));
+
+      let found = address ? collectionByAddress.get(address) : null;
+
+      if (!found) found = collectionByKey.get(nameKey(getGiftBaseName(gift)));
+
+      gift.collection_name = found ? found.name : getGiftBaseName(gift);
+      gift.collection_address = found ? found.address : "";
+    }
+
+    /* ===================== آماده‌سازی گیفت ===================== */
+    function prepareGift(gift, previous, isNew) {
+      resolveCollection(gift);
+      gift._searchText = buildSearchText(gift);
+      gift._backdrop = getBackdrop(gift);
+
+      if (previous && previous._newUntil) gift._newUntil = previous._newUntil;
+      if (isNew) gift._newUntil = Date.now() + CONFIG.NEW_BADGE_MS;
+
+      return gift;
+    }
+
+    function buildSearchText(gift) {
+      return normalizeText([
+        gift.nft_name, gift.nft_address, gift.collection_name,
+        ...Object.entries(getAttributes(gift)).flat()
+      ].join(" "));
+    }
+
+    /* ===================== همگام‌سازی ===================== */
+    async function fullSync(initial = false) {
+      if (syncing) return;
+      syncing = true;
+
+      try {
+        const fresh = new Map();
+        const seenCursors = new Set();
+        let cursor = null;
+
+        for (let page = 0; page < CONFIG.MAX_PAGES; page++) {
+          const payload = await fetchGiftsPage(cursor);
+          const records = extractRecords(payload);
+          if (!records.length) break;
+
+          records.forEach(gift => {
+            if (!gift || !gift.nft_address) return;
+            const old = giftMap.get(gift.nft_address);
+            fresh.set(
+              gift.nft_address,
+              prepareGift(gift, old, !initial && !old)
+            );
+          });
+
+          if (initial) {
+            giftMap = new Map(fresh);
+            refresh();
+          }
+
+          const next = getNextCursor(payload, cursor);
+          if (!next || seenCursors.has(next)) break;
+
+          seenCursors.add(next);
+          cursor = next;
+        }
+
+        const addedCount = [...fresh.keys()].filter(k => !giftMap.has(k)).length;
+        const removedCount = [...giftMap.keys()].filter(k => !fresh.has(k)).length;
+
+        giftMap = fresh;
+
+        if (initial || addedCount || removedCount) refresh();
+
+        if (!initial && addedCount) showToast(`${addedCount.toLocaleString("fa-IR")} گیفت جدید اضافه شد`);
+      } catch (error) {
+        console.error("fullSync:", error);
+        if (initial && giftMap.size === 0) showError(error);
+      } finally {
+        syncing = false;
+      }
+    }
+
+    async function fastPoll() {
+      if (syncing || document.hidden || giftMap.size === 0) return;
+
+      try {
+        const payload = await fetchGiftsPage(null);
+        const records = extractRecords(payload);
+
+        let added = 0;
+
+        records.forEach(gift => {
+          if (!gift || !gift.nft_address || giftMap.has(gift.nft_address)) return;
+          giftMap.set(gift.nft_address, prepareGift(gift, null, true));
+          added++;
+        });
+
+        if (added) {
+          refresh();
+          showToast(`${added.toLocaleString("fa-IR")} گیفت جدید اضافه شد`);
+        }
+      } catch (error) {
+        console.error("fastPoll:", error);
+      }
+    }
+
+    /* ===================== فیلتر و مرتب‌سازی ===================== */
+    function applyFilters() {
+      const query = normalizeText(el.search.value);
+      const collectionAddress = el.collection.value;
+      const backdrop = el.backdrop.value;
+
+      filteredGifts = [...giftMap.values()].filter(gift => {
+        if (query && !gift._searchText.includes(query)) return false;
+        if (collectionAddress && gift.collection_address !== collectionAddress) return false;
+        if (backdrop && gift._backdrop !== backdrop) return false;
+        return true;
+      });
+
+      sortGifts();
+    }
+
+    function sortGifts() {
+      const mode = el.sort.value;
+
+      const cmp = (key, dir) => (a, b) => {
+        const x = toNumber(a[key]);
+        const y = toNumber(b[key]);
+        if (x === null && y === null) return 0;
+        if (x === null) return 1;
+        if (y === null) return -1;
+        return dir === "asc" ? x - y : y - x;
+      };
+
+      const sorters = {
+        "newest": cmp("listed_at", "desc"),
+        "oldest": cmp("listed_at", "asc"),
+        // مرتب‌سازی قیمت بر اساس تومان (به‌خاطر پله‌بندی نرخ)
+        "price-asc": (a, b) => (getPriceToman(a) ?? Infinity) - (getPriceToman(b) ?? Infinity),
+        "price-desc": (a, b) => (getPriceToman(b) ?? -Infinity) - (getPriceToman(a) ?? -Infinity),
+        "duration-asc": cmp("max_duration", "asc"),
+        "duration-desc": cmp("max_duration", "desc"),
+        "number-asc": (a, b) => (getGiftNumber(a) ?? Infinity) - (getGiftNumber(b) ?? Infinity),
+        "number-desc": (a, b) => (getGiftNumber(b) ?? -Infinity) - (getGiftNumber(a) ?? -Infinity),
+      };
+
+      filteredGifts.sort(sorters[mode] || sorters.newest);
+
+      if (mode === "newest") {
+        const now = Date.now();
+        filteredGifts.sort((a, b) =>
+          (b._newUntil > now ? 1 : 0) - (a._newUntil > now ? 1 : 0)
+        );
+      }
+    }
+
+    /* ===================== رندر ===================== */
+    function createCard(gift) {
+      const name = escapeHtml(gift.nft_name || "Gift");
+      const number = getGiftNumber(gift);
+      const isNew = gift._newUntil && gift._newUntil > Date.now();
+
+      const traits = Object.entries(getAttributes(gift))
+        .map(([k, v]) => `<span class="trait">${escapeHtml(k)}: ${escapeHtml(v)}</span>`)
+        .join("");
+
+      const toman = getPriceToman(gift);
+
+      // آدرس تصاویر فقط در حافظه ذخیره می‌شوند، در HTML نوشته نمی‌شوند
+      const images = getImageCandidates(gift);
+      if (images.length) imageSources.set(gift.nft_address, images);
+
+      const imageHtml = images.length
+        ? `<img class="gift-img"
+                data-gift="${escapeHtml(gift.nft_address)}"
+                alt="${name}" loading="lazy" decoding="async" referrerpolicy="no-referrer">`
+        : "";
+
+      return `
+        <article class="card ${isNew ? "is-new" : ""}">
+          <div class="image-wrap">
+            <div class="image-placeholder">تصویر گیفت</div>
+            ${imageHtml}
+            ${number !== null ? `<span class="gift-number">#${number}</span>` : ""}
+            ${isNew ? `<span class="new-badge">جدید</span>` : ""}
+          </div>
+
+          <div class="card-body">
+            <h3 class="gift-name" title="${name}">${name}</h3>
+            <span class="collection-tag">${escapeHtml(gift.collection_name || "بدون مجموعه")}</span>
+            <div class="traits">${traits}</div>
+
+            <div class="card-info">
+              <div>
+                <div class="price-label">اجاره روزانه</div>
+                <div class="price-value">${formatToman(toman)}</div>
+                <div class="telegram-fee">${formatFeeNote()}</div>
+              </div>
+              <div class="duration">
+              حداکثر مدت اجاره<br>${escapeHtml(formatDuration(gift.max_duration))}
+            </div>
+          </div>
+
+          <div class="card-actions">
+            <!-- یک دکمه واحد برای مشاهده و اجاره -->
+            <button class="btn btn-rent" type="button"
+                    data-view="${escapeHtml(gift.nft_address)}">مشاهده و اجاره</button>
+          </div>
+        </div>
+      </article>`;
+    }
+
+    // تصاویر را بعد از رندر DOM به صورت پویا ست می‌کند
+    function hydrateImages(root = document) {
+      root.querySelectorAll("img.gift-img[data-gift]").forEach(img => {
+        if (img.getAttribute("src")) return;
+        const urls = imageSources.get(img.dataset.gift);
+        if (urls && urls.length) {
+          img.dataset.idx = "0";
+          img.setAttribute("src", urls[0]);
+        }
+      });
+    }
+
+    function getRentUrl(gift, days = null, total = null) {
+      let message =
+        `سلام، می‌خواهم گیفت ${gift.nft_name || "Gift"} را اجاره کنم.\n` +
+        `کالکشن: ${gift.collection_name || ""}`;
+
+      // اگر از ماشین حساب مودال آمده باشد، مدت و مبلغ هم ارسال می‌شود
+      if (days !== null && total !== null) {
+        message +=
+          `\nمدت اجاره: ${days.toLocaleString("fa-IR")} روز` +
+          `\nمبلغ نهایی: ${formatToman(total)} (با کارمزد تلگرام)`;
+      }
+
+      return `https://t.me/${CONFIG.TELEGRAM_USERNAME}?text=${encodeURIComponent(message)}`;
+    }
+
+    /* ===================== ماشین حساب اجاره ===================== */
+    // حداکثر تعداد روز مجاز بر اساس max_duration (ثانیه)؛ null یعنی نامحدود/نامشخص
+    function getMaxDays(gift) {
+      const seconds = toNumber(gift.max_duration);
+      if (seconds === null || seconds <= 0) return null;
+      return Math.max(1, Math.floor(seconds / 86400));
+    }
+
+    function clampDays(value, max) {
+      let days = Math.floor(Number(value));
+      if (!Number.isFinite(days) || days < 1) days = 1;
+      if (max && days > max) days = max;
+      return days;
+    }
+
+    function updateCalc(normalize = false) {
+      if (!currentGift) return;
+
+      const max = getMaxDays(currentGift);
+      const days = clampDays(el.calcDays.value, max);
+
+      // اجازه می‌دهد کاربر هنگام تایپ فیلد را خالی کند
+      const typed = el.calcDays.value;
+      if (normalize || (typed !== "" && Number(typed) !== days)) {
+        el.calcDays.value = days;
+      }
+
+      el.calcDays.max = max || "";
+      el.calcHint.textContent = max
+        ? `حداکثر ${max.toLocaleString("fa-IR")} روز قابل اجاره است`
+        : "";
+
+      const daily = getPriceToman(currentGift);
+      const fee = CONFIG.TELEGRAM_FEE_TOMAN;
+
+      if (daily === null) {
+        el.calcRentLabel.textContent = "اجاره";
+        el.calcRent.textContent = "نامشخص";
+        el.calcFee.textContent = formatToman(fee);
+        el.calcTotal.textContent = "نامشخص";
+        el.modalRentLink.href = getRentUrl(currentGift);
+        return;
+      }
+
+      const rent = daily * days;
+      const total = rent + fee;
+
+      el.calcRentLabel.textContent =
+        `اجاره (${days.toLocaleString("fa-IR")} روز × ${daily.toLocaleString("fa-IR")})`;
+      el.calcRent.textContent = formatToman(rent);
+      el.calcFee.textContent = formatToman(fee);
+      el.calcTotal.textContent = formatToman(total);
+
+      el.modalRentLink.href = getRentUrl(currentGift, days, total);
+    }
+
+    function stepDays(delta) {
+      const max = getMaxDays(currentGift || {});
+      el.calcDays.value = clampDays(
+        (Number(el.calcDays.value) || 1) + delta,
+        max
+      );
+      updateCalc(true);
+    }
+
+    function updateShowingText() {
+      el.showing.textContent = filteredGifts.length
+        ? `${visibleCount.toLocaleString("fa-IR")} از ${filteredGifts.length.toLocaleString("fa-IR")} گیفت`
+        : "بدون نتیجه";
+    }
+
+    function renderGifts(count) {
+      if (filteredGifts.length === 0) {
+        el.grid.innerHTML = `
+          <div class="empty">
+            <strong>گیفتی پیدا نشد!</strong>
+            <p>عبارت جست‌وجو، کالکشن یا رنگ بک‌گراند را تغییر بده.</p>
+          </div>`;
+        visibleCount = 0;
+        updateShowingText();
+        return;
+      }
+
+      const target = Math.min(Math.max(count, CONFIG.PAGE_SIZE), filteredGifts.length);
+      el.grid.innerHTML = filteredGifts.slice(0, target).map(createCard).join("");
+      visibleCount = target;
+      hydrateImages(el.grid);
+      updateShowingText();
+    }
+
+    function renderMore() {
+      if (visibleCount >= filteredGifts.length) return;
+
+      const next = filteredGifts.slice(visibleCount, visibleCount + CONFIG.PAGE_SIZE);
+      el.grid.insertAdjacentHTML("beforeend", next.map(createCard).join(""));
+      visibleCount += next.length;
+      hydrateImages(el.grid);
+      updateShowingText();
+    }
+
+    // بروزرسانی زنده: لیست رنگ‌ها هم هماهنگ می‌شود
+    function refresh() {
+      fillBackdropSelect();
+      applyFilters();
+      renderGifts(visibleCount || CONFIG.PAGE_SIZE);
+    }
+
+    // وقتی کاربر فیلتر را عوض می‌کند، از اول رندر می‌شود
+    function refreshFromStart() {
+      applyFilters();
+      renderGifts(CONFIG.PAGE_SIZE);
+    }
+
+    function showError(error) {
+      el.grid.innerHTML = `
+        <div class="error">
+          <strong>دریافت اطلاعات با مشکل مواجه شد.</strong>
+          <p>${escapeHtml(error.message)}</p>
+          <p>آدرس Worker در تنظیمات (API_BASE) و توکن را بررسی کن.</p>
+        </div>`;
+      el.showing.textContent = "خطا در دریافت اطلاعات";
+    }
+
+    let toastTimer;
+    function showToast(text) {
+      el.toast.textContent = text;
+      el.toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.toast.classList.remove("show"), 3500);
+    }
+
+    /* ===================== مودال و انیمیشن ===================== */
+    function destroyAnimation() {
+      if (lottieInstance) {
+        lottieInstance.destroy();
+        lottieInstance = null;
+      }
+      el.modalStage.innerHTML = "";
+    }
+
+    function showStaticImage(gift) {
+      const images = imageSources.get(gift.nft_address) || getImageCandidates(gift);
+
+      if (!images.length) {
+        el.modalStage.innerHTML = `<span class="stage-msg">پیش‌نمایش در دسترس نیست</span>`;
+        return;
+      }
+
+      el.modalStage.innerHTML = `<img alt="${escapeHtml(gift.nft_name || "")}" referrerpolicy="no-referrer">`;
+
+      const img = el.modalStage.querySelector("img");
+      let index = 0;
+      const tryNext = () => {
+        if (index >= images.length) {
+          img.remove();
+          el.modalStage.innerHTML = `<span class="stage-msg">پیش‌نمایش در دسترس نیست</span>`;
+          return;
+        }
+        img.setAttribute("src", images[index++]);
+      };
+
+      img.addEventListener("error", tryNext);
+      tryNext();
+    }
+
+    function playAnimation(gift) {
+      const candidates = getAnimationCandidates(gift);
+
+      if (!candidates.length || typeof lottie === "undefined") {
+        showStaticImage(gift);
+        return;
+      }
+
+      el.modalStage.innerHTML = `<span class="stage-msg">در حال بارگذاری انیمیشن...</span>`;
+
+      const container = document.createElement("div");
+      container.className = "anim";
+
+      let index = 0;
+
+      const tryLoad = () => {
+        if (index >= candidates.length) {
+          destroyAnimation();
+          showStaticImage(gift);
+          return;
+        }
+
+        if (lottieInstance) lottieInstance.destroy();
+        container.innerHTML = "";
+
+        lottieInstance = lottie.loadAnimation({
+          container,
+          renderer: "svg",
+          loop: true,
+          autoplay: true,
+          path: candidates[index++],
+        });
+
+        lottieInstance.addEventListener("DOMLoaded", () => {
+          el.modalStage.innerHTML = "";
+          el.modalStage.appendChild(container);
+        });
+
+        lottieInstance.addEventListener("data_failed", tryLoad);
+      };
+
+      tryLoad();
+    }
+
+    function openModal(address) {
+      const gift = giftMap.get(address);
+      if (!gift) return;
+
+      destroyAnimation();
+
+      el.modalTitle.textContent = gift.nft_name || "Gift";
+      el.modalCollection.textContent = `کالکشن: ${gift.collection_name || "---"}`;
+
+      el.modalTraits.innerHTML = Object.entries(getAttributes(gift))
+        .map(([k, v]) => `<span class="trait">${escapeHtml(k)}: ${escapeHtml(v)}</span>`)
+        .join("");
+
+      el.modalPrice.textContent = formatToman(getPriceToman(gift));
+      el.modalFee.textContent = formatFeeNote();
+      el.modalDuration.textContent = `حداکثر مدت اجاره: ${formatDuration(gift.max_duration)}`;
+
+      el.modalTgLink.href = getTelegramUrl(gift);
+
+      currentGift = gift;
+      el.calcDays.value = 1;
+      updateCalc(true);   // لینک درخواست اجاره هم همین‌جا ساخته می‌شود
+
+      el.modal.classList.add("open");
+      el.modal.setAttribute("aria-hidden", "false");
+      document.body.classList.add("modal-open");
+
+      playAnimation(gift);
+    }
+
+    function closeModal() {
+      el.modal.classList.remove("open");
+      el.modal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("modal-open");
+      currentGift = null;
+      destroyAnimation();
+    }
+
+    /* ===================== رویدادها ===================== */
+    el.search.addEventListener("input", refreshFromStart);
+    el.sort.addEventListener("change", refreshFromStart);
+    el.collection.addEventListener("change", refreshFromStart);
+    el.backdrop.addEventListener("change", refreshFromStart);
+
+    el.calcDays.addEventListener("input", () => updateCalc(false));
+    el.calcDays.addEventListener("change", () => updateCalc(true));
+    el.calcDays.addEventListener("blur", () => updateCalc(true));
+    el.calcMinus.addEventListener("click", () => stepDays(-1));
+    el.calcPlus.addEventListener("click", () => stepDays(1));
+
+    el.grid.addEventListener("click", event => {
+      const viewBtn = event.target.closest("[data-view]");
+      if (viewBtn) openModal(viewBtn.dataset.view);
+    });
+
+    $("modalClose").addEventListener("click", closeModal);
+    el.modalBackBtn.addEventListener("click", closeModal);
+
+    el.modal.addEventListener("click", event => {
+      if (event.target === el.modal) closeModal();
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") closeModal();
+    });
+
+    // اگر تصویر لود نشد، آدرس بعدی از حافظه امتحان می‌شود
+    el.grid.addEventListener("error", event => {
+      const img = event.target;
+      if (!(img instanceof HTMLImageElement) || !img.classList.contains("gift-img")) return;
+
+      const urls = imageSources.get(img.dataset.gift) || [];
+      const nextIdx = parseInt(img.dataset.idx || "0", 10) + 1;
+
+      if (nextIdx < urls.length) {
+        img.dataset.idx = String(nextIdx);
+        img.setAttribute("src", urls[nextIdx]);
+      } else {
+        img.remove();
+      }
+    }, true);
+
+    window.addEventListener("scroll", () => {
+      if (visibleCount >= filteredGifts.length) return;
+
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 600) {
+        renderMore();
+      }
+    }, { passive: true });
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) fastPoll();
+    });
+
+    /* ===================== شروع ===================== */
+    async function start() {
+      try {
+        await loadCollections();
+      } catch (error) {
+        console.error("collections:", error);
+        showError(error);
+        return;
+      }
+
+      await fullSync(true);
+
+      setInterval(fastPoll, CONFIG.FAST_POLL_MS);
+
+      setInterval(() => {
+        if (!document.hidden) fullSync(false);
+      }, CONFIG.FULL_SYNC_MS);
+
+      setInterval(() => loadCollections().then(refresh).catch(() => { }), 600000);
+    }
+
+    start();
+  </script>
+
+</body>
+
+</html>
+```
