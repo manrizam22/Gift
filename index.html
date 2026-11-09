@@ -984,12 +984,10 @@ function formatFeeNote() {
 
 /* ===================== ارتباط با API ===================== */
 async function apiGet(path, params = {}) {
-  // اضافه کردن زمان برای دور زدن کش
-  params._t = Date.now();
+  params._t = Date.now(); // دور زدن کش
   const query = new URLSearchParams(params).toString();
   const url = `${CONFIG.API_BASE}${path}?${query}`;
   
-  // حذف هدرهای سفارشی که باعث خطای CORS می‌شدند
   const response = await fetch(url, { 
     method: "GET",
     cache: "no-store"
@@ -1144,8 +1142,11 @@ function prepareGift(gift, previous, isNew) {
   resolveCollection(gift);
   gift._searchText = buildSearchText(gift);
   gift._backdrop = getBackdrop(gift);
-  if (previous && previous._newUntil) gift._newUntil = previous._newUntil;
-  if (isNew) gift._newUntil = Date.now() + CONFIG.NEW_BADGE_MS;
+  if (previous && previous._newUntil) {
+    gift._newUntil = previous._newUntil;
+  } else if (isNew) {
+    gift._newUntil = Date.now() + CONFIG.NEW_BADGE_MS;
+  }
   return gift;
 }
 
@@ -1180,11 +1181,20 @@ async function fullSync(isManual = false) {
       records.forEach(gift => {
         if (!gift || !gift.nft_address) return;
         const old = giftMap.get(gift.nft_address);
-        fresh.set(gift.nft_address, prepareGift(gift, old, !old && !isManual));
+        // مهم: در لود کامل، تگ جدید نمی‌دهیم (false)
+        fresh.set(gift.nft_address, prepareGift(gift, old, false));
       });
 
-      if (!isManual && page === 0) {
-        giftMap = new Map(fresh);
+      // ✅ لود تدریجی: به محض دریافت هر صفحه، به مپ اصلی اضافه و رندر می‌شود
+      if (!isManual && !isInteracting) {
+        for (const [key, val] of fresh) {
+          const old = giftMap.get(key);
+          if (old && old._newUntil) val._newUntil = old._newUntil;
+          giftMap.set(key, val);
+        }
+        refresh();
+      } else if (isManual && page === 0) {
+        for (const [key, val] of fresh) giftMap.set(key, val);
         refresh();
       }
 
@@ -1197,17 +1207,24 @@ async function fullSync(isManual = false) {
 
     console.log(`FullSync: Total gifts fetched from API: ${totalFetched}`);
 
-    const addedCount = [...fresh.keys()].filter(k => !giftMap.has(k)).length;
-    const removedCount = [...giftMap.keys()].filter(k => !fresh.has(k)).length;
-    giftMap = fresh;
+    // پاکسازی آیتم‌های حذف شده
+    for (const key of giftMap.keys()) {
+      if (!fresh.has(key)) giftMap.delete(key);
+    }
+    
+    // آپدیت نهایی
+    for (const [key, val] of fresh) {
+      const old = giftMap.get(key);
+      if (old && old._newUntil) val._newUntil = old._newUntil;
+      giftMap.set(key, val);
+    }
 
     for (const key of imageSources.keys()) {
-      if (!fresh.has(key)) imageSources.delete(key);
+      if (!giftMap.has(key)) imageSources.delete(key);
     }
 
     refresh();
     if (isManual) showToast(`اطلاعات بروزرسانی شد (${totalFetched} گیفت)`);
-    else if (addedCount) showToast(`${addedCount.toLocaleString("fa-IR")} گیفت جدید اضافه شد`);
 
   } catch (error) {
     console.error("fullSync:", error);
@@ -1216,6 +1233,7 @@ async function fullSync(isManual = false) {
   } finally {
     syncing = false;
     if (isManual) el.refreshBtn.classList.remove("loading");
+    if (filteredGifts.length === 0) refresh(); // برای پاک کردن حالت لودینگ در صورت خالی بودن
   }
 }
 
@@ -1230,6 +1248,7 @@ async function fastPoll() {
     
     records.forEach(gift => {
       if (!gift || !gift.nft_address || giftMap.has(gift.nft_address)) return;
+      // ✅ تگ جدید فقط در پولینگ زنده (8 ثانیه) داده می‌شود (true)
       giftMap.set(gift.nft_address, prepareGift(gift, null, true));
       added++;
     });
@@ -1402,14 +1421,22 @@ function stepDays(delta) {
 }
 
 function updateShowingText() {
-  el.showing.textContent = filteredGifts.length
-    ? `${visibleCount.toLocaleString("fa-IR")} از ${filteredGifts.length.toLocaleString("fa-IR")} گیفت`
-    : "بدون نتیجه";
+  if (syncing && filteredGifts.length === 0) {
+    el.showing.textContent = "در حال دریافت اطلاعات...";
+  } else if (filteredGifts.length) {
+    el.showing.textContent = `${visibleCount.toLocaleString("fa-IR")} از ${filteredGifts.length.toLocaleString("fa-IR")} گیفت`;
+  } else {
+    el.showing.textContent = "بدون نتیجه";
+  }
 }
 
 function renderGifts(count) {
   if (filteredGifts.length === 0) {
-    el.grid.innerHTML = `<div class="empty"><strong>گیفتی پیدا نشد!</strong><p>عبارت جست‌وجو، کالکشن یا رنگ بک‌گراند را تغییر بده.</p></div>`;
+    if (syncing) {
+      el.grid.innerHTML = `<div class="loading">در حال دریافت اطلاعات از سرور...</div>`;
+    } else {
+      el.grid.innerHTML = `<div class="empty"><strong>گیفتی پیدا نشد!</strong><p>عبارت جست‌وجو، کالکشن یا رنگ بک‌گراند را تغییر بده.</p></div>`;
+    }
     visibleCount = 0;
     updateShowingText();
     return;
