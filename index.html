@@ -257,11 +257,11 @@ LOW_PRICE_LIMIT_NANO: 10000000,
 TON_TO_TOMAN_LOW: 900000,
 TON_TO_TOMAN_HIGH: 600000,
 LIMIT: 100,
-MAX_PAGES: 300,
-FAST_POLL_MS: 8000,
+MAX_PAGES: 30,
+FAST_POLL_MS: 15000,
 FULL_SYNC_MS: 300000,
 NEW_BADGE_MS: 120000,
-FETCH_TIMEOUT_MS: 40000,
+FETCH_TIMEOUT_MS: 25000,
 PAGE_SIZE: 24,
 TELEGRAM_USERNAME: "Mr_Rentify",
 TELEGRAM_FEE_TOMAN: 40000,
@@ -541,6 +541,7 @@ try {
 let cursor = null;
 const seen = new Set();
 for (let page = 0; page < CONFIG.MAX_PAGES; page++) {
+try {
 const payload = await apiGet("/gifts", { limit: CONFIG.LIMIT, ...(cursor ? { cursor } : {}) });
 const records = extractRecords(payload);
 if (!records.length) break;
@@ -561,6 +562,11 @@ if (!old) added = true;
 if (!next || seen.has(next)) break;
 seen.add(next);
 cursor = next;
+​// وقفه کوتاه برای جلوگیری از فشار به سرور و مرورگر
+await new Promise(r => setTimeout(r, 100));
+} catch (err) {
+break;
+}
 }
 } catch (e) {} finally {
 syncing = false;
@@ -615,7 +621,6 @@ return dir === "asc" ? x - y : y - x;
 ​function createCard(gift) {
 const name = escapeHtml(gift.nft_name || "Gift");
 const num = getGiftNumber(gift);
-const isNew = gift._newUntil && gift._newUntil > Date.now();
 const traits = Object.entries(getAttributes(gift)).map(([k, v]) => <span class="trait">${escapeHtml(k)}: ${escapeHtml(v)}</span>).join("");
 const images = getImageCandidates(gift);
 if (images.length) imageSources.set(gift.nft_address, images);
