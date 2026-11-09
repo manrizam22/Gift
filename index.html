@@ -1390,6 +1390,9 @@
     }
 
     function updateShowingText() {
+      // در زمان دریافت اطلاعات، متن هدر را تغییر ندهد تا کاربر تعداد دانلود شده را ببیند
+      if (syncing) return;
+      
       el.showing.textContent = filteredGifts.length
         ? `${visibleCount.toLocaleString("fa-IR")} از ${filteredGifts.length.toLocaleString("fa-IR")} گیفت`
         : "بدون نتیجه";
@@ -1461,89 +1464,89 @@
 
     const debouncedRefreshFromStart = debounce(refreshFromStart, 200);
 
-    function showError(error) {
-      el.grid.innerHTML = `
-        <div class="error">
-          <strong>دریافت اطلاعات با مشکل مواجه شد.</strong>
-          <p>${escapeHtml(error.message)}</p>
-          <p>آدرس Worker در تنظیمات (API_BASE) و وضعیت اینترنت را بررسی کن.</p>
-        </div>`;
-      el.showing.textContent = "خطا در دریافت اطلاعات";
+    /* ===================== آماده‌سازی گیفت ===================== */
+    function prepareGift(gift, previous, isNew) {
+      resolveCollection(gift);
+      gift._searchText = buildSearchText(gift);
+      gift._backdrop = getBackdrop(gift);
+      if (previous && previous._newUntil) gift._newUntil = previous._newUntil;
+      if (isNew) gift._newUntil = Date.now() + CONFIG.NEW_BADGE_MS;
+      return gift;
     }
 
-    let toastTimer;
-    function showToast(text) {
-      el.toast.textContent = text;
-      el.toast.classList.add("show");
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => el.toast.classList.remove("show"), 3500);
+    function buildSearchText(gift) {
+      const attrValues = Object.values(getAttributes(gift));
+      return normalizeText([
+        gift.nft_name, gift.nft_address, gift.collection_name,
+        ...attrValues
+      ].join(" "));
     }
 
-    /* ===================== مودال ===================== */
-    function showStaticImage(gift) {
-      const images = imageSources.get(gift.nft_address) || getImageCandidates(gift);
-      if (!images.length) {
-        el.modalStage.innerHTML = `<span class="stage-msg">پیش‌نمایش در دسترس نیست</span>`;
-        return;
-      }
-      el.modalStage.innerHTML = `<img alt="${escapeHtml(gift.nft_name || "")}" referrerpolicy="no-referrer">`;
-      const img = el.modalStage.querySelector("img");
-      let index = 0;
-      const tryNext = () => {
-        if (index >= images.length) {
-          img.remove();
-          el.modalStage.innerHTML = `<span class="stage-msg">پیش‌نمایش در دسترس نیست</span>`;
-          return;
+    /* ===================== همگام‌سازی ===================== */
+    async function fullSync(initial = false) {
+      if (syncing) return;
+      syncing = true;
+
+      try {
+        const fresh = new Map();
+        const seenCursors = new Set();
+        let cursor = null;
+
+        for (let page = 0; page < CONFIG.MAX_PAGES; page++) {
+          const payload = await fetchGiftsPage(cursor);
+          const records = extractRecords(payload);
+          if (!records.length) break;
+
+          records.forEach(gift => {
+            if (!gift || !gift.nft_address) return;
+            const old = giftMap.get(gift.nft_address);
+            fresh.set(
+              gift.nft_address,
+              prepareGift(gift, old, !initial && !old)
+            );
+          });
+
+          // رندر فوری صفحه اول: به محض دریافت 100 گیفت اول، آن‌ها را نشان می‌دهد
+          if (initial && page === 0) {
+            giftMap = new Map(fresh);
+            refresh(); 
+          }
+
+          if (initial) {
+            el.showing.textContent = `در حال دریافت بقیه گیفت‌ها... (${fresh.size.toLocaleString("fa-IR")} مورد یافت شد)`;
+          }
+
+          const next = getNextCursor(payload, cursor);
+          if (!next || seenCursors.has(next)) break;
+          seenCursors.add(next);
+          cursor = next;
         }
-        img.setAttribute("src", images[index++]);
-      };
-      img.addEventListener("error", tryNext);
-      tryNext();
+
+        const addedCount = [...fresh.keys()].filter(k => !giftMap.has(k)).length;
+        const removedCount = [...giftMap.keys()].filter(k => !fresh.has(k)).length;
+
+        giftMap = fresh;
+        if (initial || addedCount || removedCount) refresh();
+        
+        // بعد از پایان دانلود، متن بالای صفحه را اصلاح کند
+        updateShowingText();
+
+        if (!initial && addedCount) showToast(`${addedCount.toLocaleString("fa-IR")} گیفت جدید اضافه شد`);
+        
+      } catch (error) {
+        console.error("fullSync:", error);
+        if (initial && giftMap.size === 0) showError(error);
+        else if (initial) {
+           refresh();
+           showToast("دریافت برخی اطلاعات با مشکل روبرو شد.");
+        }
+      } finally {
+        syncing = false;
+        updateShowingText();
+      }
     }
 
-    function openModal(address) {
-      const gift = giftMap.get(address);
-      if (!gift) return;
-
-      el.modalTitle.textContent = gift.nft_name || "Gift";
-      el.modalCollection.textContent = `کالکشن: ${gift.collection_name || "---"}`;
-      el.modalTraits.innerHTML = Object.entries(getAttributes(gift))
-        .map(([k, v]) => `<span class="trait">${escapeHtml(k)}: ${escapeHtml(v)}</span>`)
-        .join("");
-
-      el.modalPrice.textContent = formatToman(getPriceToman(gift));
-      el.modalFee.textContent = formatFeeNote();
-      el.modalDuration.textContent = `مدت اجاره: ${formatDuration(gift)}`;
-
-      el.modalTgLink.href = getTelegramUrl(gift);
-
-      currentGift = gift;
-      
-      const bounds = getDayBounds(gift);
-      el.calcDays.value = bounds.minDays;
-      updateCalc(true);
-
-      el.modal.classList.add("open");
-      el.modal.setAttribute("aria-hidden", "false");
-      document.body.classList.add("modal-open");
-
-      showStaticImage(gift);
-    }
-
-    function closeModal() {
-      el.modal.classList.remove("open");
-      el.modal.setAttribute("aria-hidden", "true");
-      document.body.classList.remove("modal-open");
-      currentGift = null;
-      el.modalStage.innerHTML = "";
-    }
-
-    /* ===================== رویدادها ===================== */
-    el.search.addEventListener("input", debouncedRefreshFromStart);
-    el.sort.addEventListener("change", refreshFromStart);
-    el.collection.addEventListener("change", refreshFromStart);
-    el.backdrop.addEventListener("change", refreshFromStart);
-
+    async function fastPoll() {
     el.calcDays.addEventListener("input", () => updateCalc(false));
     el.calcDays.addEventListener("change", () => updateCalc(true));
     el.calcDays.addEventListener("blur", () => updateCalc(true));
