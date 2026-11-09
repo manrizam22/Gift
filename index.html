@@ -123,8 +123,38 @@ select.control { cursor: pointer; }
   flex-wrap: wrap;
 }
 
+.results-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .results-bar strong { font-size: 16px; }
 .results-bar span { color: var(--muted); font-size: 12px; }
+
+.refresh-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: 0.2s;
+}
+
+.refresh-btn:hover {
+  background: var(--border);
+}
+
+.refresh-btn.loading svg {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
 
 .grid {
   display: grid;
@@ -674,7 +704,13 @@ footer {
 
 <main class="container">
   <div class="results-bar">
-    <strong>گیفت‌ها</strong>
+    <div class="results-title">
+      <strong>گیفت‌ها</strong>
+      <button id="manualRefreshBtn" class="refresh-btn" title="بروزرسانی کامل اطلاعات">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+        بروزرسانی
+      </button>
+    </div>
     <span id="showingText" aria-live="polite">در حال دریافت اطلاعات...</span>
   </div>
 
@@ -752,8 +788,8 @@ const CONFIG = {
   LOW_PRICE_LIMIT_NANO: 10000000,
   TON_TO_TOMAN_LOW: 900000,
   TON_TO_TOMAN_HIGH: 600000,
-  LIMIT: 100,
-  MAX_PAGES: 300,
+  LIMIT: 100, // تعداد آیتم در هر صفحه
+  MAX_PAGES: 50, // نهایت تعداد صفحات برای جلوگیری از لوپ بی‌پایان
   FAST_POLL_MS: 8000,
   FULL_SYNC_MS: 60000,
   NEW_BADGE_MS: 120000,
@@ -777,7 +813,6 @@ let lottieInstance = null;
 let currentGift = null;
 let lastFocused = null;
 
-// ✅ سیستم قفل تعامل (Interaction Lock)
 let isInteracting = false;
 let pendingRefresh = false;
 
@@ -813,6 +848,7 @@ const el = {
   modalRentLink: $("modalRentLink"),
   modalBackBtn: $("modalBackBtn"),
   rentCalculator: $("rentCalculator"),
+  refreshBtn: $("manualRefreshBtn"),
 };
 
 /* ===================== توابع کمکی ===================== */
@@ -824,11 +860,7 @@ function debounce(fn, ms = 200) {
   };
 }
 
-// ✅ مدیریت شروع و پایان تعامل کاربر
-function startInteraction() {
-  isInteracting = true;
-}
-
+function startInteraction() { isInteracting = true; }
 function endInteraction() {
   isInteracting = false;
   if (pendingRefresh) {
@@ -952,9 +984,19 @@ function formatFeeNote() {
 
 /* ===================== ارتباط با API ===================== */
 async function apiGet(path, params = {}) {
+  // ✅ اضافه کردن پارامتر زمان برای دور زدن کش کلادفلر
+  params._t = Date.now();
   const query = new URLSearchParams(params).toString();
-  const url = `${CONFIG.API_BASE}${path}${query ? "?" + query : ""}`;
-  const response = await fetch(url, { cache: "no-store" });
+  const url = `${CONFIG.API_BASE}${path}?${query}`;
+  
+  const response = await fetch(url, { 
+    cache: "no-store",
+    headers: {
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+      "Pragma": "no-cache"
+    }
+  });
+  
   if (!response.ok) throw new Error(`HTTP ${response.status} (${path})`);
   return response.json();
 }
@@ -974,14 +1016,19 @@ function extractRecords(payload) {
   return [];
 }
 
+// ✅ بهبود تشخیص Cursor برای پشتیبانی از فرمت‌های بیشتر API
 function getNextCursor(payload, current) {
   if (!payload || typeof payload !== "object") return null;
   const candidates = [
-    payload.next_cursor, payload.next, payload.next_page, payload.cursor,
+    payload.next_cursor, payload.next, payload.next_page, payload.cursor, payload.next_offset,
     payload.pagination && payload.pagination.next_cursor,
     payload.pagination && payload.pagination.next,
+    payload.pagination && payload.pagination.offset,
     payload.page_info && payload.page_info.next_cursor,
     payload.page_info && payload.page_info.end_cursor,
+    payload.meta && payload.meta.next_cursor,
+    payload.meta && payload.meta.next,
+    payload.meta && payload.meta.offset
   ];
 
   for (const value of candidates) {
@@ -1023,7 +1070,6 @@ async function loadCollections() {
 
 function fillCollectionSelect() {
   if (isInteracting && document.activeElement === el.collection) return;
-  
   const current = el.collection.value;
   el.collection.innerHTML = '<option value="">همه کالکشن‌ها</option>';
   collections.forEach(collection => {
@@ -1036,7 +1082,6 @@ function fillCollectionSelect() {
 }
 
 function fillBackdropSelect() {
-  // ✅ اگر کاربر در حال تعامل است یا لیست رنگ‌ها باز است، اصلا به DOM دست نزن
   if (isInteracting && document.activeElement === el.backdrop) return;
 
   const counts = new Map();
@@ -1047,8 +1092,6 @@ function fillBackdropSelect() {
 
   const current = el.backdrop.value;
   const newOptions = [...counts.entries()].sort((a, b) => a[0].localeCompare(b[0]));
-
-  // چک کردن اینکه آیا گزینه‌ها دقیقاً مثل قبل هستند یا نه
   const currentOptions = Array.from(el.backdrop.options).slice(1); 
   let needsUpdate = currentOptions.length !== newOptions.length;
 
@@ -1096,7 +1139,6 @@ function resolveCollection(gift) {
       }
     }
   }
-
   gift.collection_name = found ? found.name : getGiftBaseName(gift);
   gift.collection_address = found ? found.address : "";
 }
@@ -1118,32 +1160,34 @@ function buildSearchText(gift) {
 }
 
 /* ===================== همگام‌سازی ===================== */
-async function fullSync(initial = false) {
+async function fullSync(isManual = false) {
   if (syncing) return;
-  
-  // ✅ اگر کاربر در حال تعامل است، سینک کامل رو کلا متوقف کن تا بعدا
-  if (!initial && isInteracting) {
-      return; 
-  }
+  if (!isManual && isInteracting) return;
 
   syncing = true;
+  if (isManual) el.refreshBtn.classList.add("loading");
+
   try {
     const fresh = new Map();
     const seenCursors = new Set();
     let cursor = null;
+    let totalFetched = 0;
 
     for (let page = 0; page < CONFIG.MAX_PAGES; page++) {
       const payload = await fetchGiftsPage(cursor);
       const records = extractRecords(payload);
       if (!records.length) break;
 
+      totalFetched += records.length;
+
       records.forEach(gift => {
         if (!gift || !gift.nft_address) return;
         const old = giftMap.get(gift.nft_address);
-        fresh.set(gift.nft_address, prepareGift(gift, old, !initial && !old));
+        fresh.set(gift.nft_address, prepareGift(gift, old, !old && !isManual));
       });
 
-      if (initial) {
+      // اگر در حال لود اولیه بودیم، هر صفحه رو نشون بده که کاربر منتظر نمونه
+      if (!isManual && page === 0) {
         giftMap = new Map(fresh);
         refresh();
       }
@@ -1155,6 +1199,8 @@ async function fullSync(initial = false) {
       cursor = next;
     }
 
+    console.log(`FullSync: Total gifts fetched from API: ${totalFetched}`);
+
     const addedCount = [...fresh.keys()].filter(k => !giftMap.has(k)).length;
     const removedCount = [...giftMap.keys()].filter(k => !fresh.has(k)).length;
     giftMap = fresh;
@@ -1163,20 +1209,21 @@ async function fullSync(initial = false) {
       if (!fresh.has(key)) imageSources.delete(key);
     }
 
-    if (initial || addedCount || removedCount) refresh();
-    if (!initial && addedCount) showToast(`${addedCount.toLocaleString("fa-IR")} گیفت جدید اضافه شد`);
+    refresh();
+    if (isManual) showToast(`اطلاعات بروزرسانی شد (${totalFetched} گیفت)`);
+    else if (addedCount) showToast(`${addedCount.toLocaleString("fa-IR")} گیفت جدید اضافه شد`);
+
   } catch (error) {
     console.error("fullSync:", error);
-    if (initial && giftMap.size === 0) showError(error);
+    if (giftMap.size === 0) showError(error);
   } finally {
     syncing = false;
+    if (isManual) el.refreshBtn.classList.remove("loading");
   }
 }
 
 async function fastPoll() {
   if (syncing || document.hidden || giftMap.size === 0) return;
-  
-  // ✅ توقف کامل در زمان تعامل
   if (isInteracting) return;
 
   try {
@@ -1386,7 +1433,6 @@ function renderMore() {
   updateShowingText();
 }
 
-// ✅ تابع رفرش محافظت‌شده
 function refresh() {
   if (isInteracting) {
     pendingRefresh = true;
@@ -1515,20 +1561,15 @@ function trapFocus(event) {
 }
 
 /* ===================== رویدادها ===================== */
-// ✅ اتصال رویدادهای تعامل به تمام فیلدها
 [el.search, el.sort, el.collection, el.backdrop].forEach(input => {
-  // با هر لمس یا کلیک یا فوکوس، قفل فعال می‌شود
   input.addEventListener("pointerdown", startInteraction);
   input.addEventListener("touchstart", startInteraction, { passive: true });
   input.addEventListener("focus", startInteraction);
-  
-  // با خارج شدن از فیلد، قفل باز می‌شود
   input.addEventListener("blur", endInteraction);
 });
 
-// در زمان تغییر مقدار (بعد از انتخاب)، مطمئن می‌شویم که قفل باز شود
 el.search.addEventListener("input", () => {
-  endInteraction(); // آزاد کردن قفل (چون input هر بار تایپ فایر میشه)
+  endInteraction();
   debouncedRefresh();
 });
 const debouncedRefresh = debounce(() => {
@@ -1538,6 +1579,11 @@ const debouncedRefresh = debounce(() => {
 el.sort.addEventListener("change", () => { endInteraction(); refreshFromStart(); });
 el.collection.addEventListener("change", () => { endInteraction(); refreshFromStart(); });
 el.backdrop.addEventListener("change", () => { endInteraction(); refreshFromStart(); });
+
+// ✅ رویداد دکمه بروزرسانی دستی
+el.refreshBtn.addEventListener("click", () => {
+  fullSync(true); // true یعنی رفرش دستی
+});
 
 el.calcDays.addEventListener("input", () => updateCalc(false));
 el.calcDays.addEventListener("change", () => updateCalc(true));
@@ -1598,7 +1644,7 @@ async function start(retryCount = 0) {
     return;
   }
 
-  await fullSync(true);
+  await fullSync(false);
   setInterval(fastPoll, CONFIG.FAST_POLL_MS);
 
   setInterval(() => {
