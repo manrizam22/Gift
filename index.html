@@ -539,131 +539,85 @@ const CONFIG = {
 
 const FEE_NOTE_TEXT = `+ ${CONFIG.TELEGRAM_FEE_TOMAN.toLocaleString("fa-IR")} تومان کارمزد تلگرام به مبلغ کل اضافه می‌شود`;
 
-// ✅ دیکشنری دقیق و کامل تمام رنگ‌های تلگرام
-const COLOR_MAP = {
-  "tomato": "#e74c3c",
-  "mustard": "#f1c40f",
-  "carmine": "#c0392b",
-  "ranger green": "#27ae60",
-  "marine blue": "#2980b9",
-  "feldgrau": "#4f5d4e",
-  "french violet": "#8e44ad",
-  "amber": "#f59e0b",
-  "aquamarine": "#00ced1",
-  "azure blue": "#007fff",
-  "battleship grey": "#848482",
-  "black": "#000000",
-  "burgundy": "#800020",
-  "burnt sienna": "#e97451",
-  "camo green": "#78866b",
-  "cappuccino": "#c2a98d",
-  "caramel": "#c68e17",
-  "carrot juice": "#ed9121",
-  "clover green": "#3ea055",
-  "cotton candy": "#ffbcd9",
-  "crimson": "#dc143c",
-  "cyberpunk": "#fcee0a",
-  "dark green": "#013220",
-  "dark lilac": "#9b6bc4",
-  "deep cyan": "#00bfff",
-  "desert sand": "#edc9af",
-  "electric indigo": "#6f00ff",
-  "electric purple": "#bf00ff",
-  "emerald": "#50c878",
-  "english violet": "#563c5c",
-  "fandango": "#b53389",
-  "grape": "#6f2da8",
-  "gunmetal": "#2a3439",
-  "gunship green": "#3e4b3e",
-  "hunter green": "#355e3b",
-  "indigo dye": "#00416a",
-  "ivory white": "#fffff0",
-  "jade green": "#00a86b",
-  "khaki green": "#8f9779",
-  "lavender": "#b57edc",
-  "mexican pink": "#e4007c",
-  "midnight blue": "#191970",
-  "mint green": "#98ff98",
-  "moonstone": "#3aa8c1",
-  "mystic pearl": "#eae0c8",
-  "navy blue": "#000080",
-  "neon blue": "#1b03a3",
-  "old gold": "#cfb53b",
-  "onyx black": "#353839",
-  "pale brown": "#987654",
-  "pale violet": "#ccccff",
-  "pastel blue": "#aec6cf",
-  "pastel green": "#77dd77",
-  "pastel orange": "#ffb347",
-  "pastel pink": "#ffd1dc",
-  "pastel purple": "#b39eb5",
-  "pastel red": "#ff6961",
-  "pastel yellow": "#fdfd96",
-  "peach": "#ffe5b4",
-  "pearl": "#f0ead6",
-  "peridot": "#e6e200",
-  "persian blue": "#1c39bb",
-  "pewter": "#8e918f",
-  "pine green": "#01796f",
-  "pink": "#ffc0cb",
-  "platinum": "#e5e4e2",
-  "plum": "#8e4585",
-  "powder blue": "#b0e0e6",
-  "puce": "#cc8899",
-  "pumpkin": "#ff7518",
-  "purple": "#800080",
-  "quartz": "#a99a86",
-  "raspberry": "#e30b5c",
-  "red": "#ff0000",
-  "rose": "#ff007f",
-  "rose gold": "#b76e79",
-  "rosewood": "#65000b",
-  "ruby": "#e0115f",
-  "rust": "#b7410e",
-  "saffron": "#f4c430",
-  "sage": "#bcb88a",
-  "salmon": "#fa8072",
-  "sand": "#c2b280",
-  "sapphire": "#0f52ba",
-  "scarlet": "#ff2400",
-  "sea green": "#2e8b57",
-  "sepia": "#704214",
-  "shadow": "#8a795d",
-  "silver": "#c0c0c0",
-  "sky blue": "#87ceeb",
-  "slate blue": "#6a5acd",
-  "slate grey": "#708090",
-  "snow": "#fffafa",
-  "spring green": "#00ff7f",
-  "steel blue": "#4682b4",
-  "straw": "#e4d96f",
-  "sunset orange": "#fd5e53",
-  "tan": "#d2b48c",
-  "taupe": "#483c32",
-  "teal": "#008080",
-  "thistle": "#d8bfd8",
-  "tiffany blue": "#0abab5",
-  "tiger orange": "#f96815",
-  "timberwolf": "#dbd7d2",
-  "topaz": "#ffc87c",
-  "turquoise": "#40e0d0",
-  "ultramarine": "#3f00ff",
-  "umber": "#635147",
-  "verdigris": "#43b3ae",
-  "vermilion": "#e34234",
-  "violet": "#8f00ff",
-  "viridian": "#40826d",
-  "wheat": "#f5deb3",
-  "white": "#ffffff",
-  "wine": "#722f37",
-  "wisteria": "#c9a0dc",
-  "yellow": "#ffff00",
-  "zaffre": "#0014a8",
-  "orange": "#ffa500",
-  "green": "#008000",
-  "blue": "#0000ff",
-  "brown": "#a52a2a",
-  "default": "#9b97b1"
+// ✅ نقشه رنگ دقیق و رسمی تلگرام (بر اساس get-color.com و مستندات API)
+// منبع: https://get-color.com/giftbackgrounds/ و https://core.telegram.org/constructor/starGiftAttributeBackdrop
+const TELEGRAM_BACKDROP_COLORS = {
+  "amber": "#d9b245",
+  "aquamarine": "#60b196",
+  "azure blue": "#5cb0ca",
+  "battleship grey": "#8b8b84",
+  "black": "#353637",
+  "burgundy": "#a15d65",
+  "burnt sienna": "#d66f3c",
+  "camo green": "#74934c",
+  "cappuccino": "#b1907e",
+  "caramel": "#cf9832",
+  "carmine": "#df574a",
+  "carrot juice": "#da9666",
+  "celtic blue": "#45b7ed",
+  "chestnut": "#bd6e53",
+  "chocolate": "#a36d58",
+  "cobalt blue": "#6087ce",
+  "copper": "#cf8656",
+  "coral red": "#d9886a",
+  "cyberpunk": "#858df2",
+  "dark lilac": "#b07ca4",
+  "dark green": "#506341",
+  "deep cyan": "#30b4a9",
+  "desert sand": "#b29e81",
+  "electric indigo": "#a67ff2",
+  "electric purple": "#c970c7",
+  "emerald": "#77c585",
+  "english violet": "#af84b9",
+  "fandango": "#e189b5",
+  "feldgrau": "#889187",
+  "fire engine": "#ef5e4f",
+  "french blue": "#5b9ac3",
+  "french violet": "#c160e6",
+  "grape": "#9c73c0",
+  "gunmetal": "#4b5c62",
+  "gunship green": "#548964",
+  "hunter green": "#8dac77",
+  "indigo dye": "#537890",
+  "ivory white": "#bab6b0",
+  "jade green": "#54c39b",
+  "khaki green": "#abae6f",
+  "lavender": "#b688e3",
+  "lemongrass": "#acb85a",
+  "light olive": "#c1ae64",
+  "malachite": "#94b457",
+  "marine blue": "#4d679a",
+  "midnight blue": "#5b6884",
+  "mexican pink": "#e26591",
+  "mint green": "#7ecb82",
+  "moonstone": "#7db0b3",
+  "mystic pearl": "#d08a6d",
+  "mustard": "#d3970d",
+  "navy blue": "#6b9ddc",
+  "neon blue": "#7494f8",
+  "onyx black": "#4c5153",
+  "old gold": "#b58c38",
+  "orange": "#d0993a",
+  "pacific cyan": "#59bca6",
+  "pacific green": "#6dc692",
+  "persimmon": "#e6a55a",
+  "pine green": "#6aa87c",
+  "pistachio": "#96af7b",
+  "platinum": "#b0aca5",
+  "pure gold": "#cbaa40",
+  "ranger green": "#5f7849",
+  "rifle green": "#64695c",
+  "purple": "#ad6bad",
+  "raspberry": "#de7a85",
+  "roman silver": "#a3a8b5",
+  "rosewood": "#b67976",
+  "sapphire": "#58a3c8",
+  "seal brown": "#664d45",
+  "satin gold": "#be9b47",
+  "shamrock green": "#89b062",
+  "silver blue": "#7fa3b7",
+  "sky blue": "#58b2c8",
+  "tomato": "#e74c3c"
 };
 
 /* ===================== وضعیت ===================== */
@@ -791,31 +745,26 @@ function getBackdrop(gift) {
   return String(attrs[key] ?? "").replace(/\s*(.*?)\s*$/, "$1").trim();
 }
 
-// ✅ تشخیص رنگ: دقیق، بدون حدس اشتباه
-function getBackdropColor(name) {
-  if (!name) return "#9b97b1";
-  const key = name.toLowerCase().trim();
-
-  // ۱. دیکشنری کامل تلگرام
-  if (COLOR_MAP[key]) return COLOR_MAP[key];
-
-  // ۲. تلاش برای تجزیه در CSS
-  const temp = document.createElement('div');
-  temp.style.color = key;
-  if (temp.style.color) return key;
-
-  // ۳. تست کلمه به کلمه (مثلا Ivory White -> White)
-  const words = key.split(/\s+/);
-  if (words.length > 1) {
-    temp.style.color = words[words.length - 1]; // کلمه آخر
-    if (temp.style.color) return temp.style.color;
-    
-    temp.style.color = words[0]; // کلمه اول
-    if (temp.style.color) return temp.style.color;
+// ✅ دریافت رنگ دقیق: اولویت با داده مستقیم API، سپس نقشه رسمی تلگرام
+function getBackdropColor(gift) {
+  const attrs = getAttributes(gift);
+  
+  // ۱. اگر API مستقیماً رنگ مرکز یا لبه را برگرداند (طبق مستندات رسمی)
+  if (attrs.center_color) {
+    return `#${Number(attrs.center_color).toString(16).padStart(6, '0')}`;
+  }
+  if (attrs.edge_color) {
+    return `#${Number(attrs.edge_color).toString(16).padStart(6, '0')}`;
   }
 
-  // ۴. اگر پیدا نشد، خاکستری پیش‌فرض (هرگز رنگ تصادفی نمی‌دهیم)
-  return "#9b97b1";
+  // ۲. جستجو در نقشه رنگ رسمی تلگرام
+  const name = getBackdrop(gift).toLowerCase().trim();
+  if (TELEGRAM_BACKDROP_COLORS[name]) {
+    return TELEGRAM_BACKDROP_COLORS[name];
+  }
+
+  // ۳. اگر هیچ‌کدام پیدا نشد، رنگ خنثی و ثابت (نه خاکستری، نه تصادفی)
+  return "#888888";
 }
 
 function getGiftNumber(gift) {
@@ -1043,7 +992,7 @@ async function fullSync(isManual = false) {
           if (old && old._newUntil) val._newUntil = old._newUntil;
           giftMap.set(key, val);
         }
-        if (page % 2 === 0) refresh(); // هر ۲ صفحه رندر میشه تا سرعت حفظ بشه
+        if (page % 2 === 0) refresh();
       } else if (isManual && page === 0) {
         for (const [key, val] of fresh) giftMap.set(key, val);
         refresh();
@@ -1537,7 +1486,9 @@ function renderFilterContent() {
       filteredBackdrops.forEach(name => {
         const count = backCounts.get(name) || 0;
         const isChecked = selectedBackdrops.has(name) ? 'checked' : '';
-        const color = getBackdropColor(name);
+        // برای نمایش در لیست، از یک نمونه گیفت با این رنگ استفاده می‌کنیم
+        const sampleGift = [...giftMap.values()].find(g => g._backdrop === name);
+        const color = sampleGift ? getBackdropColor(sampleGift) : "#888888";
         
         html += `
           <label class="filter-item">
