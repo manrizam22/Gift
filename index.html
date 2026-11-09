@@ -107,7 +107,7 @@ header { padding: 25px 0 20px; }
 .clear-filters-btn {
   background: #ef444415; border: 1px solid #ef444450; color: #ef4444;
   border-radius: 8px; padding: 5px 10px; font-size: 12px; cursor: pointer;
-  display: none; /* پیش‌فرض مخفی */
+  display: none;
   align-items: center; gap: 5px; transition: 0.2s;
 }
 .clear-filters-btn:hover { background: #ef444430; }
@@ -323,12 +323,12 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
   position: absolute; top: 0; left: 0; height: 22px; width: 22px;
   background-color: transparent; border: 2px solid var(--muted); border-radius: 6px; transition: 0.2s;
 }
-.checkbox-wrapper input:checked ~ .checkmark { background-color: var(--blue); border-color: var(--blue); }
+.checkbox-wrapper input:checked \~ .checkmark { background-color: var(--blue); border-color: var(--blue); }
 .checkmark:after {
   content: ""; position: absolute; display: none; left: 6px; top: 2px; width: 5px; height: 10px;
   border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
 }
-.checkbox-wrapper input:checked ~ .checkmark:after { display: block; }
+.checkbox-wrapper input:checked \~ .checkmark:after { display: block; }
 
 /* Collection icon/image */
 .filter-icon {
@@ -451,7 +451,6 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
         بروزرسانی
       </button>
 
-      <!-- ✅ دکمه حذف فیلترها -->
       <button id="globalClearFiltersBtn" class="clear-filters-btn" title="حذف همه فیلترها">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
         حذف فیلترها
@@ -559,18 +558,19 @@ const CONFIG = {
   TON_TO_TOMAN_LOW: 900000,
   TON_TO_TOMAN_HIGH: 600000,
   LIMIT: 100,
-  MAX_PAGES: 50,
+  MAX_PAGES: 120,          // افزایش یافته برای دریافت گیفت‌های بیشتر
   FAST_POLL_MS: 8000,
   FULL_SYNC_MS: 60000,
   NEW_BADGE_MS: 120000,
   PAGE_SIZE: 24,
   TELEGRAM_USERNAME: "Mr_Rentify",
   TELEGRAM_FEE_TOMAN: 40000,
+  PAGE_DELAY_MS: 180,      // تأخیر بین صفحات برای جلوگیری از rate-limit
 };
 
 const FEE_NOTE_TEXT = `+ ${CONFIG.TELEGRAM_FEE_TOMAN.toLocaleString("fa-IR")} تومان کارمزد تلگرام به مبلغ کل اضافه می‌شود`;
 
-// ✅ نقشه رنگ دقیق و رسمی تلگرام
+// نقشه رنگ دقیق و رسمی تلگرام
 const TELEGRAM_BACKDROP_COLORS = {
   "amber": "#d9b245", "aquamarine": "#60b196", "azure blue": "#5cb0ca",
   "battleship grey": "#8b8b84", "black": "#353637", "burgundy": "#a15d65",
@@ -620,11 +620,11 @@ let lastFocused = null;
 let isInteracting = false;
 let pendingRefresh = false;
 
-// ✅ وضعیت اصلی فیلترها (بعد از تایید کاربر)
+// وضعیت اصلی فیلترها
 const selectedCollections = new Set();
 const selectedBackdrops = new Set();
 
-// ✅ وضعیت موقت فیلترها (در حین کار با پنجره فیلتر)
+// وضعیت موقت فیلترها
 let tempSelectedCollections = new Set();
 let tempSelectedBackdrops = new Set();
 
@@ -670,7 +670,6 @@ const el = {
   closeFilterModal: $("closeFilterModal"),
   applyFiltersBtn: $("applyFiltersBtn"),
   
-  // ✅ دکمه‌های جدید حذف فیلترها
   globalClearFiltersBtn: $("globalClearFiltersBtn"),
   clearFiltersModalBtn: $("clearFiltersModalBtn"),
 };
@@ -733,7 +732,7 @@ function getBackdrop(gift) {
   const attrs = getAttributes(gift);
   const key = Object.keys(attrs).find(k => /backdrop|background|بک/i.test(k));
   if (!key) return "";
-  return String(attrs[key] ?? "").replace(/\s*(.*?)\s*$/, "$1").trim();
+  return String(attrs[key] ?? "").trim();
 }
 
 function getBackdropColor(gift) {
@@ -762,7 +761,7 @@ function getTelegramSlug(gift) {
   const match = String(gift.nft_name || "").match(/^(.*?)\s#(\d+)/);
   if (!match) return null;
   const base = match[1].replace(/[^A-Za-z0-9]/g, "");
-  return base ? `${base}-${match[2]}` : null;
+  return base ? `\( {base}- \){match[2]}` : null;
 }
 
 function getTelegramUrl(gift) {
@@ -828,10 +827,10 @@ function formatToman(value) {
 async function apiGet(path, params = {}) {
   params._t = Date.now();
   const query = new URLSearchParams(params).toString();
-  const url = `${CONFIG.API_BASE}${path}?${query}`;
+  const url = `\( {CONFIG.API_BASE} \){path}?${query}`;
   
   const response = await fetch(url, { method: "GET", cache: "no-store" });
-  if (!response.ok) throw new Error(`HTTP ${response.status} (${path})`);
+  if (!response.ok) throw new Error(`HTTP \( {response.status} ( \){path})`);
   return response.json();
 }
 
@@ -872,6 +871,10 @@ function fetchGiftsPage(cursor) {
   const params = { limit: CONFIG.LIMIT };
   if (cursor) params.cursor = cursor;
   return apiGet("/gifts", params);
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /* ===================== کالکشن‌ها ===================== */
@@ -947,7 +950,7 @@ function buildSearchText(gift) {
   ].join(" "));
 }
 
-/* ===================== همگام‌سازی ===================== */
+/* ===================== همگام‌سازی (نسخه بهبود یافته) ===================== */
 async function fullSync(isManual = false) {
   if (syncing) return;
   if (!isManual && isInteracting) return;
@@ -960,13 +963,23 @@ async function fullSync(isManual = false) {
     const seenCursors = new Set();
     let cursor = null;
     let totalFetched = 0;
+    let pageCount = 0;
+    let emptyPages = 0;
 
     for (let page = 0; page < CONFIG.MAX_PAGES; page++) {
       const payload = await fetchGiftsPage(cursor);
       const records = extractRecords(payload);
-      if (!records.length) break;
+      
+      if (!records.length) {
+        emptyPages++;
+        if (emptyPages >= 2) break; // دو صفحه خالی پشت سر هم → تمام
+        await sleep(CONFIG.PAGE_DELAY_MS);
+        continue;
+      }
 
+      emptyPages = 0;
       totalFetched += records.length;
+      pageCount++;
 
       records.forEach(gift => {
         if (!gift || !gift.nft_address) return;
@@ -974,25 +987,39 @@ async function fullSync(isManual = false) {
         fresh.set(gift.nft_address, prepareGift(gift, old, false));
       });
 
-      if (!isManual && !isInteracting) {
+      // آپدیت تدریجی در همگام‌سازی خودکار (هر ۳ صفحه یکبار)
+      if (!isManual && !isInteracting && page % 3 === 0) {
         for (const [key, val] of fresh) {
           const old = giftMap.get(key);
           if (old && old._newUntil) val._newUntil = old._newUntil;
           giftMap.set(key, val);
         }
-        if (page % 2 === 0) refresh();
+        refresh();
       } else if (isManual && page === 0) {
         for (const [key, val] of fresh) giftMap.set(key, val);
         refresh();
       }
 
       const next = getNextCursor(payload, cursor);
-      if (!next || seenCursors.has(next)) break;
+      
+      // اگر cursor تکراری بود، یکبار دیگر تلاش کن، بعد متوقف شو
+      if (!next) break;
+      
+      if (seenCursors.has(next)) {
+        console.warn("تکرار cursor شناسایی شد، توقف صفحه بندی");
+        break;
+      }
 
       seenCursors.add(next);
       cursor = next;
+
+      // تأخیر کوتاه برای جلوگیری از فشار به API
+      if (page < CONFIG.MAX_PAGES - 1) {
+        await sleep(CONFIG.PAGE_DELAY_MS);
+      }
     }
 
+    // جایگزینی کامل داده‌ها
     for (const key of giftMap.keys()) {
       if (!fresh.has(key)) giftMap.delete(key);
     }
@@ -1001,12 +1028,19 @@ async function fullSync(isManual = false) {
       if (old && old._newUntil) val._newUntil = old._newUntil;
       giftMap.set(key, val);
     }
+    
+    // پاکسازی منابع تصویر گیفت‌های حذف شده
     for (const key of imageSources.keys()) {
       if (!giftMap.has(key)) imageSources.delete(key);
     }
 
     refresh();
-    if (isManual) showToast(`اطلاعات بروزرسانی شد (${totalFetched} گیفت)`);
+    
+    if (isManual) {
+      showToast(`بروزرسانی کامل: ${totalFetched.toLocaleString("fa-IR")} گیفت در ${pageCount} صفحه`);
+    }
+
+    console.log(`[fullSync] دریافت شد: ${totalFetched} گیفت در ${pageCount} صفحه`);
 
   } catch (error) {
     console.error("fullSync:", error);
@@ -1076,7 +1110,6 @@ function updateFilterButtonTexts() {
     el.backdropText.textContent = `${selectedBackdrops.size} رنگ انتخاب شده`;
   }
 
-  // ✅ نمایش / مخفی کردن دکمه حذف فیلترها در بالای صفحه
   if (selectedCollections.size > 0 || selectedBackdrops.size > 0) {
     el.globalClearFiltersBtn.classList.add("show");
   } else {
@@ -1126,18 +1159,18 @@ function createCard(gift) {
   if (images.length) imageSources.set(gift.nft_address, images);
 
   const imageHtml = images.length
-    ? `<img class="gift-img" data-gift="${escapeHtml(gift.nft_address)}" alt="${name}" loading="lazy" decoding="async" referrerpolicy="no-referrer" draggable="false">`
+    ? `<img class="gift-img" data-gift="\( {escapeHtml(gift.nft_address)}" alt=" \){name}" loading="lazy" decoding="async" referrerpolicy="no-referrer" draggable="false">`
     : "";
 
   return `<article class="card ${isNew ? "is-new" : ""}">
     <div class="image-wrap">
       <div class="image-placeholder">تصویر گیفت</div>
       ${imageHtml}
-      ${number !== null ? `<span class="gift-number">#${number}</span>` : ""}
+      \( {number !== null ? `<span class="gift-number"># \){number}</span>` : ""}
       ${isNew ? `<span class="new-badge">جدید</span>` : ""}
     </div>
     <div class="card-body">
-      <h3 class="gift-name" title="${name}">${name}</h3>
+      <h3 class="gift-name" title="\( {name}"> \){name}</h3>
       <span class="collection-tag">${escapeHtml(gift.collection_name || "بدون مجموعه")}</span>
       <div class="traits">${traits}</div>
       <div class="card-info">
@@ -1174,7 +1207,7 @@ function getRentUrl(gift, days = null, total = null) {
   if (days !== null && total !== null) {
     message += `\nمدت اجاره: ${days.toLocaleString("fa-IR")} روز` + `\nمبلغ نهایی: ${formatToman(total)} (با کارمزد تلگرام)`;
   }
-  return `https://t.me/${CONFIG.TELEGRAM_USERNAME}?text=${encodeURIComponent(message)}`;
+  return `https://t.me/\( {CONFIG.TELEGRAM_USERNAME}?text= \){encodeURIComponent(message)}`;
 }
 
 function getMaxDays(gift) {
@@ -1403,7 +1436,6 @@ function trapFilterFocus(event) {
 
 /* ===================== مودال فیلترها ===================== */
 function openFilterModal(type) {
-  // ✅ کپی کردن وضعیت فعلی به حافظه موقت
   tempSelectedCollections = new Set(selectedCollections);
   tempSelectedBackdrops = new Set(selectedBackdrops);
 
@@ -1455,7 +1487,7 @@ function renderFilterContent() {
 
   let html = '';
 
-  // --- بخش کالکشن‌ها ---
+  // بخش کالکشن‌ها
   if (collections.length > 0) {
     const filteredCollections = collections.filter(c => !query || normalizeText(c.name).includes(query));
     
@@ -1465,7 +1497,6 @@ function renderFilterContent() {
       
       filteredCollections.forEach(c => {
         const count = colCounts.get(c.address) || 0;
-        // ✅ چک کردن حافظه موقت
         const isChecked = tempSelectedCollections.has(c.address) ? 'checked' : '';
         const imageHtml = getCollectionImage(c);
         
@@ -1487,7 +1518,7 @@ function renderFilterContent() {
     }
   }
 
-  // --- بخش رنگ‌ها ---
+  // بخش رنگ‌ها
   const backdrops = [...backCounts.keys()].sort((a, b) => a.localeCompare(b));
   if (backdrops.length > 0) {
     const filteredBackdrops = backdrops.filter(name => !query || normalizeText(name).includes(query));
@@ -1498,7 +1529,6 @@ function renderFilterContent() {
       
       filteredBackdrops.forEach(name => {
         const count = backCounts.get(name) || 0;
-        // ✅ چک کردن حافظه موقت
         const isChecked = tempSelectedBackdrops.has(name) ? 'checked' : '';
         const color = backdropColorCache.get(name) || "#888888";
         
@@ -1527,7 +1557,7 @@ function renderFilterContent() {
   el.filterContent.innerHTML = html;
 }
 
-// ✅ تغییرات فقط در حافظه موقت ذخیره می‌شوند
+// تغییرات فقط در حافظه موقت
 el.filterContent.addEventListener("change", (e) => {
   if (e.target.classList.contains('col-checkbox')) {
     if (e.target.checked) tempSelectedCollections.add(e.target.value);
@@ -1539,7 +1569,6 @@ el.filterContent.addEventListener("change", (e) => {
 });
 
 function applyFilterModalChanges() {
-  // ✅ کپی از حافظه موقت به حافظه اصلی
   selectedCollections.clear();
   tempSelectedCollections.forEach(val => selectedCollections.add(val));
 
@@ -1573,15 +1602,13 @@ el.sort.addEventListener("change", () => { refreshFromStart(); });
 
 el.refreshBtn.addEventListener("click", () => { fullSync(true); });
 
-// ✅ عملکرد دکمه‌های حذف فیلتر
+// عملکرد دکمه‌های حذف فیلتر
 function clearAllFilters() {
-  // پاک کردن حافظه‌ها
   tempSelectedCollections.clear();
   tempSelectedBackdrops.clear();
   selectedCollections.clear();
   selectedBackdrops.clear();
   
-  // بستن مودال و آپدیت
   closeFilterModal();
   refreshFromStart();
 }
