@@ -767,7 +767,7 @@
       MAX_PAGES: 300,
 
       FAST_POLL_MS: 8000,
-      FULL_SYNC_MS: 300000, // 5 دقیقه فاصله بجای 60 ثانیه
+      FULL_SYNC_MS: 300000,
       NEW_BADGE_MS: 120000,
       FETCH_TIMEOUT_MS: 15000,
 
@@ -823,7 +823,6 @@
     };
 
     /* ===================== توابع کمکی ===================== */
-    // تابع Debounce برای جستجو
     function debounce(func, wait) {
       let timeout;
       return function(...args) {
@@ -853,7 +852,6 @@
       return Number.isFinite(number) ? number : null;
     }
 
-    // بازه اجاره (حداقل و حداکثر بر اساس ثانیه)
     function getDayBounds(gift) {
       const minSec = toNumber(gift.min_duration);
       const maxSec = toNumber(gift.max_duration);
@@ -886,7 +884,6 @@
       return String(attrs[key] ?? "").replace(/\s*\(.*?\)\s*$/, "").trim();
     }
 
-    // پارس دقیق‌تر با رجکس جدید برای استخراج اسم پایه و شماره
     function parseGiftName(name) {
       const match = String(name || "").match(/^(.+?)\s+#(\d+)\s*$/);
       if (match) return { base: match[1].trim(), num: match[2] };
@@ -1017,7 +1014,6 @@
       return String(name || "").toLowerCase().replace(/[^a-z]/g, "");
     }
 
-    // تولید کلیدهای جمع برای تطبیق دقیق‌تر
     function candidateKeys(baseName) {
       const key = nameKey(baseName);
       const keys = [key, key + "s", key + "es"];
@@ -1099,9 +1095,11 @@
     }
 
     function buildSearchText(gift) {
+      // استفاده از روش ایمن بجای flat() برای سازگاری با مرورگرهای قدیمی
+      const attrValues = Object.values(getAttributes(gift));
       return normalizeText([
         gift.nft_name, gift.nft_address, gift.collection_name,
-        ...Object.entries(getAttributes(gift)).flat()
+        ...attrValues
       ].join(" "));
     }
 
@@ -1143,12 +1141,17 @@
         const removedCount = [...giftMap.keys()].filter(k => !fresh.has(k)).length;
 
         giftMap = fresh;
-
         if (initial || addedCount || removedCount) refresh();
         if (!initial && addedCount) showToast(`${addedCount.toLocaleString("fa-IR")} گیفت جدید اضافه شد`);
+        
       } catch (error) {
         console.error("fullSync:", error);
         if (initial && giftMap.size === 0) showError(error);
+        else if (initial) {
+           // در صورت قطعی در صفحات آخر
+           refresh();
+           showToast("دریافت برخی اطلاعات با مشکل روبرو شد.");
+        }
       } finally {
         syncing = false;
       }
@@ -1189,11 +1192,13 @@
       sortGifts();
     }
 
+    // مرتب‌سازی بازنویسی شده برای جلوگیری از خطای NaN در مرورگرهای موبایل
     function sortGifts() {
       const mode = el.sort.value;
-      const cmp = (key, dir) => (a, b) => {
-        const x = toNumber(a[key]);
-        const y = toNumber(b[key]);
+
+      const cmpNum = (a, b, key, dir) => {
+        let x = toNumber(a[key]);
+        let y = toNumber(b[key]);
         if (x === null && y === null) return 0;
         if (x === null) return 1;
         if (y === null) return -1;
@@ -1201,14 +1206,38 @@
       };
 
       const sorters = {
-        "newest": cmp("listed_at", "desc"),
-        "oldest": cmp("listed_at", "asc"),
-        "price-asc": (a, b) => (getPriceToman(a) ?? Infinity) - (getPriceToman(b) ?? Infinity),
-        "price-desc": (a, b) => (getPriceToman(b) ?? -Infinity) - (getPriceToman(a) ?? -Infinity),
-        "duration-asc": cmp("max_duration", "asc"),
-        "duration-desc": cmp("max_duration", "desc"),
-        "number-asc": (a, b) => (getGiftNumber(a) ?? Infinity) - (getGiftNumber(b) ?? Infinity),
-        "number-desc": (a, b) => (getGiftNumber(b) ?? -Infinity) - (getGiftNumber(a) ?? -Infinity),
+        "newest": (a, b) => cmpNum(a, b, "listed_at", "desc"),
+        "oldest": (a, b) => cmpNum(a, b, "listed_at", "asc"),
+        "price-asc": (a, b) => {
+          const pa = getPriceToman(a), pb = getPriceToman(b);
+          if (pa === null && pb === null) return 0;
+          if (pa === null) return 1;
+          if (pb === null) return -1;
+          return pa - pb;
+        },
+        "price-desc": (a, b) => {
+          const pa = getPriceToman(a), pb = getPriceToman(b);
+          if (pa === null && pb === null) return 0;
+          if (pa === null) return 1;
+          if (pb === null) return -1;
+          return pb - pa;
+        },
+        "duration-asc": (a, b) => cmpNum(a, b, "max_duration", "asc"),
+        "duration-desc": (a, b) => cmpNum(a, b, "max_duration", "desc"),
+        "number-asc": (a, b) => {
+          const na = getGiftNumber(a), nb = getGiftNumber(b);
+          if (na === null && nb === null) return 0;
+          if (na === null) return 1;
+          if (nb === null) return -1;
+          return na - nb;
+        },
+        "number-desc": (a, b) => {
+          const na = getGiftNumber(a), nb = getGiftNumber(b);
+          if (na === null && nb === null) return 0;
+          if (na === null) return 1;
+          if (nb === null) return -1;
+          return nb - na;
+        }
       };
 
       filteredGifts.sort(sorters[mode] || sorters.newest);
@@ -1367,41 +1396,67 @@
     }
 
     function renderGifts(count) {
-      if (filteredGifts.length === 0) {
-        el.grid.innerHTML = `
-          <div class="empty">
-            <strong>گیفتی پیدا نشد!</strong>
-            <p>عبارت جست‌وجو، کالکشن یا رنگ بک‌گراند را تغییر بده.</p>
-          </div>`;
-        visibleCount = 0;
+      try {
+        if (filteredGifts.length === 0) {
+          el.grid.innerHTML = `
+            <div class="empty">
+              <strong>گیفتی پیدا نشد!</strong>
+              <p>عبارت جست‌وجو، کالکشن یا رنگ بک‌گراند را تغییر بده.</p>
+            </div>`;
+          visibleCount = 0;
+          updateShowingText();
+          return;
+        }
+
+        const target = Math.min(Math.max(count, CONFIG.PAGE_SIZE), filteredGifts.length);
+        
+        let htmlStr = "";
+        for (let i = 0; i < target; i++) {
+           try { htmlStr += createCard(filteredGifts[i]); }
+           catch (cardErr) { console.error("Card Error:", cardErr); }
+        }
+
+        el.grid.innerHTML = htmlStr;
+        visibleCount = target;
+        hydrateImages(el.grid);
         updateShowingText();
-        return;
+      } catch (e) {
+        console.error("renderGifts error:", e);
       }
-      const target = Math.min(Math.max(count, CONFIG.PAGE_SIZE), filteredGifts.length);
-      el.grid.innerHTML = filteredGifts.slice(0, target).map(createCard).join("");
-      visibleCount = target;
-      hydrateImages(el.grid);
-      updateShowingText();
     }
 
     function renderMore() {
       if (visibleCount >= filteredGifts.length) return;
-      const next = filteredGifts.slice(visibleCount, visibleCount + CONFIG.PAGE_SIZE);
-      el.grid.insertAdjacentHTML("beforeend", next.map(createCard).join(""));
-      visibleCount += next.length;
+      const nextGifts = filteredGifts.slice(visibleCount, visibleCount + CONFIG.PAGE_SIZE);
+      let htmlStr = "";
+      for (let i = 0; i < nextGifts.length; i++) {
+          try { htmlStr += createCard(nextGifts[i]); }
+          catch (cardErr) {}
+      }
+      el.grid.insertAdjacentHTML("beforeend", htmlStr);
+      visibleCount += nextGifts.length;
       hydrateImages(el.grid);
       updateShowingText();
     }
 
     function refresh() {
-      fillBackdropSelect();
-      applyFilters();
-      renderGifts(visibleCount || CONFIG.PAGE_SIZE);
+      try {
+        fillBackdropSelect();
+        applyFilters();
+        renderGifts(visibleCount || CONFIG.PAGE_SIZE);
+      } catch (err) {
+        console.error("Refresh error:", err);
+        el.showing.textContent = "خطا در نمایش اطلاعات (لطفاً مجدد تلاش کنید)";
+      }
     }
 
     function refreshFromStart() {
-      applyFilters();
-      renderGifts(CONFIG.PAGE_SIZE);
+      try {
+        applyFilters();
+        renderGifts(CONFIG.PAGE_SIZE);
+      } catch (err) {
+         console.error("RefreshStart error:", err);
+      }
     }
 
     const debouncedRefreshFromStart = debounce(refreshFromStart, 200);
@@ -1411,7 +1466,7 @@
         <div class="error">
           <strong>دریافت اطلاعات با مشکل مواجه شد.</strong>
           <p>${escapeHtml(error.message)}</p>
-          <p>آدرس Worker در تنظیمات (API_BASE) و توکن را بررسی کن.</p>
+          <p>آدرس Worker در تنظیمات (API_BASE) و وضعیت اینترنت را بررسی کن.</p>
         </div>`;
       el.showing.textContent = "خطا در دریافت اطلاعات";
     }
@@ -1472,7 +1527,6 @@
       el.modal.setAttribute("aria-hidden", "false");
       document.body.classList.add("modal-open");
 
-      // استفاده از تصاویر ثابت برای جلوگیری از مشکل CORS 
       showStaticImage(gift);
     }
 
