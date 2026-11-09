@@ -788,8 +788,8 @@ const CONFIG = {
   LOW_PRICE_LIMIT_NANO: 10000000,
   TON_TO_TOMAN_LOW: 900000,
   TON_TO_TOMAN_HIGH: 600000,
-  LIMIT: 100, // تعداد آیتم در هر صفحه
-  MAX_PAGES: 50, // نهایت تعداد صفحات برای جلوگیری از لوپ بی‌پایان
+  LIMIT: 100,
+  MAX_PAGES: 50,
   FAST_POLL_MS: 8000,
   FULL_SYNC_MS: 60000,
   NEW_BADGE_MS: 120000,
@@ -984,17 +984,15 @@ function formatFeeNote() {
 
 /* ===================== ارتباط با API ===================== */
 async function apiGet(path, params = {}) {
-  // ✅ اضافه کردن پارامتر زمان برای دور زدن کش کلادفلر
+  // اضافه کردن زمان برای دور زدن کش
   params._t = Date.now();
   const query = new URLSearchParams(params).toString();
   const url = `${CONFIG.API_BASE}${path}?${query}`;
   
+  // حذف هدرهای سفارشی که باعث خطای CORS می‌شدند
   const response = await fetch(url, { 
-    cache: "no-store",
-    headers: {
-      "Cache-Control": "no-cache, no-store, must-revalidate",
-      "Pragma": "no-cache"
-    }
+    method: "GET",
+    cache: "no-store"
   });
   
   if (!response.ok) throw new Error(`HTTP ${response.status} (${path})`);
@@ -1016,7 +1014,6 @@ function extractRecords(payload) {
   return [];
 }
 
-// ✅ بهبود تشخیص Cursor برای پشتیبانی از فرمت‌های بیشتر API
 function getNextCursor(payload, current) {
   if (!payload || typeof payload !== "object") return null;
   const candidates = [
@@ -1186,7 +1183,6 @@ async function fullSync(isManual = false) {
         fresh.set(gift.nft_address, prepareGift(gift, old, !old && !isManual));
       });
 
-      // اگر در حال لود اولیه بودیم، هر صفحه رو نشون بده که کاربر منتظر نمونه
       if (!isManual && page === 0) {
         giftMap = new Map(fresh);
         refresh();
@@ -1216,6 +1212,7 @@ async function fullSync(isManual = false) {
   } catch (error) {
     console.error("fullSync:", error);
     if (giftMap.size === 0) showError(error);
+    if (isManual) showToast("خطا در بروزرسانی");
   } finally {
     syncing = false;
     if (isManual) el.refreshBtn.classList.remove("loading");
@@ -1453,7 +1450,7 @@ function refreshFromStart() {
 }
 
 function showError(error) {
-  el.grid.innerHTML = `<div class="error"><strong>دریافت اطلاعات با مشکل مواجه شد.</strong><p>${escapeHtml(error.message)}</p><p>آدرس Worker در تنظیمات (API_BASE) و توکن را بررسی کن.</p></div>`;
+  el.grid.innerHTML = `<div class="error"><strong>دریافت اطلاعات با مشکل مواجه شد.</strong><p>${escapeHtml(error.message)}</p><p>اتصال اینترنت خود را بررسی کنید (در صورت نیاز VPN را روشن/خاموش کنید).</p></div>`;
   el.showing.textContent = "خطا در دریافت اطلاعات";
 }
 
@@ -1580,9 +1577,8 @@ el.sort.addEventListener("change", () => { endInteraction(); refreshFromStart();
 el.collection.addEventListener("change", () => { endInteraction(); refreshFromStart(); });
 el.backdrop.addEventListener("change", () => { endInteraction(); refreshFromStart(); });
 
-// ✅ رویداد دکمه بروزرسانی دستی
 el.refreshBtn.addEventListener("click", () => {
-  fullSync(true); // true یعنی رفرش دستی
+  fullSync(true);
 });
 
 el.calcDays.addEventListener("input", () => updateCalc(false));
