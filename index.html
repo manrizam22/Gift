@@ -539,7 +539,7 @@ const CONFIG = {
 
 const FEE_NOTE_TEXT = `+ ${CONFIG.TELEGRAM_FEE_TOMAN.toLocaleString("fa-IR")} تومان کارمزد تلگرام به مبلغ کل اضافه می‌شود`;
 
-// ✅ دیکشنری بسیار کامل رنگ‌ها (شامل رنگ‌های عکس شما)
+// ✅ دیکشنری کامل رنگ‌های شناخته شده تلگرام
 const COLOR_MAP = {
   "tomato": "#e74c3c",
   "mustard": "#f1c40f",
@@ -581,6 +581,15 @@ const COLOR_MAP = {
   "jade green": "#00a86b",
   "khaki green": "#8f9779",
   "lavender": "#b57edc",
+  "mexican pink": "#e4007c",
+  "midnight blue": "#191970",
+  "mint green": "#98ff98",
+  "moonstone": "#3aa8c1",
+  "mystic pearl": "#d5c9d6",
+  "navy blue": "#000080",
+  "neon blue": "#1b03a3",
+  "old gold": "#cfb53b",
+  "onyx black": "#353839",
   "default": "#9b97b1"
 };
 
@@ -590,7 +599,6 @@ let collections = [];
 let collectionByAddress = new Map();
 let collectionByKey = new Map();
 
-// ✅ کش عکس کالکشن‌ها برای لود آنی
 const collectionImageCache = new Map();
 
 let filteredGifts = [];
@@ -710,18 +718,27 @@ function getBackdrop(gift) {
   return String(attrs[key] ?? "").replace(/\s*(.*?)\s*$/, "$1").trim();
 }
 
+// ✅ سیستم هوشمند تولید رنگ: هیچ رنگی خاکستری نمیمونه!
 function getBackdropColor(name) {
   if (!name) return COLOR_MAP["default"];
   const key = name.toLowerCase().trim();
-  
+
+  // ۱. بررسی دیکشنری اختصاصی
   if (COLOR_MAP[key]) return COLOR_MAP[key];
 
-  // تلاش برای تبدیل نام رنگ به کد رنگ استاندارد مرورگر (اگر در نقشه نبود)
+  // ۲. بررسی رنگ‌های استاندارد CSS (با حذف فاصله‌ها)
+  const noSpaceKey = key.replace(/\s+/g, '');
   const temp = document.createElement('div');
-  temp.style.color = key;
-  if (temp.style.color) return key;
+  temp.style.color = noSpaceKey;
+  if (temp.style.color) return noSpaceKey;
 
-  return COLOR_MAP["default"];
+  // ۳. اگر ناشناخته بود: تولید یک رنگ زیبا و ثابت بر اساس هش اسم
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) {
+    hash = key.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const h = Math.abs(hash) % 360;
+  return `hsl(${h}, 65%, 55%)`; // رنگ زنده و یکتا
 }
 
 function getGiftNumber(gift) {
@@ -777,13 +794,10 @@ function getAnimationCandidates(gift) {
   return list;
 }
 
-// ✅ لود آنی عکس کالکشن‌ها با استفاده از کش
 function getCollectionImage(col) {
-  // اگر API خودش عکس داده بود
   const colImg = col.image || col.image_url || col.thumbnail || col.preview;
   if (colImg) return `<img src="${escapeHtml(colImg)}" loading="lazy" alt="" onerror="this.style.display='none'; this.parentElement.innerHTML='🎁';">`;
 
-  // اگر توی کش ذخیره شده بود
   const cachedImg = collectionImageCache.get(col.address);
   if (cachedImg) return `<img src="${escapeHtml(cachedImg)}" loading="lazy" alt="" onerror="this.style.display='none'; this.parentElement.innerHTML='🎁';">`;
 
@@ -899,12 +913,9 @@ function prepareGift(gift, previous, isNew) {
   gift._searchText = buildSearchText(gift);
   gift._backdrop = getBackdrop(gift);
   
-  // ✅ پر کردن کش عکس کالکشن هنگام پردازش گیفت
   if (gift.collection_address && !collectionImageCache.has(gift.collection_address)) {
     const images = getImageCandidates(gift);
-    if (images.length) {
-      collectionImageCache.set(gift.collection_address, images[0]);
-    }
+    if (images.length) collectionImageCache.set(gift.collection_address, images[0]);
   }
 
   if (previous && previous._newUntil) {
@@ -949,7 +960,6 @@ async function fullSync(isManual = false) {
         fresh.set(gift.nft_address, prepareGift(gift, old, false));
       });
 
-      // ✅ رندر تدریجی با فاصله، برای اینکه UI قفل نکنه
       if (!isManual && !isInteracting) {
         for (const [key, val] of fresh) {
           const old = giftMap.get(key);
