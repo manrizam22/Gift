@@ -150,6 +150,9 @@ header { padding: 25px 0 20px; }
   grid-column: 1 / -1; text-align: center; padding: 55px 15px; color: var(--muted);
   background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
 }
+.loading-more {
+  grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--muted); font-size: 13px;
+}
 footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px; text-align: center; color: var(--muted); font-size: 11px; }
 
 /* Modal */
@@ -394,7 +397,7 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
       <small class="telegram-fee" id="modalFee"></small>
     </div>
     <div class="modal-meta" id="modalDuration"></div>
-    <div class="calc" id="rentCalculator">
+    <div class="calc">
       <div class="calc-title">ماشین حساب اجاره</div>
       <div class="calc-row">
         <label for="calcDays">تعداد روز اجاره</label>
@@ -426,7 +429,7 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
 <div class="filter-modal" id="filterModal" aria-hidden="true">
   <div class="filter-box" role="dialog" aria-modal="true">
     <div class="filter-header">
-      <h2 id="filterHeaderTitle">فیلترها</h2>
+      <h2>فیلترها</h2>
       <button class="filter-close" id="closeFilterModal">✕</button>
     </div>
     <div class="filter-search-box">
@@ -449,47 +452,40 @@ const CONFIG = {
   LOW_PRICE_LIMIT_NANO: 10000000,
   TON_TO_TOMAN_LOW: 900000,
   TON_TO_TOMAN_HIGH: 600000,
-  LIMIT: 100,
-  MAX_PAGES: 80,
-  FAST_POLL_MS: 10000,
-  FULL_SYNC_MS: 90000,
+  LIMIT: 60,                 // تعداد گیفت در هر درخواست
+  MAX_PAGES: 60,
+  FAST_POLL_MS: 12000,
+  FULL_SYNC_MS: 120000,
   NEW_BADGE_MS: 120000,
   PAGE_SIZE: 24,
   TELEGRAM_USERNAME: "Mr_Rentify",
   TELEGRAM_FEE_TOMAN: 40000,
-  PAGE_DELAY_MS: 120
+  PAGE_DELAY_MS: 200         // فاصله بین درخواست‌ها
 };
 
 const FEE_NOTE_TEXT = `+ ${CONFIG.TELEGRAM_FEE_TOMAN.toLocaleString("fa-IR")} تومان کارمزد تلگرام به مبلغ کل اضافه می‌شود`;
 
 const TELEGRAM_BACKDROP_COLORS = {
-  "amber": "#d9b245", "aquamarine": "#60b196", "azure blue": "#5cb0ca",
-  "battleship grey": "#8b8b84", "black": "#353637", "burgundy": "#a15d65",
-  "burnt sienna": "#d66f3c", "camo green": "#74934c", "cappuccino": "#b1907e",
-  "caramel": "#cf9832", "carmine": "#df574a", "carrot juice": "#da9666",
-  "celtic blue": "#45b7ed", "chestnut": "#bd6e53", "chocolate": "#a36d58",
-  "cobalt blue": "#6087ce", "copper": "#cf8656", "coral red": "#d9886a",
-  "cyberpunk": "#858df2", "dark lilac": "#b07ca4", "dark green": "#506341",
-  "deep cyan": "#30b4a9", "desert sand": "#b29e81", "electric indigo": "#a67ff2",
-  "electric purple": "#c970c7", "emerald": "#77c585", "english violet": "#af84b9",
-  "fandango": "#e189b5", "feldgrau": "#889187", "fire engine": "#ef5e4f",
-  "french blue": "#5b9ac3", "french violet": "#c160e6", "grape": "#9c73c0",
-  "gunmetal": "#4b5c62", "gunship green": "#548964", "hunter green": "#8dac77",
-  "indigo dye": "#537890", "ivory white": "#bab6b0", "jade green": "#54c39b",
-  "khaki green": "#abae6f", "lavender": "#b688e3", "lemongrass": "#acb85a",
-  "light olive": "#c1ae64", "malachite": "#94b457", "marine blue": "#4d679a",
-  "midnight blue": "#5b6884", "mexican pink": "#e26591", "mint green": "#7ecb82",
-  "moonstone": "#7db0b3", "mystic pearl": "#d08a6d", "mustard": "#d3970d",
-  "navy blue": "#6b9ddc", "neon blue": "#7494f8", "onyx black": "#4c5153",
-  "old gold": "#b58c38", "orange": "#d0993a", "pacific cyan": "#59bca6",
-  "pacific green": "#6dc692", "persimmon": "#e6a55a", "pine green": "#6aa87c",
-  "pistachio": "#96af7b", "platinum": "#b0aca5", "pure gold": "#cbaa40",
-  "ranger green": "#5f7849", "rifle green": "#64695c", "purple": "#ad6bad",
-  "raspberry": "#de7a85", "roman silver": "#a3a8b5", "rosewood": "#b67976",
-  "sapphire": "#58a3c8", "seal brown": "#664d45", "satin gold": "#be9b47",
-  "shamrock green": "#89b062", "silver blue": "#7fa3b7", "sky blue": "#58b2c8",
-  "steel grey": "#96a1ab", "strawberry": "#dd8d6f", "tactical pine": "#43816a",
-  "tomato": "#e74c3c", "turquoise": "#5dbeb6"
+  "amber":"#d9b245","aquamarine":"#60b196","azure blue":"#5cb0ca","battleship grey":"#8b8b84",
+  "black":"#353637","burgundy":"#a15d65","burnt sienna":"#d66f3c","camo green":"#74934c",
+  "cappuccino":"#b1907e","caramel":"#cf9832","carmine":"#df574a","carrot juice":"#da9666",
+  "celtic blue":"#45b7ed","chestnut":"#bd6e53","chocolate":"#a36d58","cobalt blue":"#6087ce",
+  "copper":"#cf8656","coral red":"#d9886a","cyberpunk":"#858df2","dark lilac":"#b07ca4",
+  "dark green":"#506341","deep cyan":"#30b4a9","desert sand":"#b29e81","electric indigo":"#a67ff2",
+  "electric purple":"#c970c7","emerald":"#77c585","english violet":"#af84b9","fandango":"#e189b5",
+  "feldgrau":"#889187","fire engine":"#ef5e4f","french blue":"#5b9ac3","french violet":"#c160e6",
+  "grape":"#9c73c0","gunmetal":"#4b5c62","gunship green":"#548964","hunter green":"#8dac77",
+  "indigo dye":"#537890","ivory white":"#bab6b0","jade green":"#54c39b","khaki green":"#abae6f",
+  "lavender":"#b688e3","lemongrass":"#acb85a","light olive":"#c1ae64","malachite":"#94b457",
+  "marine blue":"#4d679a","midnight blue":"#5b6884","mexican pink":"#e26591","mint green":"#7ecb82",
+  "moonstone":"#7db0b3","mystic pearl":"#d08a6d","mustard":"#d3970d","navy blue":"#6b9ddc",
+  "neon blue":"#7494f8","onyx black":"#4c5153","old gold":"#b58c38","orange":"#d0993a",
+  "pacific cyan":"#59bca6","pacific green":"#6dc692","persimmon":"#e6a55a","pine green":"#6aa87c",
+  "pistachio":"#96af7b","platinum":"#b0aca5","pure gold":"#cbaa40","ranger green":"#5f7849",
+  "rifle green":"#64695c","purple":"#ad6bad","raspberry":"#de7a85","roman silver":"#a3a8b5",
+  "rosewood":"#b67976","sapphire":"#58a3c8","seal brown":"#664d45","satin gold":"#be9b47",
+  "shamrock green":"#89b062","silver blue":"#7fa3b7","sky blue":"#58b2c8","steel grey":"#96a1ab",
+  "strawberry":"#dd8d6f","tactical pine":"#43816a","tomato":"#e74c3c","turquoise":"#5dbeb6"
 };
 
 let giftMap = new Map();
@@ -504,8 +500,6 @@ let syncing = false;
 let lottieInstance = null;
 let currentGift = null;
 let lastFocused = null;
-let isInteracting = false;
-let pendingRefresh = false;
 const selectedCollections = new Set();
 const selectedBackdrops = new Set();
 let tempSelectedCollections = new Set();
@@ -530,16 +524,12 @@ const el = {
   clearFiltersModalBtn: $("clearFiltersModalBtn")
 };
 
-function debounce(fn, ms = 200) {
+function debounce(fn, ms = 250) {
   let t;
   return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
 }
-function endInteraction() {
-  isInteracting = false;
-  if (pendingRefresh) { pendingRefresh = false; refresh(); }
-}
 function normalizeText(v) {
-  return String(v ?? "").toLowerCase().replace(/ي/g, "ی").replace(/ك/g, "ک").replace(/\u200c/g, " ").trim();
+  return String(v ?? "").toLowerCase().replace(/ي/g,"ی").replace(/ك/g,"ک").replace(/\u200c/g," ").trim();
 }
 function escapeHtml(v) {
   return String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
@@ -553,9 +543,9 @@ function formatDuration(sec) {
   const v = Number(sec);
   if (!Number.isFinite(v) || v <= 0) return "نامشخص";
   const d = Math.floor(v / 86400);
-  if (d >= 1) return `${d.toLocaleString("fa-IR")} روز`;
+  if (d >= 1) return d.toLocaleString("fa-IR") + " روز";
   const h = Math.floor(v / 3600);
-  if (h >= 1) return `${h.toLocaleString("fa-IR")} ساعت`;
+  if (h >= 1) return h.toLocaleString("fa-IR") + " ساعت";
   return "کمتر از یک ساعت";
 }
 function getAttributes(g) {
@@ -571,8 +561,8 @@ function getBackdrop(g) {
 }
 function getBackdropColor(g) {
   const attrs = getAttributes(g);
-  if (attrs.center_color) return `#${Number(attrs.center_color).toString(16).padStart(6, "0")}`;
-  if (attrs.edge_color) return `#${Number(attrs.edge_color).toString(16).padStart(6, "0")}`;
+  if (attrs.center_color) return "#" + Number(attrs.center_color).toString(16).padStart(6,"0");
+  if (attrs.edge_color) return "#" + Number(attrs.edge_color).toString(16).padStart(6,"0");
   const name = getBackdrop(g).toLowerCase().trim();
   return TELEGRAM_BACKDROP_COLORS[name] || "#888888";
 }
@@ -587,12 +577,12 @@ function getGiftBaseName(g) {
 function getTelegramSlug(g) {
   const m = String(g.nft_name || "").match(/^(.*?)\s#(\d+)/);
   if (!m) return null;
-  const base = m[1].replace(/[^A-Za-z0-9]/g, "");
-  return base ? `\( {base}- \){m[2]}` : null;
+  const base = m[1].replace(/[^A-Za-z0-9]/g,"");
+  return base ? base + "-" + m[2] : null;
 }
 function getTelegramUrl(g) {
   const s = getTelegramSlug(g);
-  return s ? `https://t.me/nft/${s}` : "https://t.me/";
+  return s ? "https://t.me/nft/" + s : "https://t.me/";
 }
 function getFragmentSlug(g) {
   const s = getTelegramSlug(g);
@@ -603,7 +593,8 @@ function getImageCandidates(g) {
     .filter(u => typeof u === "string" && /^https?:\/\//.test(u));
   const slug = getFragmentSlug(g);
   if (slug) {
-    list.push(`https://nft.fragment.com/gift/\( {slug}.medium.jpg`, `https://nft.fragment.com/gift/ \){slug}.webp`);
+    list.push("https://nft.fragment.com/gift/" + slug + ".medium.jpg");
+    list.push("https://nft.fragment.com/gift/" + slug + ".webp");
   }
   return list;
 }
@@ -611,7 +602,7 @@ function getAnimationCandidates(g) {
   const list = [g.lottie, g.lottie_url, g.animation, g.animation_url]
     .filter(u => typeof u === "string" && /^https?:\/\/.+\.json/.test(u));
   const slug = getFragmentSlug(g);
-  if (slug) list.push(`https://nft.fragment.com/gift/${slug}.lottie.json`);
+  if (slug) list.push("https://nft.fragment.com/gift/" + slug + ".lottie.json");
   return list;
 }
 function getCollectionImage(col) {
@@ -628,20 +619,20 @@ function getPriceToman(g) {
   return Math.round((raw / 1e9) * rate);
 }
 function formatToman(v) {
-  return v === null ? "نامشخص" : `${v.toLocaleString("fa-IR")} تومان`;
+  return v === null ? "نامشخص" : v.toLocaleString("fa-IR") + " تومان";
 }
 
 async function apiGet(path, params = {}) {
   params._t = Date.now();
   const q = new URLSearchParams(params).toString();
-  const res = await fetch(`\( {CONFIG.API_BASE} \){path}?${q}`, { cache: "no-store" });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const res = await fetch(CONFIG.API_BASE + path + "?" + q, { cache: "no-store" });
+  if (!res.ok) throw new Error("HTTP " + res.status);
   return res.json();
 }
 function extractRecords(p) {
   if (Array.isArray(p)) return p;
   if (!p || typeof p !== "object") return [];
-  for (const k of ["items", "results", "gifts", "collections", "data"]) {
+  for (const k of ["items","results","gifts","collections","data"]) {
     const v = p[k];
     if (Array.isArray(v)) return v;
     if (v && typeof v === "object") {
@@ -653,36 +644,23 @@ function extractRecords(p) {
 }
 function getNextCursor(p, current) {
   if (!p || typeof p !== "object") return null;
-  const cands = [
-    p.next_cursor, p.next, p.next_page, p.cursor, p.next_offset,
-    p.pagination?.next_cursor, p.pagination?.next,
-    p.meta?.next_cursor, p.meta?.next, p.meta?.offset
-  ];
+  const cands = [p.next_cursor, p.next, p.next_page, p.cursor, p.next_offset,
+    p.pagination?.next_cursor, p.pagination?.next, p.meta?.next_cursor, p.meta?.next, p.meta?.offset];
   for (const v of cands) {
     if (v != null && v !== "" && v !== false && String(v) !== String(current || "")) return String(v);
   }
   return null;
 }
-function fetchGiftsPage(cursor) {
-  const params = { limit: CONFIG.LIMIT };
-  if (cursor) params.cursor = cursor;
-  return apiGet("/gifts", params);
-}
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-function nameKey(n) { return String(n || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
+function nameKey(n) { return String(n || "").toLowerCase().replace(/[^a-z0-9]/g,""); }
 
 async function loadCollections() {
   const payload = await apiGet("/collections");
   const list = extractRecords(payload).filter(c => c?.address && c?.name);
-  const fresh = list.sort((a, b) => a.name.localeCompare(b.name));
-  const same = fresh.length === collections.length && fresh.every((c, i) =>
-    c.address === collections[i]?.address && c.name === collections[i]?.name);
-  if (same) return false;
-  collections = fresh;
+  collections = list.sort((a,b) => a.name.localeCompare(b.name));
   collectionByAddress = new Map(collections.map(c => [c.address, c]));
   collectionByKey = new Map(collections.map(c => [nameKey(c.name), c]));
-  return true;
 }
 
 function resolveCollection(g) {
@@ -706,7 +684,7 @@ function resolveCollection(g) {
 
 function prepareGift(g, prev, isNew) {
   resolveCollection(g);
-  g._searchText = buildSearchText(g);
+  g._searchText = normalizeText([g.nft_name, g.nft_address, g.collection_name, ...Object.entries(getAttributes(g)).flat()].join(" "));
   g._backdrop = getBackdrop(g);
   g._priceToman = getPriceToman(g);
   g._number = getGiftNumber(g);
@@ -722,15 +700,9 @@ function prepareGift(g, prev, isNew) {
   return g;
 }
 
-function buildSearchText(g) {
-  return normalizeText([g.nft_name, g.nft_address, g.collection_name, ...Object.entries(getAttributes(g)).flat()].join(" "));
-}
-
-/* ========== همگام‌سازی بهبود یافته ========== */
+/* ===================== همگام‌سازی تدریجی ===================== */
 async function fullSync(isManual = false) {
   if (syncing) return;
-  if (!isManual && isInteracting) return;
-
   syncing = true;
   if (isManual) el.refreshBtn.classList.add("loading");
 
@@ -739,13 +711,13 @@ async function fullSync(isManual = false) {
     const seenCursors = new Set();
     let cursor = null;
     let totalFetched = 0;
-    let pageCount = 0;
-    let firstPageDone = false;
+    let page = 0;
+    let hasShownFirst = false;
 
-    for (let page = 0; page < CONFIG.MAX_PAGES; page++) {
+    while (page < CONFIG.MAX_PAGES) {
       let payload;
       try {
-        payload = await fetchGiftsPage(cursor);
+        payload = await apiGet("/gifts", { limit: CONFIG.LIMIT, ...(cursor ? { cursor } : {}) });
       } catch (err) {
         console.warn("خطا در صفحه", page, err);
         if (page === 0) throw err;
@@ -756,59 +728,54 @@ async function fullSync(isManual = false) {
       if (!records.length) break;
 
       totalFetched += records.length;
-      pageCount++;
 
       records.forEach(g => {
         if (!g?.nft_address) return;
-        const old = giftMap.get(g.nft_address);
+        const old = giftMap.get(g.nft_address) || fresh.get(g.nft_address);
         fresh.set(g.nft_address, prepareGift(g, old, false));
       });
 
-      // بعد از صفحه اول بلافاصله نمایش بده
-      if (!firstPageDone) {
-        firstPageDone = true;
+      // بعد از اولین صفحه بلافاصله نمایش بده
+      if (!hasShownFirst) {
+        hasShownFirst = true;
         for (const [k, v] of fresh) giftMap.set(k, v);
         refresh();
         el.showing.textContent = `در حال دریافت بیشتر... (${totalFetched.toLocaleString("fa-IR")})`;
-      } else if (page % 2 === 0) {
-        // آپدیت تدریجی
+      } else {
+        // صفحات بعدی را هم به تدریج اضافه کن
         for (const [k, v] of fresh) {
           const old = giftMap.get(k);
           if (old?._newUntil) v._newUntil = old._newUntil;
           giftMap.set(k, v);
         }
-        if (!isInteracting) refresh();
+        // هر ۲ صفحه یکبار رفرش کن تا سبک باشد
+        if (page % 2 === 0) refresh();
       }
 
       const next = getNextCursor(payload, cursor);
       if (!next || seenCursors.has(next)) break;
       seenCursors.add(next);
       cursor = next;
+      page++;
 
-      if (page < CONFIG.MAX_PAGES - 1) await sleep(CONFIG.PAGE_DELAY_MS);
+      await sleep(CONFIG.PAGE_DELAY_MS);
     }
 
-    // جایگزینی نهایی
+    // پاک کردن گیفت‌هایی که دیگر وجود ندارند
     for (const k of [...giftMap.keys()]) {
       if (!fresh.has(k)) giftMap.delete(k);
     }
-    for (const [k, v] of fresh) {
-      const old = giftMap.get(k);
-      if (old?._newUntil) v._newUntil = old._newUntil;
-      giftMap.set(k, v);
-    }
-    for (const k of [...imageSources.keys()]) {
-      if (!giftMap.has(k)) imageSources.delete(k);
-    }
+    for (const [k, v] of fresh) giftMap.set(k, v);
 
     refresh();
-    if (isManual) {
-      showToast(`بروزرسانی کامل: ${totalFetched.toLocaleString("fa-IR")} گیفت`);
-    }
-    console.log(`[fullSync] ${totalFetched} گیفت در ${pageCount} صفحه`);
+    if (isManual) showToast("بروزرسانی کامل: " + totalFetched.toLocaleString("fa-IR") + " گیفت");
+    console.log("[fullSync] تمام شد:", totalFetched, "گیفت");
   } catch (err) {
-    console.error("fullSync error:", err);
-    if (giftMap.size === 0) showError(err);
+    console.error(err);
+    if (giftMap.size === 0) {
+      el.grid.innerHTML = `<div class="error"><strong>خطا در دریافت اطلاعات</strong><p>${escapeHtml(err.message)}</p><p>اتصال اینترنت یا VPN را بررسی کنید.</p></div>`;
+      el.showing.textContent = "خطا";
+    }
     if (isManual) showToast("خطا در بروزرسانی");
   } finally {
     syncing = false;
@@ -817,9 +784,9 @@ async function fullSync(isManual = false) {
 }
 
 async function fastPoll() {
-  if (syncing || document.hidden || giftMap.size === 0 || isInteracting) return;
+  if (syncing || document.hidden || giftMap.size === 0) return;
   try {
-    const payload = await fetchGiftsPage(null);
+    const payload = await apiGet("/gifts", { limit: 40 });
     const records = extractRecords(payload);
     let added = 0;
     records.forEach(g => {
@@ -829,14 +796,14 @@ async function fastPoll() {
     });
     if (added) {
       refresh();
-      showToast(`${added.toLocaleString("fa-IR")} گیفت جدید`);
+      showToast(added.toLocaleString("fa-IR") + " گیفت جدید");
     }
   } catch (e) {
     console.error("fastPoll:", e);
   }
 }
 
-/* ========== فیلتر و رندر ========== */
+/* ===================== فیلتر و رندر ===================== */
 function applyFilters() {
   const q = normalizeText(el.search.value);
   filteredGifts = [...giftMap.values()].filter(g => {
@@ -854,11 +821,11 @@ function updateFilterButtonTexts() {
   else if (selectedCollections.size === 1) {
     const c = collections.find(x => x.address === [...selectedCollections][0]);
     el.collectionText.textContent = c ? c.name : "1 کالکشن";
-  } else el.collectionText.textContent = `${selectedCollections.size} کالکشن`;
+  } else el.collectionText.textContent = selectedCollections.size + " کالکشن";
 
   if (selectedBackdrops.size === 0) el.backdropText.textContent = "همه رنگ‌ها";
   else if (selectedBackdrops.size === 1) el.backdropText.textContent = [...selectedBackdrops][0];
-  else el.backdropText.textContent = `${selectedBackdrops.size} رنگ`;
+  else el.backdropText.textContent = selectedBackdrops.size + " رنگ";
 
   el.globalClearFiltersBtn.classList.toggle("show", selectedCollections.size > 0 || selectedBackdrops.size > 0);
 }
@@ -875,17 +842,17 @@ function sortGifts() {
   const sorters = {
     newest: cmp("listed_at", "desc"),
     oldest: cmp("listed_at", "asc"),
-    "price-asc": (a, b) => (a._priceToman ?? Infinity) - (b._priceToman ?? Infinity),
-    "price-desc": (a, b) => (b._priceToman ?? -Infinity) - (a._priceToman ?? -Infinity),
+    "price-asc": (a,b) => (a._priceToman ?? Infinity) - (b._priceToman ?? Infinity),
+    "price-desc": (a,b) => (b._priceToman ?? -Infinity) - (a._priceToman ?? -Infinity),
     "duration-asc": cmp("max_duration", "asc"),
     "duration-desc": cmp("max_duration", "desc"),
-    "number-asc": (a, b) => (a._number ?? Infinity) - (b._number ?? Infinity),
-    "number-desc": (a, b) => (b._number ?? -Infinity) - (a._number ?? -Infinity)
+    "number-asc": (a,b) => (a._number ?? Infinity) - (b._number ?? Infinity),
+    "number-desc": (a,b) => (b._number ?? -Infinity) - (a._number ?? -Infinity)
   };
   filteredGifts.sort(sorters[mode] || sorters.newest);
   if (mode === "newest") {
     const now = Date.now();
-    filteredGifts.sort((a, b) => (b._newUntil > now ? 1 : 0) - (a._newUntil > now ? 1 : 0));
+    filteredGifts.sort((a,b) => (b._newUntil > now ? 1 : 0) - (a._newUntil > now ? 1 : 0));
   }
 }
 
@@ -893,8 +860,7 @@ function createCard(g) {
   const name = escapeHtml(g.nft_name || "Gift");
   const num = g._number;
   const isNew = g._newUntil && g._newUntil > Date.now();
-  const traits = Object.entries(getAttributes(g))
-    .map(([k, v]) => `<span class="trait">${escapeHtml(k)}: ${escapeHtml(v)}</span>`).join("");
+  const traits = Object.entries(getAttributes(g)).map(([k,v]) => `<span class="trait">${escapeHtml(k)}: ${escapeHtml(v)}</span>`).join("");
   const images = getImageCandidates(g);
   if (images.length) imageSources.set(g.nft_address, images);
   const imgHtml = images.length
@@ -944,7 +910,6 @@ function getRentUrl(g, days = null, total = null) {
   }
   return `https://t.me/\( {CONFIG.TELEGRAM_USERNAME}?text= \){encodeURIComponent(msg)}`;
 }
-
 function getMaxDays(g) {
   const s = toNumber(g.max_duration);
   return (s == null || s <= 0) ? null : Math.max(1, Math.floor(s / 86400));
@@ -961,7 +926,7 @@ function updateCalc(normalize = false) {
   const days = clampDays(el.calcDays.value, max);
   if (normalize || (el.calcDays.value !== "" && Number(el.calcDays.value) !== days)) el.calcDays.value = days;
   if (max) el.calcDays.max = max; else el.calcDays.removeAttribute("max");
-  el.calcHint.textContent = max ? `حداکثر ${max.toLocaleString("fa-IR")} روز قابل اجاره است` : "";
+  el.calcHint.textContent = max ? "حداکثر " + max.toLocaleString("fa-IR") + " روز قابل اجاره است" : "";
   const daily = currentGift._priceToman;
   const fee = CONFIG.TELEGRAM_FEE_TOMAN;
   if (daily == null) {
@@ -987,16 +952,20 @@ function stepDays(delta) {
 }
 
 function updateShowingText() {
-  if (syncing && filteredGifts.length === 0) el.showing.textContent = "در حال دریافت اطلاعات...";
-  else if (filteredGifts.length) el.showing.textContent = `${visibleCount.toLocaleString("fa-IR")} از ${filteredGifts.length.toLocaleString("fa-IR")} گیفت`;
-  else el.showing.textContent = "بدون نتیجه";
+  if (syncing && filteredGifts.length === 0) {
+    el.showing.textContent = "در حال دریافت اطلاعات...";
+  } else if (filteredGifts.length) {
+    el.showing.textContent = visibleCount.toLocaleString("fa-IR") + " از " + filteredGifts.length.toLocaleString("fa-IR") + " گیفت";
+  } else {
+    el.showing.textContent = "بدون نتیجه";
+  }
 }
 
 function renderGifts(count) {
   if (!filteredGifts.length) {
     el.grid.innerHTML = syncing
-      ? `<div class="loading">در حال دریافت اطلاعات از سرور...</div>`
-      : `<div class="empty"><strong>گیفتی پیدا نشد!</strong><p>فیلترها یا عبارت جست‌وجو را تغییر بده.</p></div>`;
+      ? `<div class="loading">در حال دریافت گیفت‌ها...</div>`
+      : `<div class="empty"><strong>گیفتی پیدا نشد!</strong><p>فیلترها را تغییر دهید.</p></div>`;
     visibleCount = 0;
     updateShowingText();
     return;
@@ -1016,28 +985,23 @@ function renderMore() {
   updateShowingText();
 }
 function refresh() {
-  if (isInteracting) { pendingRefresh = true; return; }
   applyFilters();
   renderGifts(visibleCount || CONFIG.PAGE_SIZE);
 }
 function refreshFromStart() {
-  if (isInteracting) { pendingRefresh = true; return; }
   applyFilters();
   renderGifts(CONFIG.PAGE_SIZE);
 }
-function showError(err) {
-  el.grid.innerHTML = `<div class="error"><strong>دریافت اطلاعات با مشکل مواجه شد.</strong><p>${escapeHtml(err.message)}</p><p>اتصال اینترنت یا VPN خود را بررسی کنید.</p></div>`;
-  el.showing.textContent = "خطا در دریافت اطلاعات";
-}
+
 let toastTimer;
 function showToast(text) {
   el.toast.textContent = text;
   el.toast.classList.add("show");
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.toast.classList.remove("show"), 3500);
+  toastTimer = setTimeout(() => el.toast.classList.remove("show"), 3200);
 }
 
-/* ========== Modal گیفت ========== */
+/* ===================== Modal ===================== */
 function destroyAnimation() {
   if (lottieInstance) { lottieInstance.destroy(); lottieInstance = null; }
   el.modalStage.innerHTML = "";
@@ -1048,7 +1012,7 @@ function showStaticImage(g) {
     el.modalStage.innerHTML = `<span class="stage-msg">پیش‌نمایش در دسترس نیست</span>`;
     return;
   }
-  el.modalStage.innerHTML = `<img alt="${escapeHtml(g.nft_name || "")}" referrerpolicy="no-referrer" draggable="false">`;
+  el.modalStage.innerHTML = `<img alt="${escapeHtml(g.nft_name||"")}" referrerpolicy="no-referrer" draggable="false">`;
   const img = el.modalStage.querySelector("img");
   let i = 0;
   const tryNext = () => {
@@ -1091,12 +1055,11 @@ function openModal(addr) {
   destroyAnimation();
   lastFocused = document.activeElement;
   el.modalTitle.textContent = g.nft_name || "Gift";
-  el.modalCollection.textContent = `کالکشن: ${g.collection_name || "---"}`;
-  el.modalTraits.innerHTML = Object.entries(getAttributes(g))
-    .map(([k, v]) => `<span class="trait">${escapeHtml(k)}: ${escapeHtml(v)}</span>`).join("");
+  el.modalCollection.textContent = "کالکشن: " + (g.collection_name || "---");
+  el.modalTraits.innerHTML = Object.entries(getAttributes(g)).map(([k,v]) => `<span class="trait">${escapeHtml(k)}: ${escapeHtml(v)}</span>`).join("");
   el.modalPrice.textContent = formatToman(g._priceToman);
   el.modalFee.textContent = FEE_NOTE_TEXT;
-  el.modalDuration.textContent = `حداکثر مدت اجاره: ${formatDuration(g.max_duration)}`;
+  el.modalDuration.textContent = "حداکثر مدت اجاره: " + formatDuration(g.max_duration);
   el.modalTgLink.href = getTelegramUrl(g);
   currentGift = g;
   el.calcDays.value = 1;
@@ -1117,24 +1080,8 @@ function closeModal() {
   if (lastFocused?.focus) lastFocused.focus();
   lastFocused = null;
 }
-function trapFocus(e) {
-  if (e.key !== "Tab") return;
-  const list = el.modalBox.querySelectorAll('button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])');
-  if (!list.length) return;
-  const first = list[0], last = list[list.length - 1];
-  if (e.shiftKey && document.activeElement === first) { last.focus(); e.preventDefault(); }
-  else if (!e.shiftKey && document.activeElement === last) { first.focus(); e.preventDefault(); }
-}
-function trapFilterFocus(e) {
-  if (e.key !== "Tab") return;
-  const list = el.filterModal.querySelectorAll('button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])');
-  if (!list.length) return;
-  const first = list[0], last = list[list.length - 1];
-  if (e.shiftKey && document.activeElement === first) { last.focus(); e.preventDefault(); }
-  else if (!e.shiftKey && document.activeElement === last) { first.focus(); e.preventDefault(); }
-}
 
-/* ========== Modal فیلتر ========== */
+/* ===================== Filter Modal ===================== */
 function openFilterModal(type) {
   tempSelectedCollections = new Set(selectedCollections);
   tempSelectedBackdrops = new Set(selectedBackdrops);
@@ -1144,10 +1091,6 @@ function openFilterModal(type) {
   el.filterModal.classList.add("open");
   el.filterModal.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
-  setTimeout(() => {
-    const id = type === "collection" ? "section-collection" : "section-backdrop";
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, 80);
 }
 function closeFilterModal() {
   el.filterModal.classList.remove("open");
@@ -1180,7 +1123,7 @@ function renderFilterContent() {
       html += `</div>`;
     }
   }
-  const backs = [...backCounts.keys()].sort((a, b) => a.localeCompare(b));
+  const backs = [...backCounts.keys()].sort((a,b) => a.localeCompare(b));
   if (backs.length) {
     const filtered = backs.filter(n => !q || normalizeText(n).includes(q));
     if (filtered.length) {
@@ -1225,7 +1168,7 @@ function clearAllFilters() {
   refreshFromStart();
 }
 
-/* ========== رویدادها ========== */
+/* ===================== رویدادها ===================== */
 document.addEventListener("contextmenu", e => e.preventDefault());
 el.collectionTrigger.addEventListener("click", () => openFilterModal("collection"));
 el.backdropTrigger.addEventListener("click", () => openFilterModal("backdrop"));
@@ -1233,8 +1176,7 @@ el.closeFilterModal.addEventListener("click", closeFilterModal);
 el.applyFiltersBtn.addEventListener("click", applyFilterModalChanges);
 el.filterSearchInput.addEventListener("input", debounce(renderFilterContent, 250));
 el.filterModal.addEventListener("click", e => { if (e.target === el.filterModal) closeFilterModal(); });
-el.search.addEventListener("input", () => { endInteraction(); debouncedRefresh(); });
-const debouncedRefresh = debounce(() => refreshFromStart(), 300);
+el.search.addEventListener("input", debounce(() => refreshFromStart(), 300));
 el.sort.addEventListener("change", () => refreshFromStart());
 el.refreshBtn.addEventListener("click", () => fullSync(true));
 el.globalClearFiltersBtn.addEventListener("click", clearAllFilters);
@@ -1254,8 +1196,6 @@ el.modal.addEventListener("click", e => { if (e.target === el.modal) closeModal(
 document.addEventListener("keydown", e => {
   if (e.key === "Escape") { closeModal(); closeFilterModal(); }
 });
-el.modalBox.addEventListener("keydown", trapFocus);
-el.filterModal.addEventListener("keydown", trapFilterFocus);
 el.modalRentLink.addEventListener("click", closeModal);
 el.modalTgLink.addEventListener("click", closeModal);
 el.grid.addEventListener("error", e => {
@@ -1284,21 +1224,19 @@ document.addEventListener("visibilitychange", () => {
   if (!document.hidden) fastPoll();
 });
 
-/* ========== شروع ========== */
-async function start(retry = 0) {
+/* ===================== شروع ===================== */
+async function start() {
   try {
     await loadCollections();
   } catch (err) {
-    console.error("collections:", err);
-    showError(err);
-    if (retry < 3) setTimeout(() => start(retry + 1), 3000 * (retry + 1));
+    console.error(err);
+    el.grid.innerHTML = `<div class="error"><strong>خطا در دریافت کالکشن‌ها</strong><p>${escapeHtml(err.message)}</p></div>`;
+    el.showing.textContent = "خطا";
     return;
   }
   await fullSync(false);
   setInterval(fastPoll, CONFIG.FAST_POLL_MS);
-  setInterval(() => {
-    if (!document.hidden && !isInteracting) fullSync(false);
-  }, CONFIG.FULL_SYNC_MS);
+  setInterval(() => { if (!document.hidden) fullSync(false); }, CONFIG.FULL_SYNC_MS);
 }
 start();
 </script>
