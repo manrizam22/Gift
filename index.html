@@ -101,7 +101,11 @@ padding: 10px; color: white; font-weight: 700; font-size: 12px; border: 0; curso
 }
 .btn-rent { background: linear-gradient(120deg, #8b5cf6, #6d28d9); }
 .empty, .loading, .error {
-grid-column: 1 / -1; text-align: center; padding: 55px 15px; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+grid-column: 1 / -1; text-align: center; padding: 45px 15px; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+}
+.error { color: #f87171; border-color: #f8717130; }
+.error button {
+margin-top: 15px; background: #8b5cf6; color: white; border: 0; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold;
 }
 footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px; text-align: center; color: var(--muted); font-size: 11px; }
 .modal {
@@ -261,7 +265,7 @@ MAX_PAGES: 30,
 FAST_POLL_MS: 15000,
 FULL_SYNC_MS: 300000,
 NEW_BADGE_MS: 120000,
-FETCH_TIMEOUT_MS: 25000,
+FETCH_TIMEOUT_MS: 15000,
 PAGE_SIZE: 24,
 TELEGRAM_USERNAME: "Mr_Rentify",
 TELEGRAM_FEE_TOMAN: 40000,
@@ -540,13 +544,13 @@ syncing = true;
 try {
 let cursor = null;
 const seen = new Set();
-for (let page = 0; page < CONFIG.MAX_PAGES; page++) {
+let loadedAny = false;
+​for (let page = 0; page < CONFIG.MAX_PAGES; page++) {
 try {
 const payload = await apiGet("/gifts", { limit: CONFIG.LIMIT, ...(cursor ? { cursor } : {}) });
 const records = extractRecords(payload);
 if (!records.length) break;
-​let added = false;
-records.forEach(g => {
+​records.forEach(g => {
 if (!g) return;
 g.nft_address = g.nft_address || g.address;
 if (!g.nft_address) return;
@@ -554,21 +558,29 @@ const old = giftMap.get(g.nft_address);
 const prep = prepareGift(g, old, !initial && !old);
 if (prep) {
 giftMap.set(g.nft_address, prep);
-if (!old) added = true;
+loadedAny = true;
 }
 });
-​if (initial || added) refresh();
+​if (initial || loadedAny) refresh();
 ​const next = getNextCursor(payload, cursor);
 if (!next || seen.has(next)) break;
 seen.add(next);
 cursor = next;
-​// وقفه کوتاه برای جلوگیری از فشار به سرور و مرورگر
-await new Promise(r => setTimeout(r, 100));
+​await new Promise(r => setTimeout(r, 50));
 } catch (err) {
+console.warn("Page fetch error:", err);
 break;
 }
 }
-} catch (e) {} finally {
+​if (giftMap.size === 0) {
+throw new Error("سرور پاسخی نداد یا لیست گیفت‌ها خالی است.");
+}
+} catch (e) {
+if (initial && giftMap.size === 0) {
+el.grid.innerHTML =  <div class="error"> <strong>خطا در ارتباط با سرور (یا مسدود شدن CORS)</strong> <p>${escapeHtml(e.message)}</p> <button type="button" onclick="start()">تلاش مجدد</button> </div>;
+el.showing.textContent = "خطا در اتصال";
+}
+} finally {
 syncing = false;
 refresh();
 }
@@ -635,6 +647,7 @@ if (urls?.length) img.setAttribute("src", urls[0]);
 }
 ​function renderGifts(count) {
 if (!filteredGifts.length) {
+if (giftMap.size === 0) return; // در حال بارگذاری اولیه
 el.grid.innerHTML = <div class="empty"><strong>گیفتی پیدا نشد!</strong></div>;
 visibleCount = 0;
 el.showing.textContent = "بدون نتیجه";
@@ -715,6 +728,7 @@ el.modal.addEventListener("click", e => { if (e.target === el.modal) closeModal(
 if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 600) renderMore();
 }, { passive: true });
 ​async function start() {
+el.grid.innerHTML = <div class="loading">در حال ارتباط با سرور و بارگذاری گیفت‌ها...</div>;
 await loadCollections();
 await fullSync(true);
 setInterval(fastPoll, CONFIG.FAST_POLL_MS);
