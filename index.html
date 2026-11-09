@@ -464,10 +464,10 @@ const CONFIG = {
   LOW_PRICE_LIMIT_NANO: 10000000,
   TON_TO_TOMAN_LOW: 900000,
   TON_TO_TOMAN_HIGH: 600000,
-  LIMIT: 500, // ✅ درخواست ۵۰۰ آیتم در هر بار (کاهش تعداد صفحات)
-  MAX_PAGES: 20,
+  LIMIT: 1000,     // ✅ درخواست ۱۰۰۰ آیتم در هر بار برای سرعت فوق‌العاده
+  MAX_PAGES: 50,   // ✅ تا ۵۰,۰۰۰ آیتم
   FAST_POLL_MS: 8000,
-  FULL_SYNC_MS: 120000,
+  FULL_SYNC_MS: 180000, // ✅ سینک کامل هر ۳ دقیقه
   NEW_BADGE_MS: 120000,
   PAGE_SIZE: 24,
   TELEGRAM_USERNAME: "Mr_Rentify",
@@ -569,18 +569,14 @@ async function saveCacheToDB() {
   try {
     const tx = db.transaction("gifts", "readwrite");
     const store = tx.objectStore("gifts");
-    store.clear(); // پاک کردن قبلی‌ها
+    store.clear();
     for (const gift of giftMap.values()) {
-      // حذف فیلدهای سنگین و غیرضروری برای جلوگیری از پر شدن حافظه
       const minimal = { ...gift };
       delete minimal._searchText;
       delete minimal._newUntil;
       store.put(minimal);
     }
-    console.log("IndexedDB cache saved successfully.");
-  } catch (e) {
-    console.warn("Could not save to IndexedDB", e);
-  }
+  } catch (e) { console.warn("Could not save to IndexedDB", e); }
 }
 
 async function loadCacheFromDB() {
@@ -589,24 +585,19 @@ async function loadCacheFromDB() {
     const tx = db.transaction("gifts", "readonly");
     const store = tx.objectStore("gifts");
     const request = store.getAll();
-    
     return new Promise((resolve) => {
       request.onsuccess = () => {
         const data = request.result;
         if (!data || data.length === 0) { resolve(false); return; }
-        
         data.forEach(gift => {
           gift._searchText = buildSearchText(gift);
           giftMap.set(gift.nft_address, gift);
         });
-        console.log(`Loaded ${giftMap.size} gifts from IndexedDB.`);
         resolve(true);
       };
       request.onerror = () => resolve(false);
     });
-  } catch (e) {
-    return false;
-  }
+  } catch (e) { return false; }
 }
 
 /* ===================== توابع کمکی ===================== */
@@ -847,8 +838,8 @@ function buildSearchText(gift) {
   return normalizeText([gift.nft_name, gift.nft_address, gift.collection_name, ...Object.entries(getAttributes(gift)).flat()].join(" "));
 }
 
-/* ===================== همگام‌سازی ===================== */
-async function fullSync(isManual = false) {
+/* ===================== همگام‌سازی (سرعت بالا) ===================== */
+async function fullSync(isManual = false, hasCache = false) {
   if (syncing) return;
   if (!isManual && isInteracting) return;
 
@@ -869,15 +860,22 @@ async function fullSync(isManual = false) {
       const records = extractRecords(payload);
       if (!records.length) break;
 
+      let addedCount = 0;
       records.forEach(gift => {
         if (!gift || !gift.nft_address) return;
         const old = giftMap.get(gift.nft_address);
-        fresh.set(gift.nft_address, prepareGift(gift, old, false));
+        const prepared = prepareGift(gift, old, false);
+        fresh.set(gift.nft_address, prepared);
+        
+        if (!giftMap.has(gift.nft_address)) {
+           giftMap.set(gift.nft_address, prepared);
+           addedCount++;
+        }
       });
 
-      if (giftMap.size === 0) {
-        for (const [key, val] of fresh) giftMap.set(key, val);
-        if (page % 2 === 0) refresh();
+      // ✅ رندر آنی! هر صفحه که میاد، سریع نشون بده
+      if (!isInteracting && (!hasCache || isManual || page === 0)) {
+         refresh();
       }
 
       const next = getNextCursor(payload, cursor);
@@ -885,7 +883,8 @@ async function fullSync(isManual = false) {
       seenCursors.add(next);
       cursor = next;
       
-      await new Promise(r => setTimeout(r, 30));
+      // ✅ تاخیر صفر (حداکثر سرعت)
+      await new Promise(r => setTimeout(r, 0));
     }
 
     isSuccess = true;
@@ -904,7 +903,7 @@ async function fullSync(isManual = false) {
         giftMap.set(key, val);
       }
       
-      saveCacheToDB(); // ✅ ذخیره در IndexedDB
+      saveCacheToDB();
       if (isManual) showToast(`اطلاعات بروزرسانی شد (${fresh.size} گیفت)`);
     }
     syncing = false;
@@ -916,7 +915,7 @@ async function fullSync(isManual = false) {
 async function fastPoll() {
   if (syncing || document.hidden || giftMap.size === 0 || isInteracting) return;
   try {
-    const payload = await apiGet("/gifts", { limit: 100 });
+    const payload = await apiGet("/gifts", { limit: 200 });
     const records = extractRecords(payload);
     let added = 0;
     records.forEach(gift => {
@@ -1364,27 +1363,28 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden) fast
 
 /* ===================== شروع ===================== */
 async function start(retryCount = 0) {
-  await initDB(); // ✅ راه‌اندازی دیتابیس
+  await initDB(); 
   const hasCache = await loadCacheFromDB();
   
   if (hasCache) {
-    refreshFromStart(); // نمایش آنی از حافظه
+    refreshFromStart(); 
   }
 
   try { 
-    await loadCollections(); 
-  } 
-  catch (error) {
-    console.error("collections:", error); 
+    // ✅ اجرای همزمان برای سرعت بالا
+    const collPromise = loadCollections().then(changed => { if (changed && !isInteracting) refresh(); });
+    const giftPromise = fullSync(false, hasCache);
+    
+    await Promise.all([collPromise, giftPromise]);
+  } catch (error) {
+    console.error("start error:", error);
     if (!hasCache) showError(error);
-    if (retryCount < 3) setTimeout(() => start(retryCount + 1), 3000 * (retryCount + 1));
+    if (retryCount < 3) setTimeout(() => start(retryCount + 1), 3000);
     return;
   }
 
-  await fullSync(false);
-  
   setInterval(fastPoll, CONFIG.FAST_POLL_MS);
-  setInterval(() => { if (!document.hidden && !isInteracting) fullSync(false); }, CONFIG.FULL_SYNC_MS);
+  setInterval(() => { if (!document.hidden && !isInteracting) fullSync(false, true); }, CONFIG.FULL_SYNC_MS);
 }
 
 start();
