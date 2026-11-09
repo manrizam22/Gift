@@ -400,7 +400,6 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
         </select>
       </div>
 
-      <!-- دکمه‌های باز کردن فیلتر -->
       <div class="field">
         <label>دسته‌بندی / کالکشن</label>
         <div class="control filter-trigger" id="collectionTrigger">
@@ -540,7 +539,7 @@ const CONFIG = {
 
 const FEE_NOTE_TEXT = `+ ${CONFIG.TELEGRAM_FEE_TOMAN.toLocaleString("fa-IR")} تومان کارمزد تلگرام به مبلغ کل اضافه می‌شود`;
 
-// ✅ نقشه کامل رنگ‌ها برای نمایش دایره‌های واقعی
+// ✅ دیکشنری بسیار کامل رنگ‌ها (شامل رنگ‌های عکس شما)
 const COLOR_MAP = {
   "tomato": "#e74c3c",
   "mustard": "#f1c40f",
@@ -573,6 +572,15 @@ const COLOR_MAP = {
   "emerald": "#50c878",
   "english violet": "#563c5c",
   "fandango": "#b53389",
+  "grape": "#6f2da8",
+  "gunmetal": "#2a3439",
+  "gunship green": "#3e4b3e",
+  "hunter green": "#355e3b",
+  "indigo dye": "#00416a",
+  "ivory white": "#e4e4d0",
+  "jade green": "#00a86b",
+  "khaki green": "#8f9779",
+  "lavender": "#b57edc",
   "default": "#9b97b1"
 };
 
@@ -581,6 +589,9 @@ let giftMap = new Map();
 let collections = [];
 let collectionByAddress = new Map();
 let collectionByKey = new Map();
+
+// ✅ کش عکس کالکشن‌ها برای لود آنی
+const collectionImageCache = new Map();
 
 let filteredGifts = [];
 let visibleCount = 0;
@@ -701,7 +712,16 @@ function getBackdrop(gift) {
 
 function getBackdropColor(name) {
   if (!name) return COLOR_MAP["default"];
-  return COLOR_MAP[name.toLowerCase().trim()] || COLOR_MAP["default"];
+  const key = name.toLowerCase().trim();
+  
+  if (COLOR_MAP[key]) return COLOR_MAP[key];
+
+  // تلاش برای تبدیل نام رنگ به کد رنگ استاندارد مرورگر (اگر در نقشه نبود)
+  const temp = document.createElement('div');
+  temp.style.color = key;
+  if (temp.style.color) return key;
+
+  return COLOR_MAP["default"];
 }
 
 function getGiftNumber(gift) {
@@ -757,22 +777,17 @@ function getAnimationCandidates(gift) {
   return list;
 }
 
-// ✅ گرفتن عکس برای کالکشن‌ها
+// ✅ لود آنی عکس کالکشن‌ها با استفاده از کش
 function getCollectionImage(col) {
-  // ۱. اگر خود API عکسی برای کالکشن داشت
+  // اگر API خودش عکس داده بود
   const colImg = col.image || col.image_url || col.thumbnail || col.preview;
   if (colImg) return `<img src="${escapeHtml(colImg)}" loading="lazy" alt="" onerror="this.style.display='none'; this.parentElement.innerHTML='🎁';">`;
 
-  // ۲. اگر نداشت، از اولین گیفت موجود در این کالکشن عکس می‌گیریم
-  const sampleGift = [...giftMap.values()].find(g => g.collection_address === col.address);
-  if (sampleGift) {
-    const images = getImageCandidates(sampleGift);
-    if (images.length) {
-      return `<img src="${escapeHtml(images[0])}" loading="lazy" alt="" onerror="this.style.display='none'; this.parentElement.innerHTML='🎁';">`;
-    }
-  }
+  // اگر توی کش ذخیره شده بود
+  const cachedImg = collectionImageCache.get(col.address);
+  if (cachedImg) return `<img src="${escapeHtml(cachedImg)}" loading="lazy" alt="" onerror="this.style.display='none'; this.parentElement.innerHTML='🎁';">`;
 
-  return '🎁'; // در نهایت اگر هیچی نبود
+  return '🎁';
 }
 
 /* ===================== قیمت ===================== */
@@ -883,6 +898,15 @@ function prepareGift(gift, previous, isNew) {
   resolveCollection(gift);
   gift._searchText = buildSearchText(gift);
   gift._backdrop = getBackdrop(gift);
+  
+  // ✅ پر کردن کش عکس کالکشن هنگام پردازش گیفت
+  if (gift.collection_address && !collectionImageCache.has(gift.collection_address)) {
+    const images = getImageCandidates(gift);
+    if (images.length) {
+      collectionImageCache.set(gift.collection_address, images[0]);
+    }
+  }
+
   if (previous && previous._newUntil) {
     gift._newUntil = previous._newUntil;
   } else if (isNew) {
@@ -925,13 +949,14 @@ async function fullSync(isManual = false) {
         fresh.set(gift.nft_address, prepareGift(gift, old, false));
       });
 
+      // ✅ رندر تدریجی با فاصله، برای اینکه UI قفل نکنه
       if (!isManual && !isInteracting) {
         for (const [key, val] of fresh) {
           const old = giftMap.get(key);
           if (old && old._newUntil) val._newUntil = old._newUntil;
           giftMap.set(key, val);
         }
-        refresh();
+        if (page % 2 === 0) refresh(); // هر ۲ صفحه رندر میشه تا سرعت حفظ بشه
       } else if (isManual && page === 0) {
         for (const [key, val] of fresh) giftMap.set(key, val);
         refresh();
@@ -1393,7 +1418,7 @@ function renderFilterContent() {
       filteredCollections.forEach(c => {
         const count = colCounts.get(c.address) || 0;
         const isChecked = selectedCollections.has(c.address) ? 'checked' : '';
-        const imageHtml = getCollectionImage(c); // ✅ گرفتن عکس کالکشن
+        const imageHtml = getCollectionImage(c);
         
         html += `
           <label class="filter-item">
@@ -1472,7 +1497,7 @@ el.collectionTrigger.addEventListener("click", () => openFilterModal('collection
 el.backdropTrigger.addEventListener("click", () => openFilterModal('backdrop'));
 el.closeFilterModal.addEventListener("click", closeFilterModal);
 el.applyFiltersBtn.addEventListener("click", applyFilterModalChanges);
-el.filterSearchInput.addEventListener("input", debounce(renderFilterContent, 200));
+el.filterSearchInput.addEventListener("input", debounce(renderFilterContent, 250));
 
 el.filterModal.addEventListener("click", e => {
   if (e.target === el.filterModal) closeFilterModal();
