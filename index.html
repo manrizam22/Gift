@@ -37,6 +37,16 @@ body.modal-open { overflow: hidden; }
 
 button, input, select { font: inherit; }
 
+/* 🚫 غیرفعال کردن منوی نگه داشتن و انتخاب متن */
+img, a, button {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 .container { width: min(1250px, calc(100% - 32px)); margin: auto; }
 
 header { padding: 25px 0 20px; }
@@ -80,7 +90,7 @@ header { padding: 25px 0 20px; }
 .filter-trigger.active { border-color: var(--primary); box-shadow: 0 0 0 3px #a78bfa18; }
 
 .results-bar { justify-content: space-between; gap: 12px; margin: 25px 0 15px; flex-wrap: wrap; }
-.results-title { display: flex; align-items: center; gap: 10px; }
+.results-title { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .results-bar strong { font-size: 16px; }
 .results-bar span { color: var(--muted); font-size: 12px; }
 
@@ -92,6 +102,16 @@ header { padding: 25px 0 20px; }
 .refresh-btn:hover { background: var(--border); }
 .refresh-btn.loading svg { animation: spin 1s linear infinite; }
 @keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* ✅ استایل دکمه حذف فیلترها */
+.clear-filters-btn {
+  background: #ef444415; border: 1px solid #ef444450; color: #ef4444;
+  border-radius: 8px; padding: 5px 10px; font-size: 12px; cursor: pointer;
+  display: none; /* پیش‌فرض مخفی */
+  align-items: center; gap: 5px; transition: 0.2s;
+}
+.clear-filters-btn:hover { background: #ef444430; }
+.clear-filters-btn.show { display: flex; }
 
 .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 17px; }
 
@@ -327,9 +347,11 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
 .filter-item-text { font-size: 14px; font-weight: 500; }
 .filter-item-count { font-size: 12px; color: var(--muted); }
 
-.filter-footer { padding: 16px 20px; border-top: 1px solid var(--border); background: var(--surface); }
+.filter-footer { padding: 16px 20px; border-top: 1px solid var(--border); background: var(--surface); display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
 .btn-apply { width: 100%; background: var(--blue); color: white; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 700; border: none; cursor: pointer; }
 .btn-apply:hover { background: #2563eb; }
+.btn-clear-modal { width: 100%; background: transparent; color: var(--muted); padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 700; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
+.btn-clear-modal:hover { background: var(--surface2); color: var(--text); }
 
 /* Responsive adjustments */
 @media(max-width: 950px) {
@@ -423,10 +445,18 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
   <div class="results-bar">
     <div class="results-title">
       <strong>گیفت‌ها</strong>
+      
       <button id="manualRefreshBtn" class="refresh-btn" title="بروزرسانی کامل اطلاعات">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
         بروزرسانی
       </button>
+
+      <!-- ✅ دکمه حذف فیلترها -->
+      <button id="globalClearFiltersBtn" class="clear-filters-btn" title="حذف همه فیلترها">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        حذف فیلترها
+      </button>
+
     </div>
     <span id="showingText" aria-live="polite">در حال دریافت اطلاعات...</span>
   </div>
@@ -511,6 +541,7 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
     </div>
 
     <div class="filter-footer">
+      <button class="btn-clear-modal" id="clearFiltersModalBtn">حذف فیلترها</button>
       <button class="btn-apply" id="applyFiltersBtn">اعمال فیلترها</button>
     </div>
   </div>
@@ -577,7 +608,7 @@ let collectionByAddress = new Map();
 let collectionByKey = new Map();
 
 const collectionImageCache = new Map();
-const backdropColorCache = new Map(); // ✅ کش برای رنگ‌ها جهت افزایش سرعت
+const backdropColorCache = new Map();
 
 let filteredGifts = [];
 let visibleCount = 0;
@@ -589,8 +620,13 @@ let lastFocused = null;
 let isInteracting = false;
 let pendingRefresh = false;
 
+// ✅ وضعیت اصلی فیلترها (بعد از تایید کاربر)
 const selectedCollections = new Set();
 const selectedBackdrops = new Set();
+
+// ✅ وضعیت موقت فیلترها (در حین کار با پنجره فیلتر)
+let tempSelectedCollections = new Set();
+let tempSelectedBackdrops = new Set();
 
 const imageSources = new Map();
 const $ = id => document.getElementById(id);
@@ -633,6 +669,10 @@ const el = {
   filterSearchInput: $("filterSearchInput"),
   closeFilterModal: $("closeFilterModal"),
   applyFiltersBtn: $("applyFiltersBtn"),
+  
+  // ✅ دکمه‌های جدید حذف فیلترها
+  globalClearFiltersBtn: $("globalClearFiltersBtn"),
+  clearFiltersModalBtn: $("clearFiltersModalBtn"),
 };
 
 /* ===================== توابع کمکی ===================== */
@@ -880,11 +920,9 @@ function prepareGift(gift, previous, isNew) {
   gift._searchText = buildSearchText(gift);
   gift._backdrop = getBackdrop(gift);
   
-  // ✅ محاسبه و ذخیره قیمت و شماره برای افزایش سرعت مرتب‌سازی
   gift._priceToman = getPriceToman(gift);
   gift._number = getGiftNumber(gift);
 
-  // ✅ ذخیره رنگ در کش برای استفاده در فیلترها بدون افت سرعت
   if (gift._backdrop && !backdropColorCache.has(gift._backdrop)) {
       backdropColorCache.set(gift._backdrop, getBackdropColor(gift));
   }
@@ -1037,12 +1075,18 @@ function updateFilterButtonTexts() {
   } else {
     el.backdropText.textContent = `${selectedBackdrops.size} رنگ انتخاب شده`;
   }
+
+  // ✅ نمایش / مخفی کردن دکمه حذف فیلترها در بالای صفحه
+  if (selectedCollections.size > 0 || selectedBackdrops.size > 0) {
+    el.globalClearFiltersBtn.classList.add("show");
+  } else {
+    el.globalClearFiltersBtn.classList.remove("show");
+  }
 }
 
 function sortGifts() {
   const mode = el.sort.value;
   
-  // ✅ استفاده از مقادیر ذخیره‌شده (_priceToman و _number) برای سرعت بالاتر
   const cmp = (key, dir) => (a, b) => {
     const x = toNumber(a[key]), y = toNumber(b[key]);
     if (x === null && y === null) return 0;
@@ -1082,7 +1126,7 @@ function createCard(gift) {
   if (images.length) imageSources.set(gift.nft_address, images);
 
   const imageHtml = images.length
-    ? `<img class="gift-img" data-gift="${escapeHtml(gift.nft_address)}" alt="${name}" loading="lazy" decoding="async" referrerpolicy="no-referrer">`
+    ? `<img class="gift-img" data-gift="${escapeHtml(gift.nft_address)}" alt="${name}" loading="lazy" decoding="async" referrerpolicy="no-referrer" draggable="false">`
     : "";
 
   return `<article class="card ${isNew ? "is-new" : ""}">
@@ -1264,7 +1308,7 @@ function showStaticImage(gift) {
     el.modalStage.innerHTML = `<span class="stage-msg">پیش‌نمایش در دسترس نیست</span>`;
     return;
   }
-  el.modalStage.innerHTML = `<img alt="${escapeHtml(gift.nft_name || "")}" referrerpolicy="no-referrer">`;
+  el.modalStage.innerHTML = `<img alt="${escapeHtml(gift.nft_name || "")}" referrerpolicy="no-referrer" draggable="false">`;
   const img = el.modalStage.querySelector("img");
   let index = 0;
   const tryNext = () => {
@@ -1347,7 +1391,6 @@ function trapFocus(event) {
   else if (!event.shiftKey && document.activeElement === last) { first.focus(); event.preventDefault(); }
 }
 
-// ✅ فوکوس‌ترپ برای مودال فیلترها
 function trapFilterFocus(event) {
   if (event.key !== "Tab") return;
   const focusable = el.filterModal.querySelectorAll('button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])');
@@ -1360,6 +1403,10 @@ function trapFilterFocus(event) {
 
 /* ===================== مودال فیلترها ===================== */
 function openFilterModal(type) {
+  // ✅ کپی کردن وضعیت فعلی به حافظه موقت
+  tempSelectedCollections = new Set(selectedCollections);
+  tempSelectedBackdrops = new Set(selectedBackdrops);
+
   renderFilterContent();
   
   if (type === 'collection') {
@@ -1418,7 +1465,8 @@ function renderFilterContent() {
       
       filteredCollections.forEach(c => {
         const count = colCounts.get(c.address) || 0;
-        const isChecked = selectedCollections.has(c.address) ? 'checked' : '';
+        // ✅ چک کردن حافظه موقت
+        const isChecked = tempSelectedCollections.has(c.address) ? 'checked' : '';
         const imageHtml = getCollectionImage(c);
         
         html += `
@@ -1450,8 +1498,8 @@ function renderFilterContent() {
       
       filteredBackdrops.forEach(name => {
         const count = backCounts.get(name) || 0;
-        const isChecked = selectedBackdrops.has(name) ? 'checked' : '';
-        // ✅ استفاده از کش برای رنگ‌ها (بسیار سریع‌تر)
+        // ✅ چک کردن حافظه موقت
+        const isChecked = tempSelectedBackdrops.has(name) ? 'checked' : '';
         const color = backdropColorCache.get(name) || "#888888";
         
         html += `
@@ -1479,23 +1527,32 @@ function renderFilterContent() {
   el.filterContent.innerHTML = html;
 }
 
-// ✅ ذخیره آنی تیک‌ها و رفع مشکل از دست رفتن State
+// ✅ تغییرات فقط در حافظه موقت ذخیره می‌شوند
 el.filterContent.addEventListener("change", (e) => {
   if (e.target.classList.contains('col-checkbox')) {
-    if (e.target.checked) selectedCollections.add(e.target.value);
-    else selectedCollections.delete(e.target.value);
+    if (e.target.checked) tempSelectedCollections.add(e.target.value);
+    else tempSelectedCollections.delete(e.target.value);
   } else if (e.target.classList.contains('back-checkbox')) {
-    if (e.target.checked) selectedBackdrops.add(e.target.value);
-    else selectedBackdrops.delete(e.target.value);
+    if (e.target.checked) tempSelectedBackdrops.add(e.target.value);
+    else tempSelectedBackdrops.delete(e.target.value);
   }
 });
 
 function applyFilterModalChanges() {
+  // ✅ کپی از حافظه موقت به حافظه اصلی
+  selectedCollections.clear();
+  tempSelectedCollections.forEach(val => selectedCollections.add(val));
+
+  selectedBackdrops.clear();
+  tempSelectedBackdrops.forEach(val => selectedBackdrops.add(val));
+
   closeFilterModal();
   refreshFromStart();
 }
 
 /* ===================== رویدادها ===================== */
+document.addEventListener('contextmenu', event => event.preventDefault());
+
 el.collectionTrigger.addEventListener("click", () => openFilterModal('collection'));
 el.backdropTrigger.addEventListener("click", () => openFilterModal('backdrop'));
 el.closeFilterModal.addEventListener("click", closeFilterModal);
@@ -1515,6 +1572,22 @@ const debouncedRefresh = debounce(() => { refreshFromStart(); }, 300);
 el.sort.addEventListener("change", () => { refreshFromStart(); });
 
 el.refreshBtn.addEventListener("click", () => { fullSync(true); });
+
+// ✅ عملکرد دکمه‌های حذف فیلتر
+function clearAllFilters() {
+  // پاک کردن حافظه‌ها
+  tempSelectedCollections.clear();
+  tempSelectedBackdrops.clear();
+  selectedCollections.clear();
+  selectedBackdrops.clear();
+  
+  // بستن مودال و آپدیت
+  closeFilterModal();
+  refreshFromStart();
+}
+
+el.globalClearFiltersBtn.addEventListener("click", clearAllFilters);
+el.clearFiltersModalBtn.addEventListener("click", clearAllFilters);
 
 el.calcDays.addEventListener("input", () => updateCalc(false));
 el.calcDays.addEventListener("change", () => updateCalc(true));
@@ -1539,7 +1612,6 @@ document.addEventListener("keydown", event => {
 el.modalBox.addEventListener("keydown", trapFocus);
 el.filterModal.addEventListener("keydown", trapFilterFocus);
 
-// ✅ بستن مودال بعد از کلیک روی لینک‌های تلگرام
 el.modalRentLink.addEventListener("click", closeModal);
 el.modalTgLink.addEventListener("click", closeModal);
 
