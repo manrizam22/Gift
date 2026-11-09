@@ -777,6 +777,10 @@ let lottieInstance = null;
 let currentGift = null;
 let lastFocused = null;
 
+// ✅ سیستم قفل تعامل (Interaction Lock)
+let isInteracting = false;
+let pendingRefresh = false;
+
 const imageSources = new Map();
 const $ = id => document.getElementById(id);
 
@@ -820,14 +824,17 @@ function debounce(fn, ms = 200) {
   };
 }
 
-// ✅ تشخیص اینکه آیا کاربر در حال تایپ یا انتخاب از منو است
-function isUserInteracting() {
-  if (document.activeElement) {
-    const tag = document.activeElement.tagName;
-    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return true;
+// ✅ مدیریت شروع و پایان تعامل کاربر
+function startInteraction() {
+  isInteracting = true;
+}
+
+function endInteraction() {
+  isInteracting = false;
+  if (pendingRefresh) {
+    pendingRefresh = false;
+    refresh();
   }
-  if (el.modal.classList.contains("open")) return true;
-  return false;
 }
 
 function normalizeText(value) {
@@ -1015,6 +1022,8 @@ async function loadCollections() {
 }
 
 function fillCollectionSelect() {
+  if (isInteracting && document.activeElement === el.collection) return;
+  
   const current = el.collection.value;
   el.collection.innerHTML = '<option value="">همه کالکشن‌ها</option>';
   collections.forEach(collection => {
@@ -1026,8 +1035,10 @@ function fillCollectionSelect() {
   el.collection.value = current;
 }
 
-// ✅ بهینه‌سازی: جلوگیری از بازسازی DOM در صورتی که لیست رنگ‌ها تغییر نکرده باشد
 function fillBackdropSelect() {
+  // ✅ اگر کاربر در حال تعامل است یا لیست رنگ‌ها باز است، اصلا به DOM دست نزن
+  if (isInteracting && document.activeElement === el.backdrop) return;
+
   const counts = new Map();
   giftMap.forEach(gift => {
     if (!gift._backdrop) return;
@@ -1053,7 +1064,9 @@ function fillBackdropSelect() {
   }
 
   if (!needsUpdate) {
-    el.backdrop.value = counts.has(current) ? current : "";
+    if (el.backdrop.value !== (counts.has(current) ? current : "")) {
+        el.backdrop.value = counts.has(current) ? current : "";
+    }
     return;
   }
 
@@ -1107,8 +1120,11 @@ function buildSearchText(gift) {
 /* ===================== همگام‌سازی ===================== */
 async function fullSync(initial = false) {
   if (syncing) return;
-  // ✅ اگر کاربر در حال انتخاب بود، sync پس‌زمینه رو متوقف کن
-  if (!initial && isUserInteracting()) return;
+  
+  // ✅ اگر کاربر در حال تعامل است، سینک کامل رو کلا متوقف کن تا بعدا
+  if (!initial && isInteracting) {
+      return; 
+  }
 
   syncing = true;
   try {
@@ -1159,8 +1175,9 @@ async function fullSync(initial = false) {
 
 async function fastPoll() {
   if (syncing || document.hidden || giftMap.size === 0) return;
-  // ✅ مهم‌ترین بخش: متوقف کردن آپدیت در زمان باز بودن منوها
-  if (isUserInteracting()) return;
+  
+  // ✅ توقف کامل در زمان تعامل
+  if (isInteracting) return;
 
   try {
     const payload = await fetchGiftsPage(null);
@@ -1369,13 +1386,22 @@ function renderMore() {
   updateShowingText();
 }
 
+// ✅ تابع رفرش محافظت‌شده
 function refresh() {
+  if (isInteracting) {
+    pendingRefresh = true;
+    return;
+  }
   fillBackdropSelect();
   applyFilters();
   renderGifts(visibleCount || CONFIG.PAGE_SIZE);
 }
 
 function refreshFromStart() {
+  if (isInteracting) {
+    pendingRefresh = true;
+    return;
+  }
   applyFilters();
   renderGifts(CONFIG.PAGE_SIZE);
 }
@@ -1489,10 +1515,29 @@ function trapFocus(event) {
 }
 
 /* ===================== رویدادها ===================== */
-el.search.addEventListener("input", debounce(refreshFromStart, 200));
-el.sort.addEventListener("change", refreshFromStart);
-el.collection.addEventListener("change", refreshFromStart);
-el.backdrop.addEventListener("change", refreshFromStart);
+// ✅ اتصال رویدادهای تعامل به تمام فیلدها
+[el.search, el.sort, el.collection, el.backdrop].forEach(input => {
+  // با هر لمس یا کلیک یا فوکوس، قفل فعال می‌شود
+  input.addEventListener("pointerdown", startInteraction);
+  input.addEventListener("touchstart", startInteraction, { passive: true });
+  input.addEventListener("focus", startInteraction);
+  
+  // با خارج شدن از فیلد، قفل باز می‌شود
+  input.addEventListener("blur", endInteraction);
+});
+
+// در زمان تغییر مقدار (بعد از انتخاب)، مطمئن می‌شویم که قفل باز شود
+el.search.addEventListener("input", () => {
+  endInteraction(); // آزاد کردن قفل (چون input هر بار تایپ فایر میشه)
+  debouncedRefresh();
+});
+const debouncedRefresh = debounce(() => {
+  refreshFromStart();
+}, 300);
+
+el.sort.addEventListener("change", () => { endInteraction(); refreshFromStart(); });
+el.collection.addEventListener("change", () => { endInteraction(); refreshFromStart(); });
+el.backdrop.addEventListener("change", () => { endInteraction(); refreshFromStart(); });
 
 el.calcDays.addEventListener("input", () => updateCalc(false));
 el.calcDays.addEventListener("change", () => updateCalc(true));
@@ -1561,7 +1606,7 @@ async function start(retryCount = 0) {
   }, CONFIG.FULL_SYNC_MS);
 
   setInterval(() => {
-    if (isUserInteracting()) return; // ✅ پشتیبانی از عدم اجرای آپدیت
+    if (isInteracting) return;
     loadCollections().then(changed => { if (changed) refresh(); }).catch(() => {});
   }, 600000);
 }
