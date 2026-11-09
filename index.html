@@ -690,7 +690,7 @@
     </div>
 
     <section class="grid" id="giftGrid">
-      <div class="loading">در حال دریافت گیفت‌ها...</div>
+      <div class="loading">در حال ارتباط با سرور...</div>
     </section>
 
   </main>
@@ -769,7 +769,9 @@
       FAST_POLL_MS: 8000,
       FULL_SYNC_MS: 300000,
       NEW_BADGE_MS: 120000,
-      FETCH_TIMEOUT_MS: 15000,
+      
+      // افزایش مهلت پاسخگویی به ۴۵ ثانیه برای اینترنت‌های کند
+      FETCH_TIMEOUT_MS: 45000, 
 
       PAGE_SIZE: 24,
       TELEGRAM_USERNAME: "Mr_Rentify",
@@ -1023,7 +1025,7 @@
         <div class="error">
           <strong>دریافت اطلاعات با مشکل مواجه شد.</strong>
           <p>${escapeHtml(error.message)}</p>
-          <p>آدرس Worker در تنظیمات (API_BASE) و توکن را بررسی کن.</p>
+          <p>آدرس Worker و وضعیت اینترنت خود را بررسی کنید.</p>
         </div>`;
       el.showing.textContent = "خطا در دریافت اطلاعات";
     }
@@ -1178,62 +1180,68 @@
       ].join(" "));
     }
 
-    /* ===================== همگام‌سازی ===================== */
+    /* ===================== همگام‌سازی فوق مقاوم ===================== */
     async function fullSync(initial = false) {
       if (syncing) return;
       syncing = true;
 
       try {
-        const fresh = new Map();
-        const seenCursors = new Set();
         let cursor = null;
+        const seenCursors = new Set();
+        let errorCount = 0; // شمارش خطاهای متوالی
 
         for (let page = 0; page < CONFIG.MAX_PAGES; page++) {
-          const payload = await fetchGiftsPage(cursor);
-          const records = extractRecords(payload);
-          if (!records.length) break;
+          try {
+            const payload = await fetchGiftsPage(cursor);
+            const records = extractRecords(payload);
+            
+            if (!records.length) break;
 
-          records.forEach(gift => {
-            if (!gift || !gift.nft_address) return;
-            const old = giftMap.get(gift.nft_address);
-            fresh.set(
-              gift.nft_address,
-              prepareGift(gift, old, !initial && !old)
-            );
-          });
+            let newlyAdded = false;
+            
+            // اضافه کردن مستقیم به نقشه اصلی برای رندر زنده
+            records.forEach(gift => {
+              if (!gift || !gift.nft_address) return;
+              const old = giftMap.get(gift.nft_address);
+              giftMap.set(gift.nft_address, prepareGift(gift, old, !initial && !old));
+              if (!old) newlyAdded = true;
+            });
 
-          if (initial && page === 0) {
-            giftMap = new Map(fresh);
-            refresh(); 
+            // رندر زنده روی صفحه به محض رسیدن هر صفحه
+            if (initial) {
+              el.showing.textContent = `در حال دریافت... (${giftMap.size.toLocaleString("fa-IR")} گیفت)`;
+              refresh();
+            } else if (newlyAdded) {
+              refresh();
+            }
+
+            const next = getNextCursor(payload, cursor);
+            if (!next || seenCursors.has(next)) break;
+            
+            seenCursors.add(next);
+            cursor = next;
+            errorCount = 0; // ریست کردن خطا بعد از موفقیت
+
+          } catch (pageErr) {
+            console.warn("خطا در دریافت یک صفحه:", pageErr);
+            errorCount++;
+            
+            // اگر ۳ بار پشت سر هم خطا داد، حلقه را می‌شکنیم ولی اطلاعات قبلی را نگه می‌داریم
+            if (errorCount >= 3) {
+              console.error("ارتباط ناپایدار است. توقف دریافت صفحات بیشتر.");
+              if (initial && giftMap.size === 0) throw pageErr;
+              break; 
+            }
+            
+            // دو ثانیه صبر و تلاش مجدد برای همان صفحه
+            await new Promise(r => setTimeout(r, 2000));
+            page--; 
           }
-
-          if (initial) {
-            el.showing.textContent = `در حال دریافت بقیه گیفت‌ها... (${fresh.size.toLocaleString("fa-IR")} مورد یافت شد)`;
-          }
-
-          const next = getNextCursor(payload, cursor);
-          if (!next || seenCursors.has(next)) break;
-          seenCursors.add(next);
-          cursor = next;
         }
-
-        const addedCount = [...fresh.keys()].filter(k => !giftMap.has(k)).length;
-        const removedCount = [...giftMap.keys()].filter(k => !fresh.has(k)).length;
-
-        giftMap = fresh;
-        if (initial || addedCount || removedCount) refresh();
-        
-        updateShowingText();
-
-        if (!initial && addedCount) showToast(`${addedCount.toLocaleString("fa-IR")} گیفت جدید اضافه شد`);
         
       } catch (error) {
-        console.error("fullSync:", error);
+        console.error("خطای کلی در همگام‌سازی:", error);
         if (initial && giftMap.size === 0) showError(error);
-        else if (initial) {
-           refresh();
-           showToast("دریافت برخی اطلاعات با مشکل روبرو شد.");
-        }
       } finally {
         syncing = false;
         updateShowingText();
@@ -1256,7 +1264,7 @@
           showToast(`${added.toLocaleString("fa-IR")} گیفت جدید اضافه شد`);
         }
       } catch (error) {
-        console.error("fastPoll:", error);
+        console.error("خطا در دریافت سریع:", error);
       }
     }
 
@@ -1472,7 +1480,11 @@
     }
 
     function updateShowingText() {
-      if (syncing) return;
+      if (syncing && visibleCount > 0) {
+        el.showing.textContent = `در حال دریافت... (${giftMap.size.toLocaleString("fa-IR")} مورد پیدا شد)`;
+        return;
+      }
+      
       el.showing.textContent = filteredGifts.length
         ? `${visibleCount.toLocaleString("fa-IR")} از ${filteredGifts.length.toLocaleString("fa-IR")} گیفت`
         : "بدون نتیجه";
@@ -1484,7 +1496,7 @@
           el.grid.innerHTML = `
             <div class="empty">
               <strong>گیفتی پیدا نشد!</strong>
-              <p>عبارت جست‌وجو، کالکشن یا رنگ بک‌گراند را تغییر بده.</p>
+              <p>شاید در صفحات بعدی باشد، کمی صبر کنید یا عبارت جست‌وجو را تغییر دهید.</p>
             </div>`;
           visibleCount = 0;
           updateShowingText();
@@ -1504,7 +1516,7 @@
         hydrateImages(el.grid);
         updateShowingText();
       } catch (e) {
-        console.error("renderGifts error:", e);
+        console.error("رندر با خطا مواجه شد:", e);
       }
     }
 
@@ -1529,7 +1541,6 @@
         renderGifts(visibleCount || CONFIG.PAGE_SIZE);
       } catch (err) {
         console.error("Refresh error:", err);
-        el.showing.textContent = "خطا در نمایش اطلاعات (لطفاً مجدد تلاش کنید)";
       }
     }
 
@@ -1598,14 +1609,14 @@
 
     /* ===================== شروع ===================== */
     async function start() {
+      // 1. اول سعی می‌کنیم کالکشن‌ها را بگیریم
       try {
         await loadCollections();
       } catch (error) {
-        console.error("collections:", error);
-        showError(error);
-        return;
+        console.warn("خطا در دریافت لیست کالکشن‌ها. برنامه متوقف نمی‌شود:", error);
       }
 
+      // 2. شروع دریافت و رندر زنده گیفت‌ها
       await fullSync(true);
 
       setInterval(fastPoll, CONFIG.FAST_POLL_MS);
