@@ -3,738 +3,1722 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Telegram Gifts | فروشگاه اجاره گیفت تلگرام</title>
+<meta name="theme-color" content="#0c0b14">
+<title>Telegram Gifts | فروشگاه گیفت تلگرام</title>
+<meta name="description" content="مشاهده و اجاره گیفت‌های تلگرام">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
---bg: #0c0b14;
---surface: #151421;
---surface2: #201d30;
---border: #302b43;
---text: #f4f1ff;
---muted: #9b97b1;
---primary: #a78bfa;
---green: #34d399;
---orange: #fb923c;
+  --bg: #0c0b14;
+  --surface: #151421;
+  --surface2: #201d30;
+  --border: #302b43;
+  --text: #f4f1ff;
+  --muted: #9b97b1;
+  --primary: #a78bfa;
+  --green: #34d399;
+  --orange: #fb923c;
 }
+
 * { box-sizing: border-box; }
+
 body {
-margin: 0;
-min-height: 100vh;
-background: radial-gradient(circle at 50% -10%, #33205a 0, transparent 35%), var(--bg);
-color: var(--text);
-font-family: Vazirmatn, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 50% -10%, #33205a 0, transparent 35%),
+    var(--bg);
+  color: var(--text);
+  font-family: Vazirmatn, sans-serif;
 }
+
 body.modal-open { overflow: hidden; }
+
 button, input, select { font: inherit; }
-.container { width: min(1250px, calc(100% - 32px)); margin: auto; }
-header { padding: 25px 0 20px; }
-.topbar, .brand, .results-bar { display: flex; align-items: center; }
-.topbar { justify-content: space-between; gap: 15px; flex-wrap: wrap; }
-.brand { gap: 12px; }
-.brand-icon {
-width: 48px; height: 48px; display: grid; place-items: center;
-border-radius: 15px; background: linear-gradient(135deg, #a78bfa, #7c3aed); font-size: 24px;
+
+.container {
+  width: min(1250px, calc(100% - 32px));
+  margin: auto;
 }
+
+header { padding: 25px 0 20px; }
+
+.topbar, .brand, .results-bar {
+  display: flex;
+  align-items: center;
+}
+
+.topbar {
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.brand { gap: 12px; }
+
+.brand-icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #a78bfa, #7c3aed);
+  font-size: 24px;
+}
+
 .brand h1 { margin: 0; font-size: 20px; }
 .brand p { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
+
 .contact-link {
-text-decoration: none; color: white; background: #222034;
-border: 1px solid var(--border); padding: 10px 16px; border-radius: 12px; font-size: 13px;
+  text-decoration: none;
+  color: white;
+  background: #222034;
+  border: 1px solid var(--border);
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 13px;
 }
+
 .toolbar {
-margin-top: 24px; display: grid;
-grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 12px;
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  gap: 12px;
 }
+
 .field { min-width: 0; }
-.field label { display: block; color: var(--muted); font-size: 12px; margin-bottom: 7px; }
-.control {
-width: 100%; height: 46px; border: 1px solid var(--border); outline: none;
-border-radius: 12px; background: var(--surface); color: var(--text); padding: 0 13px;
+
+.field label {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 7px;
 }
-.control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px #a78bfa18; }
+
+.control {
+  width: 100%;
+  height: 46px;
+  border: 1px solid var(--border);
+  outline: none;
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  padding: 0 13px;
+}
+
+.control:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px #a78bfa18;
+}
+
+.control::placeholder { color: #77728d; }
 select.control { cursor: pointer; }
-.results-bar { justify-content: space-between; gap: 12px; margin: 25px 0 15px; flex-wrap: wrap; }
+
+.results-bar {
+  justify-content: space-between;
+  gap: 12px;
+  margin: 25px 0 15px;
+  flex-wrap: wrap;
+}
+
 .results-bar strong { font-size: 16px; }
 .results-bar span { color: var(--muted); font-size: 12px; }
-.grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 17px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 17px;
+}
+
 .card {
-min-width: 0; overflow: hidden; background: var(--surface);
-border: 1px solid var(--border); border-radius: 17px;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 17px;
+  transition: border-color .2s, box-shadow .2s;
 }
+
+.image-wrap, .card-body {
+  transition: transform .2s;
+}
+
+.card:hover {
+  border-color: #8b5cf6aa;
+  box-shadow: 0 12px 35px #0004;
+}
+
+.card:hover .image-wrap,
+.card:hover .card-body {
+  transform: translateY(-4px);
+}
+
+.card.is-new {
+  border-color: var(--orange);
+  animation: newGlow 1.6s ease-out;
+}
+
+@keyframes newGlow {
+  0% { box-shadow: 0 0 0 0 #fb923c99; }
+  100% { box-shadow: 0 0 0 18px #fb923c00; }
+}
+
 .image-wrap {
-position: relative; aspect-ratio: 1 / 1; overflow: hidden;
-background: linear-gradient(145deg, #28243c, #171523); display: grid; place-items: center; border-radius: 17px 17px 0 0;
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: linear-gradient(145deg, #28243c, #171523);
+  display: grid;
+  place-items: center;
+  border-radius: 17px 17px 0 0;
 }
-.image-placeholder { width: 100%; height: 100%; display: grid; place-items: center; color: #77728d; font-size: 12px; }
+
+.image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: #77728d;
+  font-size: 12px;
+}
+
 .image-wrap img.gift-img {
-position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 12px; z-index: 1;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 12px;
+  z-index: 1;
+  transition: transform .25s;
 }
+
+.card:hover .gift-img { transform: scale(1.06); }
+
 .gift-number {
-position: absolute; right: 10px; top: 10px; z-index: 2;
-background: #0c0b14df; border: 1px solid #ffffff20; padding: 4px 9px; border-radius: 8px; font-size: 10px; direction: ltr;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 2;
+  background: #0c0b14df;
+  border: 1px solid #ffffff20;
+  padding: 4px 9px;
+  border-radius: 8px;
+  font-size: 10px;
+  direction: ltr;
 }
+
+.new-badge {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  z-index: 2;
+  background: var(--orange);
+  color: #1a1020;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 8px;
+  font-size: 10px;
+}
+
 .card-body { padding: 13px; }
+
 .gift-name {
-margin: 0; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; direction: ltr; text-align: right;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: ltr;
+  text-align: right;
 }
+
 .collection-tag {
-display: inline-block; margin-top: 9px; padding: 4px 8px; border-radius: 7px;
-background: #34d39912; color: #6ee7b7; border: 1px solid #34d39925; font-size: 10px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  display: inline-block;
+  margin-top: 9px;
+  padding: 4px 8px;
+  border-radius: 7px;
+  background: #34d39912;
+  color: #6ee7b7;
+  border: 1px solid #34d39925;
+  font-size: 10px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.traits { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; min-height: 25px; }
-.trait { background: #a78bfa13; color: #c4b5fd; border: 1px solid #a78bfa25; padding: 3px 7px; border-radius: 7px; font-size: 10px; }
+
+.traits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 10px;
+  min-height: 25px;
+}
+
+.trait {
+  background: #a78bfa13;
+  color: #c4b5fd;
+  border: 1px solid #a78bfa25;
+  padding: 3px 7px;
+  border-radius: 7px;
+  font-size: 10px;
+}
+
 .card-info {
-margin-top: 13px; padding-top: 11px; border-top: 1px solid var(--border);
-display: flex; justify-content: space-between; gap: 8px; align-items: center;
+  margin-top: 13px;
+  padding-top: 11px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
 }
+
 .price-label, .duration { color: var(--muted); font-size: 10px; }
-.price-value { margin-top: 3px; font-size: 13px; font-weight: 800; color: var(--green); }
-.telegram-fee { margin-top: 4px; font-size: 9px; font-weight: 600; color: var(--orange); line-height: 1.4; }
+
+.price-value {
+  margin-top: 3px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--green);
+}
+
+.telegram-fee {
+  margin-top: 4px;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--orange);
+  line-height: 1.4;
+}
+
 .duration { text-align: left; }
-.card-actions { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 12px; }
+
+.card-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
 .btn {
-display: block; text-align: center; text-decoration: none; border-radius: 10px;
-padding: 10px; color: white; font-weight: 700; font-size: 12px; border: 0; cursor: pointer;
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 10px;
+  padding: 10px;
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  border: 0;
+  cursor: pointer;
 }
+
+.btn:hover { filter: brightness(1.15); }
+
+.btn-view {
+  background: #2a2640;
+  border: 1px solid #4b4468;
+  color: #ddd6fe;
+}
+
 .btn-rent { background: linear-gradient(120deg, #8b5cf6, #6d28d9); }
+.btn-tg { background: #229ed9; }
+
 .empty, .loading, .error {
-grid-column: 1 / -1; text-align: center; padding: 45px 15px; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 55px 15px;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
 }
-.error { color: #f87171; border-color: #f8717130; }
-.error button {
-margin-top: 15px; background: #8b5cf6; color: white; border: 0; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold;
+
+footer {
+  border-top: 1px solid var(--border);
+  padding: 22px 0;
+  margin-top: 40px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
 }
-footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px; text-align: center; color: var(--muted); font-size: 11px; }
+
+/* ---------- Modal ---------- */
 .modal {
-position: fixed; inset: 0; z-index: 100; display: none; align-items: center; justify-content: center; padding: 16px; background: #05040bd9; backdrop-filter: blur(6px);
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: #05040bd9;
+  backdrop-filter: blur(6px);
 }
-.modal.open { display: flex; }
+
+.modal.open { display: flex; animation: fade .2s ease-out; }
+
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
 .modal-box {
-position: relative; width: min(480px, 100%); max-height: calc(100vh - 32px);
-overflow-y: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 22px; padding: 18px;
+  position: relative;
+  width: min(480px, 100%);
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 18px;
+  animation: pop .25s ease-out;
+  scroll-behavior: smooth;
 }
+
+@keyframes pop {
+  from { transform: translateY(20px) scale(.97); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
 .modal-close {
-position: absolute; top: 12px; left: 12px; z-index: 5; width: 36px; height: 36px;
-border-radius: 50%; border: 1px solid var(--border); background: #0c0b14cc; color: white; font-size: 18px; cursor: pointer;
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 5;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: #0c0b14cc;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
 }
+
 .modal-stage {
-position: relative; aspect-ratio: 1 / 1; max-width: min(100%, 34vh); margin-inline: auto;
-border-radius: 17px; overflow: hidden; background: radial-gradient(circle at 50% 40%, #3a2c63, #171523 75%); display: grid; place-items: center;
+  position: relative;
+  aspect-ratio: 1 / 1;
+  max-width: min(100%, 34vh);
+  margin-inline: auto;
+  border-radius: 17px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 40%, #3a2c63, #171523 75%);
+  display: grid;
+  place-items: center;
 }
-.modal-stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 10px; }
-.modal-title { margin: 16px 0 4px; font-size: 18px; direction: ltr; text-align: right; }
+
+.modal-stage .anim,
+.modal-stage img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 10px;
+}
+
+.modal-stage .stage-msg {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.modal-title {
+  margin: 16px 0 4px;
+  font-size: 18px;
+  direction: ltr;
+  text-align: right;
+}
+
 .modal-price {
-margin: 14px 0; padding: 12px 14px; background: #34d39910; border: 1px solid #34d39930; border-radius: 12px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px 10px;
+  margin: 14px 0;
+  padding: 12px 14px;
+  background: #34d39910;
+  border: 1px solid #34d39930;
+  border-radius: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px 10px;
 }
+
 .modal-price strong { color: var(--green); font-size: 17px; }
-.modal-meta { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
-.calc { margin-top: 12px; padding: 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; }
-.calc-title { font-size: 13px; font-weight: 700; margin-bottom: 12px; }
-.calc-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.stepper { display: flex; align-items: stretch; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface); direction: ltr; }
-.stepper button { width: 38px; border: 0; background: #2a2640; color: #ddd6fe; font-size: 18px; cursor: pointer; }
-.stepper input { width: 62px; height: 38px; border: 0; outline: none; text-align: center; background: transparent; color: var(--text); font-weight: 700; }
-.calc-hint { min-height: 16px; margin-top: 6px; color: var(--muted); font-size: 11px; }
-.calc-lines { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); display: grid; gap: 7px; }
-.calc-total { margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: #34d39912; border: 1px solid #34d39935; color: var(--text); font-weight: 700; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
-.calc-total strong { color: var(--green); font-size: 16px; }
-.modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
-.modal-actions .btn-rent { grid-column: 1 / -1; padding: 13px; font-size: 14px; }
-.toast {
-position: fixed; bottom: 20px; left: 50%; transform: translate(-50%, 30px); z-index: 200;
-background: #231f36; border: 1px solid var(--orange); color: white; padding: 11px 20px; border-radius: 12px; font-size: 13px; opacity: 0; pointer-events: none; transition: .3s;
+
+.modal-price .telegram-fee {
+  flex: 1 1 100%;
+  min-width: 0;
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.7;
+  text-align: right;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
+
+.modal-meta { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+
+/* ---------- ماشین حساب اجاره ---------- */
+.calc {
+  margin-top: 12px;
+  padding: 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.calc-title { font-size: 13px; font-weight: 700; margin-bottom: 12px; }
+
+.calc-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.calc-row label { color: var(--muted); font-size: 12px; }
+
+.stepper {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+  direction: ltr;
+}
+
+.stepper button {
+  width: 38px;
+  border: 0;
+  background: #2a2640;
+  color: #ddd6fe;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.stepper button:hover { background: #342f50; }
+
+.stepper input {
+  width: 62px;
+  height: 38px;
+  border: 0;
+  outline: none;
+  text-align: center;
+  background: transparent;
+  color: var(--text);
+  font-weight: 700;
+  -moz-appearance: textfield;
+}
+
+.stepper input::-webkit-outer-spin-button,
+.stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+.calc-hint { min-height: 16px; margin-top: 6px; color: var(--muted); font-size: 11px; }
+
+.calc-lines {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+  display: grid;
+  gap: 7px;
+}
+
+.calc-lines div,
+.calc-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.calc-lines strong { color: var(--text); font-size: 12px; }
+
+.calc-total {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #34d39912;
+  border: 1px solid #34d39935;
+  color: var(--text);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.calc-total strong { color: var(--green); font-size: 16px; }
+
+.modal-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+/* ---------- Toast ---------- */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translate(-50%, 30px);
+  z-index: 200;
+  background: #231f36;
+  border: 1px solid var(--orange);
+  color: white;
+  padding: 11px 20px;
+  border-radius: 12px;
+  font-size: 13px;
+  opacity: 0;
+  pointer-events: none;
+  transition: .3s;
+}
+
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+@media(max-width: 950px) {
+  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .toolbar { grid-template-columns: 1fr 1fr 1fr; }
+  .search-field { grid-column: 1 / -1; }
+}
+
 @media(max-width: 650px) {
-.grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.toolbar { grid-template-columns: 1fr 1fr; }
-.search-field, .backdrop-field { grid-column: 1 / -1; }
+  .container { width: min(100% - 22px, 500px); }
+  .toolbar { grid-template-columns: 1fr 1fr; }
+  .search-field,
+  .backdrop-field { grid-column: 1 / -1; }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .card-body { padding: 10px; }
+  .gift-name { font-size: 12px; }
+  .trait { font-size: 9px; }
+  .price-value { font-size: 11px; }
+  .telegram-fee { font-size: 8px; }
+  .duration { font-size: 9px; }
+}
+
+@media(max-width: 360px) {
+  .grid { gap: 8px; }
+  .toolbar { grid-template-columns: 1fr; }
+  .search-field,
+  .backdrop-field { grid-column: auto; }
+}
+
+/* احترام به تنظیمات کاربر */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 </style>
 </head>
+
 <body>
+
 <header>
-<div class="container">
-<div class="topbar">
-<div class="brand">
-<div class="brand-icon">🎁</div>
-<div>
-<h1>Telegram Gifts</h1>
-<p>فروشگاه اجاره گیفت تلگرام</p>
-</div>
-</div>
-<a class="contact-link" href="https://t.me/Mr_Rentify" target="_blank" rel="noopener">ارتباط با پشتیبانی ↗</a>
-</div>
-<section class="toolbar">
-<div class="field search-field">
-<label for="searchInput">جست‌وجوی گیفت</label>
-<input id="searchInput" class="control" type="search" placeholder="نام یا شماره گیفت..." autocomplete="off">
-</div>
-<div class="field">
-<label for="sortSelect">مرتب‌سازی</label>
-<select id="sortSelect" class="control">
-<option value="newest">جدیدترین</option>
-<option value="oldest">قدیمی‌ترین</option>
-<option value="price-asc">ارزان‌ترین اجاره</option>
-<option value="price-desc">گران‌ترین اجاره</option>
-<option value="duration-asc">کمترین مدت اجاره</option>
-<option value="duration-desc">بیشترین مدت اجاره</option>
-<option value="number-asc">شماره صعودی</option>
-<option value="number-desc">شماره نزولی</option>
-</select>
-</div>
-<div class="field">
-<label for="collectionFilter">دسته‌بندی / کالکشن</label>
-<select id="collectionFilter" class="control">
-<option value="">همه کالکشن‌ها</option>
-</select>
-</div>
-<div class="field backdrop-field">
-<label for="backdropFilter">رنگ بک‌گراند</label>
-<select id="backdropFilter" class="control">
-<option value="">همه رنگ‌ها</option>
-</select>
-</div>
-</section>
-</div>
+  <div class="container">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-icon">🎁</div>
+        <div>
+          <h1>Telegram Gifts</h1>
+          <p>فروشگاه اجاره گیفت تلگرام</p>
+        </div>
+      </div>
+
+      <a class="contact-link" href="https://t.me/Mr_Rentify" target="_blank" rel="noopener">
+        ارتباط با پشتیبانی ↗
+      </a>
+    </div>
+
+    <section class="toolbar">
+      <div class="field search-field">
+        <label for="searchInput">جست‌وجوی گیفت</label>
+        <input id="searchInput" class="control" type="search" placeholder="نام یا شماره گیفت..." autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label for="sortSelect">مرتب‌سازی</label>
+        <select id="sortSelect" class="control">
+          <option value="newest">جدیدترین</option>
+          <option value="oldest">قدیمی‌ترین</option>
+          <option value="price-asc">ارزان‌ترین اجاره</option>
+          <option value="price-desc">گران‌ترین اجاره</option>
+          <option value="duration-asc">کمترین مدت اجاره</option>
+          <option value="duration-desc">بیشترین مدت اجاره</option>
+          <option value="number-asc">شماره صعودی</option>
+          <option value="number-desc">شماره نزولی</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="collectionFilter">دسته‌بندی / کالکشن</label>
+        <select id="collectionFilter" class="control">
+          <option value="">همه کالکشن‌ها</option>
+        </select>
+      </div>
+
+      <div class="field backdrop-field">
+        <label for="backdropFilter">رنگ بک‌گراند</label>
+        <select id="backdropFilter" class="control">
+          <option value="">همه رنگ‌ها</option>
+        </select>
+      </div>
+    </section>
+  </div>
 </header>
-​<main class="container">
-<div class="results-bar">
-<strong>گیفت‌ها</strong>
-<span id="showingText">در حال دریافت اطلاعات...</span>
-</div>
-<section class="grid" id="giftGrid">
-<div class="loading">در حال ارتباط با سرور و بارگذاری گیفت‌ها...</div>
-</section>
+
+<main class="container">
+  <div class="results-bar">
+    <strong>گیفت‌ها</strong>
+    <span id="showingText" aria-live="polite">در حال دریافت اطلاعات...</span>
+  </div>
+
+  <section class="grid" id="giftGrid">
+    <div class="loading">در حال دریافت گیفت‌ها...</div>
+  </section>
 </main>
-​<footer>Telegram Gifts Marketplace · تمامی حقوق محفوظ است</footer>
-​<div class="modal" id="giftModal" aria-hidden="true">
-<div class="modal-box" id="modalBox" role="dialog" aria-modal="true">
-<button class="modal-close" id="modalClose" aria-label="بستن">✕</button>
-<div class="modal-stage" id="modalStage"></div>
-<h3 class="modal-title" id="modalTitle"></h3>
-<div class="modal-meta" id="modalCollection"></div>
-<div class="traits" id="modalTraits"></div>
-<div class="modal-price">
-<div>
-<div class="price-label">قیمت اجاره روزانه</div>
-<strong id="modalPrice"></strong>
+
+<footer>
+  Telegram Gifts Marketplace · تمامی حقوق محفوظ است
+</footer>
+
+<!-- مودال مشاهده گیفت -->
+<div class="modal" id="giftModal" aria-hidden="true">
+  <div class="modal-box" id="modalBox" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" id="modalClose" aria-label="بستن">✕</button>
+
+    <div class="modal-stage" id="modalStage"></div>
+
+    <h3 class="modal-title" id="modalTitle"></h3>
+    <div class="modal-meta" id="modalCollection"></div>
+    <div class="traits" id="modalTraits"></div>
+
+    <div class="modal-price">
+      <div>
+        <div class="price-label">قیمت اجاره روزانه</div>
+        <strong id="modalPrice"></strong>
+      </div>
+      <small class="telegram-fee" id="modalFee"></small>
+    </div>
+
+    <div class="modal-meta" id="modalDuration"></div>
+
+    <!-- ماشین حساب -->
+    <div class="calc" id="rentCalculator">
+      <div class="calc-title">ماشین حساب اجاره</div>
+
+      <div class="calc-row">
+        <label for="calcDays">تعداد روز اجاره</label>
+        <div class="stepper">
+          <button type="button" id="calcMinus" aria-label="کم کردن یک روز">−</button>
+          <input id="calcDays" type="number" inputmode="numeric" min="1" step="1" value="1">
+          <button type="button" id="calcPlus" aria-label="اضافه کردن یک روز">+</button>
+        </div>
+      </div>
+      <div class="calc-hint" id="calcHint"></div>
+
+      <div class="calc-lines">
+        <div><span id="calcRentLabel">اجاره</span><strong id="calcRent"></strong></div>
+        <div><span>کارمزد تلگرام</span><strong id="calcFee"></strong></div>
+      </div>
+
+      <div class="calc-total">
+        <span>مبلغ نهایی</span>
+        <strong id="calcTotal"></strong>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <a class="btn btn-rent" id="modalRentLink" target="_blank" rel="noopener">ارسال درخواست اجاره به پشتیبانی</a>
+      <a class="btn btn-tg" id="modalTgLink" target="_blank" rel="noopener">مشاهده در تلگرام</a>
+      <button type="button" class="btn btn-view" id="modalBackBtn">بازگشت به لیست</button>
+    </div>
+  </div>
 </div>
-<small class="telegram-fee" id="modalFee"></small>
-</div>
-<div class="modal-meta" id="modalDuration"></div>
-​<div class="calc" id="rentCalculator">
-<div class="calc-title">ماشین حساب اجاره</div>
-<div class="calc-row">
-<label for="calcDays">تعداد روز اجاره</label>
-<div class="stepper">
-<button type="button" id="calcMinus">−</button>
-<input id="calcDays" type="number" inputmode="numeric" step="1" value="1">
-<button type="button" id="calcPlus">+</button>
-</div>
-</div>
-<div class="calc-hint" id="calcHint"></div>
-<div class="calc-lines">
-<div><span id="calcRentLabel">اجاره</span><strong id="calcRent"></strong></div>
-<div><span>کارمزد تلگرام</span><strong id="calcFee"></strong></div>
-</div>
-<div class="calc-total">
-<span>مبلغ نهایی</span>
-<strong id="calcTotal"></strong>
-</div>
-</div>
-​<div class="modal-actions">
-<a class="btn btn-rent" id="modalRentLink" target="_blank" rel="noopener">ارسال درخواست اجاره به پشتیبانی</a>
-<button type="button" class="btn btn-view" id="modalBackBtn">بازگشت به لیست</button>
-<a class="btn" id="modalTgLink" style="background:#229ed9;" target="_blank" rel="noopener">مشاهده در تلگرام</a>
-</div>
-</div>
-</div>
-​<div class="toast" id="toast"></div>
-​<script>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+
+<script>
+/* ===================== تنظیمات ===================== */
 const CONFIG = {
-API_BASE: "https://gifts-proxy.marketappgiftreza.workers.dev",
-LOW_PRICE_LIMIT_NANO: 10000000,
-TON_TO_TOMAN_LOW: 900000,
-TON_TO_TOMAN_HIGH: 600000,
-LIMIT: 100,
-MAX_PAGES: 30,
-FAST_POLL_MS: 15000,
-FULL_SYNC_MS: 300000,
-NEW_BADGE_MS: 120000,
-FETCH_TIMEOUT_MS: 15000,
-PAGE_SIZE: 24,
-TELEGRAM_USERNAME: "Mr_Rentify",
-TELEGRAM_FEE_TOMAN: 40000,
+  API_BASE: "https://gifts-proxy.marketappgiftreza.workers.dev",
+
+  LOW_PRICE_LIMIT_NANO: 10000000,
+  TON_TO_TOMAN_LOW: 900000,
+  TON_TO_TOMAN_HIGH: 600000,
+
+  LIMIT: 100,
+  MAX_PAGES: 300,
+
+  FAST_POLL_MS: 8000,
+  FULL_SYNC_MS: 60000,
+  NEW_BADGE_MS: 120000,
+
+  PAGE_SIZE: 24,
+  TELEGRAM_USERNAME: "Mr_Rentify",
+  TELEGRAM_FEE_TOMAN: 40000,
 };
-​let giftMap = new Map();
+
+// متن ثابت کارمزد یک‌بار ساخته می‌شود (به‌جای هر کارت)
+const FEE_NOTE_TEXT =
+  `+ ${CONFIG.TELEGRAM_FEE_TOMAN.toLocaleString("fa-IR")} تومان کارمزد تلگرام به مبلغ کل اضافه می‌شود`;
+
+/* ===================== وضعیت ===================== */
+let giftMap = new Map();
 let collections = [];
 let collectionByAddress = new Map();
 let collectionByKey = new Map();
+
 let filteredGifts = [];
 let visibleCount = 0;
 let syncing = false;
+let lottieInstance = null;
 let currentGift = null;
+let lastFocused = null;
+
 const imageSources = new Map();
-​const $ = id => document.getElementById(id);
+const $ = id => document.getElementById(id);
+
 const el = {
-grid: $("giftGrid"),
-search: $("searchInput"),
-sort: $("sortSelect"),
-collection: $("collectionFilter"),
-backdrop: $("backdropFilter"),
-showing: $("showingText"),
-toast: $("toast"),
-modal: $("giftModal"),
-modalStage: $("modalStage"),
-modalTitle: $("modalTitle"),
-modalCollection: $("modalCollection"),
-modalTraits: $("modalTraits"),
-modalPrice: $("modalPrice"),
-modalFee: $("modalFee"),
-calcDays: $("calcDays"),
-calcMinus: $("calcMinus"),
-calcPlus: $("calcPlus"),
-calcHint: $("calcHint"),
-calcRentLabel: $("calcRentLabel"),
-calcRent: $("calcRent"),
-calcFee: $("calcFee"),
-calcTotal: $("calcTotal"),
-modalDuration: $("modalDuration"),
-modalTgLink: $("modalTgLink"),
-modalRentLink: $("modalRentLink"),
-modalBackBtn: $("modalBackBtn"),
+  grid: $("giftGrid"),
+  search: $("searchInput"),
+  sort: $("sortSelect"),
+  collection: $("collectionFilter"),
+  backdrop: $("backdropFilter"),
+  showing: $("showingText"),
+  toast: $("toast"),
+  modal: $("giftModal"),
+  modalBox: $("modalBox"),
+  modalStage: $("modalStage"),
+  modalTitle: $("modalTitle"),
+  modalCollection: $("modalCollection"),
+  modalTraits: $("modalTraits"),
+  modalPrice: $("modalPrice"),
+  modalFee: $("modalFee"),
+  calcDays: $("calcDays"),
+  calcMinus: $("calcMinus"),
+  calcPlus: $("calcPlus"),
+  calcHint: $("calcHint"),
+  calcRentLabel: $("calcRentLabel"),
+  calcRent: $("calcRent"),
+  calcFee: $("calcFee"),
+  calcTotal: $("calcTotal"),
+  modalDuration: $("modalDuration"),
+  modalTgLink: $("modalTgLink"),
+  modalRentLink: $("modalRentLink"),
+  modalBackBtn: $("modalBackBtn"),
+  rentCalculator: $("rentCalculator"),
 };
-​function debounce(func, wait) {
-let timeout;
-return function(...args) {
-clearTimeout(timeout);
-timeout = setTimeout(() => func.apply(this, args), wait);
-};
+
+/* ===================== توابع کمکی ===================== */
+function debounce(fn, ms = 200) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), ms);
+  };
 }
-​function normalizeText(val) {
-return String(val ?? "").toLowerCase().replace(/ي/g, "ی").replace(/ك/g, "ک").replace(/\u200c/g, " ").trim();
+
+function normalizeText(value) {
+  return String(value ?? "")
+    .toLowerCase()
+    .replace(/ي/g, "ی")
+    .replace(/ك/g, "ک")
+    .replace(/\u200c/g, " ")
+    .trim();
 }
-​function escapeHtml(val) {
-return String(val ?? "").replace(/[&<>"']/g, c => ({ "&": "&", "<": "<", ">": ">", '"': """, "'": "'" })[c]);
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
 }
-​function toNumber(val) {
-if (val === null || val === undefined || val === "") return null;
-const n = Number(val);
-return Number.isFinite(n) ? n : null;
+
+function toNumber(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
 }
-​function getDayBounds(gift) {
-const minSec = toNumber(gift.min_duration);
-const maxSec = toNumber(gift.max_duration);
-const minDays = minSec > 0 ? Math.max(1, Math.ceil(minSec / 86400)) : 1;
-const maxDays = maxSec > 0 ? Math.floor(maxSec / 86400) : null;
-return { minDays, maxDays: maxDays && maxDays < minDays ? minDays : maxDays };
+
+function formatDuration(seconds) {
+  const value = Number(seconds);
+  if (!Number.isFinite(value) || value <= 0) return "نامشخص";
+
+  const days = Math.floor(value / 86400);
+  if (days >= 1) return `${days.toLocaleString("fa-IR")} روز`;
+
+  const hours = Math.floor(value / 3600);
+  if (hours >= 1) return `${hours.toLocaleString("fa-IR")} ساعت`;
+
+  return "کمتر از یک ساعت";
 }
-​function formatDuration(gift) {
-const b = getDayBounds(gift);
-if (!b.maxDays) return حداقل ${b.minDays} روز;
-if (b.minDays === b.maxDays) return ${b.minDays} روز;
-return از ${b.minDays} تا ${b.maxDays} روز;
+
+function getAttributes(gift) {
+  const result = {};
+  if (!Array.isArray(gift.attributes)) return result;
+
+  gift.attributes.forEach(attribute => {
+    if (!attribute || !attribute.trait_type) return;
+    result[attribute.trait_type] = attribute.value;
+  });
+  return result;
 }
-​function getAttributes(gift) {
-const res = {};
-if (!Array.isArray(gift.attributes)) return res;
-gift.attributes.forEach(a => { if (a && a.trait_type) res[a.trait_type] = a.value; });
-return res;
+
+function getBackdrop(gift) {
+  const attrs = getAttributes(gift);
+  const key = Object.keys(attrs).find(k => /backdrop|background|بک/i.test(k));
+  if (!key) return "";
+  return String(attrs[key] ?? "").replace(/\s*(.*?)\s*$/, "$1").trim();
 }
-​function getBackdrop(gift) {
-const attrs = getAttributes(gift);
-const key = Object.keys(attrs).find(k => /backdrop|background|بک/i.test(k));
-if (!key) return "";
-return String(attrs[key] ?? "").replace(/\s*(.?)\s$/, "").trim();
+
+function getGiftNumber(gift) {
+  const match = String(gift.nft_name || "").match(/#(\d+)/);
+  return match ? Number(match[1]) : null;
 }
-​function parseGiftName(name) {
-const str = String(name || "").trim();
-const match = str.match(/^(.+?)\s+#(\d+)\s*$/);
-if (match) return { base: match[1].trim(), num: match[2] };
-const matchHash = str.match(/#(\d+)/);
-if (matchHash) return { base: str.replace(/#\d+/, "").trim() || str, num: matchHash[1] };
-return { base: str, num: null };
+
+// ✅ اصلاح شد: `.*?` جای `.?` — قبلاً فقط یک حرف را می‌گرفت
+function getGiftBaseName(gift) {
+  const match = String(gift.nft_name || "").match(/^(.*?)\s#\d+/);
+  return match ? match[1].trim() : String(gift.nft_name || "").trim();
 }
-​function getGiftNumber(gift) {
-const p = parseGiftName(gift.nft_name);
-return p.num ? Number(p.num) : null;
+
+// ✅ اصلاح شد: همان رجکس درست
+function getTelegramSlug(gift) {
+  const match = String(gift.nft_name || "").match(/^(.*?)\s#(\d+)/);
+  if (!match) return null;
+
+  const base = match[1].replace(/[^A-Za-z0-9]/g, "");
+  return base ? `${base}-${match[2]}` : null;
 }
-​function getGiftBaseName(gift) {
-return parseGiftName(gift.nft_name).base;
+
+function getTelegramUrl(gift) {
+  const slug = getTelegramSlug(gift);
+  return slug ? `https://t.me/nft/${slug}` : "https://t.me/";
 }
-​function getTelegramSlug(gift) {
-const p = parseGiftName(gift.nft_name);
-if (!p.num) return null;
-const base = p.base.replace(/[^A-Za-z0-9]/g, "");
-return base ? ${base}-${p.num} : null;
+
+function getFragmentSlug(gift) {
+  const slug = getTelegramSlug(gift);
+  return slug ? slug.toLowerCase() : null;
 }
-​function getTelegramUrl(gift) {
-const slug = getTelegramSlug(gift);
-return slug ? https://t.me/nft/${slug} : "https://t.me/";
+
+function getImageCandidates(gift) {
+  const list = [
+    gift.image, gift.image_url, gift.thumbnail,
+    gift.preview, gift.nft_image,
+    gift.metadata && gift.metadata.image
+  ].filter(url => typeof url === "string" && /^https?:\/\//.test(url));
+
+  const slug = getFragmentSlug(gift);
+
+  if (slug) {
+    list.push(
+      `https://nft.fragment.com/gift/${slug}.medium.jpg`,
+      `https://nft.fragment.com/gift/${slug}.webp`
+    );
+  }
+  return list;
 }
-​function getFragmentSlug(gift) {
-const slug = getTelegramSlug(gift);
-return slug ? slug.toLowerCase() : null;
+
+function getAnimationCandidates(gift) {
+  const list = [
+    gift.lottie, gift.lottie_url, gift.animation, gift.animation_url
+  ].filter(url => typeof url === "string" && /^https?:\/\/.+\.json/.test(url));
+
+  const slug = getFragmentSlug(gift);
+  if (slug) list.push(`https://nft.fragment.com/gift/${slug}.lottie.json`);
+
+  return list;
 }
-​function getImageCandidates(gift) {
-const list = [gift.image, gift.image_url, gift.thumbnail, gift.preview, gift.nft_image, gift.metadata?.image]
-.filter(url => typeof url === "string" && /^https?:///.test(url));
-const slug = getFragmentSlug(gift);
-if (slug) {
-list.push(https://nft.fragment.com/gift/${slug}.webp, https://nft.fragment.com/gift/${slug}.medium.jpg);
+
+/* ===================== قیمت (تومان) ===================== */
+function getPriceToman(gift) {
+  const raw = toNumber(gift.price_per_day);
+  if (raw === null) return null;
+
+  const rate = raw < CONFIG.LOW_PRICE_LIMIT_NANO
+    ? CONFIG.TON_TO_TOMAN_LOW
+    : CONFIG.TON_TO_TOMAN_HIGH;
+
+  return Math.round((raw / 1e9) * rate);
 }
-return list;
+
+function formatToman(value) {
+  if (value === null) return "نامشخص";
+  return `${value.toLocaleString("fa-IR")} تومان`;
 }
-​function getPriceToman(gift) {
-const raw = toNumber(gift.price_per_day);
-if (raw === null) return null;
-const rate = raw < CONFIG.LOW_PRICE_LIMIT_NANO ? CONFIG.TON_TO_TOMAN_LOW : CONFIG.TON_TO_TOMAN_HIGH;
-return Math.round((raw / 1e9) * rate);
+
+function formatFeeNote() {
+  return FEE_NOTE_TEXT;
 }
-​function formatToman(val) {
-if (val === null) return "نامشخص";
-return ${val.toLocaleString("fa-IR")} تومان;
+
+/* ===================== ارتباط با API ===================== */
+async function apiGet(path, params = {}) {
+  const query = new URLSearchParams(params).toString();
+  const url = `${CONFIG.API_BASE}${path}${query ? "?" + query : ""}`;
+
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) throw new Error(`HTTP ${response.status} (${path})`);
+
+  return response.json();
 }
-​function formatFeeNote() {
-return + ${CONFIG.TELEGRAM_FEE_TOMAN.toLocaleString("fa-IR")} تومان کارمزد تلگرام;
+
+function extractRecords(payload) {
+  if (Array.isArray(payload)) return payload;
+  if (!payload || typeof payload !== "object") return [];
+
+  for (const key of ["items", "results", "gifts", "collections", "data"]) {
+    const value = payload[key];
+    if (Array.isArray(value)) return value;
+    if (value && typeof value === "object") {
+      const inner = extractRecords(value);
+      if (inner.length) return inner;
+    }
+  }
+  return [];
 }
-​async function apiGet(path, params = {}) {
-const query = new URLSearchParams(params).toString();
-const url = ${CONFIG.API_BASE}${path}${query ? "?" + query : ""};
-const controller = new AbortController();
-const timeoutId = setTimeout(() => controller.abort(), CONFIG.FETCH_TIMEOUT_MS);
-try {
-const res = await fetch(url, { cache: "no-store", signal: controller.signal });
-clearTimeout(timeoutId);
-if (!res.ok) throw new Error(HTTP ${res.status});
-return await res.json();
-} catch (err) {
-clearTimeout(timeoutId);
-throw err;
+
+function getNextCursor(payload, current) {
+  if (!payload || typeof payload !== "object") return null;
+
+  const candidates = [
+    payload.next_cursor, payload.next, payload.next_page, payload.cursor,
+    payload.pagination && payload.pagination.next_cursor,
+    payload.pagination && payload.pagination.next,
+    payload.page_info && payload.page_info.next_cursor,
+    payload.page_info && payload.page_info.end_cursor,
+  ];
+
+  for (const value of candidates) {
+    if (value === null || value === undefined || value === false || value === "") continue;
+    if (typeof value === "string" || typeof value === "number") {
+      if (String(value) !== String(current || "")) return String(value);
+    }
+  }
+  return null;
 }
+
+function fetchGiftsPage(cursor) {
+  const params = { limit: CONFIG.LIMIT };
+  if (cursor) params.cursor = cursor;
+  return apiGet("/gifts", params);
 }
-​function extractRecords(payload) {
-if (Array.isArray(payload)) return payload;
-if (!payload || typeof payload !== "object") return [];
-for (const key of ["items", "results", "gifts", "collections", "data"]) {
-const val = payload[key];
-if (Array.isArray(val)) return val;
-if (val && typeof val === "object") {
-const inner = extractRecords(val);
-if (inner.length) return inner;
+
+/* ===================== کالکشن‌ها ===================== */
+function nameKey(name) {
+  return String(name || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
 }
+
+// ✅ حالا بولین برمی‌گرداند: true اگر تغییر کرد
+async function loadCollections() {
+  const payload = await apiGet("/collections");
+  const list = extractRecords(payload).filter(c => c && c.address && c.name);
+  const fresh = list.sort((a, b) => a.name.localeCompare(b.name));
+
+  const same =
+    fresh.length === collections.length &&
+    fresh.every((c, i) =>
+      c.address === collections[i]?.address && c.name === collections[i]?.name
+    );
+
+  if (same) return false;
+
+  collections = fresh;
+  collectionByAddress = new Map(collections.map(c => [c.address, c]));
+  collectionByKey = new Map(collections.map(c => [nameKey(c.name), c]));
+
+  fillCollectionSelect();
+  return true;
 }
-return [];
+
+function fillCollectionSelect() {
+  const current = el.collection.value;
+  el.collection.innerHTML = '<option value="">همه کالکشن‌ها</option>';
+
+  collections.forEach(collection => {
+    const option = document.createElement("option");
+    option.value = collection.address;
+    option.textContent = collection.name;
+    el.collection.appendChild(option);
+  });
+
+  el.collection.value = current;
 }
-​function getNextCursor(payload, current) {
-if (!payload || typeof payload !== "object") return null;
-const cands = [payload.next_cursor, payload.next, payload.cursor, payload.pagination?.next_cursor, payload.page_info?.end_cursor];
-for (const v of cands) {
-if (v && String(v) !== String(current || "")) return String(v);
+
+function fillBackdropSelect() {
+  const counts = new Map();
+
+  giftMap.forEach(gift => {
+    if (!gift._backdrop) return;
+    counts.set(gift._backdrop, (counts.get(gift._backdrop) || 0) + 1);
+  });
+
+  const current = el.backdrop.value;
+  el.backdrop.innerHTML = '<option value="">همه رنگ‌ها</option>';
+
+  [...counts.entries()]
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .forEach(([name, count]) => {
+      const option = document.createElement("option");
+      option.value = name;
+      option.textContent = `${name} (${count.toLocaleString("fa-IR")})`;
+      el.backdrop.appendChild(option);
+    });
+
+  el.backdrop.value = counts.has(current) ? current : "";
 }
-return null;
+
+// ✅ گارد برای key خالی: قبلاً هر گیفت به اولین کالکشن می‌چسبید
+function resolveCollection(gift) {
+  const address =
+    gift.collection_address ||
+    (gift.collection && (gift.collection.address || gift.collection.collection_address));
+
+  let found = address ? collectionByAddress.get(address) : null;
+
+  if (!found) {
+    const baseName = getGiftBaseName(gift);
+    const key = nameKey(baseName);
+
+    if (key) {
+      found = collectionByKey.get(key);
+
+      if (!found) {
+        for (const [colKey, colObj] of collectionByKey.entries()) {
+          if (colKey.includes(key) || key.includes(colKey)) {
+            found = colObj;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  gift.collection_name = found ? found.name : getGiftBaseName(gift);
+  gift.collection_address = found ? found.address : "";
 }
-​function showToast(text) {
-el.toast.textContent = text;
-el.toast.classList.add("show");
-setTimeout(() => el.toast.classList.remove("show"), 3500);
+
+function prepareGift(gift, previous, isNew) {
+  resolveCollection(gift);
+  gift._searchText = buildSearchText(gift);
+  gift._backdrop = getBackdrop(gift);
+
+  if (previous && previous._newUntil) gift._newUntil = previous._newUntil;
+  if (isNew) gift._newUntil = Date.now() + CONFIG.NEW_BADGE_MS;
+  return gift;
 }
-​function showStaticImage(gift) {
-const images = imageSources.get(gift.nft_address) || getImageCandidates(gift);
-if (!images.length) {
-el.modalStage.innerHTML = <span style="color:var(--muted);font-size:12px;">تصویر موجود نیست</span>;
-return;
+
+function buildSearchText(gift) {
+  return normalizeText([
+    gift.nft_name, gift.nft_address, gift.collection_name,
+    ...Object.entries(getAttributes(gift)).flat()
+  ].join(" "));
 }
-el.modalStage.innerHTML = <img alt="" referrerpolicy="no-referrer">;
-const img = el.modalStage.querySelector("img");
-let idx = 0;
-const tryNext = () => {
-if (idx >= images.length) { img.remove(); return; }
-img.setAttribute("src", images[idx++]);
-};
-img.addEventListener("error", tryNext);
-tryNext();
+
+/* ===================== همگام‌سازی ===================== */
+async function fullSync(initial = false) {
+  if (syncing) return;
+  syncing = true;
+
+  try {
+    const fresh = new Map();
+    const seenCursors = new Set();
+    let cursor = null;
+
+    for (let page = 0; page < CONFIG.MAX_PAGES; page++) {
+      const payload = await fetchGiftsPage(cursor);
+      const records = extractRecords(payload);
+      if (!records.length) break;
+
+      records.forEach(gift => {
+        if (!gift || !gift.nft_address) return;
+        const old = giftMap.get(gift.nft_address);
+        fresh.set(
+          gift.nft_address,
+          prepareGift(gift, old, !initial && !old)
+        );
+      });
+
+      // ✅ فقط در حالت initial داخل حلقه رندر می‌کنیم (برای UX بهتر)
+      if (initial) {
+        giftMap = new Map(fresh);
+        refresh();
+      }
+
+      const next = getNextCursor(payload, cursor);
+      if (!next || seenCursors.has(next)) break;
+
+      seenCursors.add(next);
+      cursor = next;
+    }
+
+    const addedCount = [...fresh.keys()].filter(k => !giftMap.has(k)).length;
+    const removedCount = [...giftMap.keys()].filter(k => !fresh.has(k)).length;
+
+    giftMap = fresh;
+
+    // ✅ پاکسازی کش تصاویر حذف‌شده‌ها (جلوگیری از memory leak)
+    for (const key of imageSources.keys()) {
+      if (!fresh.has(key)) imageSources.delete(key);
+    }
+
+    if (initial || addedCount || removedCount) refresh();
+
+    if (!initial && addedCount) {
+      showToast(`${addedCount.toLocaleString("fa-IR")} گیفت جدید اضافه شد`);
+    }
+  } catch (error) {
+    console.error("fullSync:", error);
+    if (initial && giftMap.size === 0) showError(error);
+  } finally {
+    syncing = false;
+  }
 }
-​function openModal(address) {
-const gift = giftMap.get(address);
-if (!gift) return;
-el.modalTitle.textContent = gift.nft_name || "Gift";
-el.modalCollection.textContent = کالکشن: ${gift.collection_name || "---"};
-el.modalTraits.innerHTML = Object.entries(getAttributes(gift)).map(([k, v]) => <span class="trait">${escapeHtml(k)}: ${escapeHtml(v)}</span>).join("");
-el.modalPrice.textContent = formatToman(getPriceToman(gift));
-el.modalFee.textContent = formatFeeNote();
-el.modalDuration.textContent = مدت اجاره: ${formatDuration(gift)};
-el.modalTgLink.href = getTelegramUrl(gift);
-currentGift = gift;
-const b = getDayBounds(gift);
-el.calcDays.value = b.minDays;
-updateCalc(true);
-el.modal.classList.add("open");
-document.body.classList.add("modal-open");
-showStaticImage(gift);
+
+async function fastPoll() {
+  if (syncing || document.hidden || giftMap.size === 0) return;
+
+  try {
+    const payload = await fetchGiftsPage(null);
+    const records = extractRecords(payload);
+
+    let added = 0;
+    records.forEach(gift => {
+      if (!gift || !gift.nft_address || giftMap.has(gift.nft_address)) return;
+      giftMap.set(gift.nft_address, prepareGift(gift, null, true));
+      added++;
+    });
+
+    if (added) {
+      refresh();
+      showToast(`${added.toLocaleString("fa-IR")} گیفت جدید اضافه شد`);
+    }
+  } catch (error) {
+    console.error("fastPoll:", error);
+  }
 }
-​function closeModal() {
-el.modal.classList.remove("open");
-document.body.classList.remove("modal-open");
-currentGift = null;
-el.modalStage.innerHTML = "";
+
+/* ===================== فیلتر و مرتب‌سازی ===================== */
+function applyFilters() {
+  const query = normalizeText(el.search.value);
+  const collectionAddress = el.collection.value;
+  const backdrop = el.backdrop.value;
+
+  filteredGifts = [...giftMap.values()].filter(gift => {
+    if (query && !gift._searchText.includes(query)) return false;
+    if (collectionAddress && gift.collection_address !== collectionAddress) return false;
+    if (backdrop && gift._backdrop !== backdrop) return false;
+    return true;
+  });
+
+  sortGifts();
 }
-​function nameKey(name) { return String(name || "").toLowerCase().replace(/[^a-z]/g, ""); }
-function candidateKeys(baseName) {
-const key = nameKey(baseName);
-const keys = [key, key + "s", key + "es"];
-if (key.endsWith("y")) keys.push(key.slice(0, -1) + "ies");
-return keys;
+
+function sortGifts() {
+  const mode = el.sort.value;
+
+  const cmp = (key, dir) => (a, b) => {
+    const x = toNumber(a[key]);
+    const y = toNumber(b[key]);
+    if (x === null && y === null) return 0;
+    if (x === null) return 1;
+    if (y === null) return -1;
+    return dir === "asc" ? x - y : y - x;
+  };
+
+  const sorters = {
+    "newest": cmp("listed_at", "desc"),
+    "oldest": cmp("listed_at", "asc"),
+    "price-asc": (a, b) => (getPriceToman(a) ?? Infinity) - (getPriceToman(b) ?? Infinity),
+    "price-desc": (a, b) => (getPriceToman(b) ?? -Infinity) - (getPriceToman(a) ?? -Infinity),
+    "duration-asc": cmp("max_duration", "asc"),
+    "duration-desc": cmp("max_duration", "desc"),
+    "number-asc": (a, b) => (getGiftNumber(a) ?? Infinity) - (getGiftNumber(b) ?? Infinity),
+    "number-desc": (a, b) => (getGiftNumber(b) ?? -Infinity) - (getGiftNumber(a) ?? -Infinity),
+  };
+
+  filteredGifts.sort(sorters[mode] || sorters.newest);
+
+  if (mode === "newest") {
+    const now = Date.now();
+    filteredGifts.sort((a, b) =>
+      (b._newUntil > now ? 1 : 0) - (a._newUntil > now ? 1 : 0)
+    );
+  }
 }
-​async function loadCollections() {
-try {
-const payload = await apiGet("/collections");
-collections = extractRecords(payload).filter(c => c && c.address && c.name).sort((a, b) => a.name.localeCompare(b.name));
-collectionByAddress = new Map(collections.map(c => [c.address, c]));
-collectionByKey = new Map(collections.map(c => [nameKey(c.name), c]));
-​el.collection.innerHTML = '<option value="">همه کالکشن‌ها</option>';
-collections.forEach(c => {
-const opt = document.createElement("option");
-opt.value = c.address;
-opt.textContent = c.name;
-el.collection.appendChild(opt);
-});
-} catch (e) {}
+
+/* ===================== رندر ===================== */
+function createCard(gift) {
+  const name = escapeHtml(gift.nft_name || "Gift");
+  const number = getGiftNumber(gift);
+  const isNew = gift._newUntil && gift._newUntil > Date.now();
+
+  const traits = Object.entries(getAttributes(gift))
+    .map(([k, v]) => `<span class="trait">${escapeHtml(k)}: ${escapeHtml(v)}</span>`)
+    .join("");
+
+  const toman = getPriceToman(gift);
+
+  const images = getImageCandidates(gift);
+  if (images.length) imageSources.set(gift.nft_address, images);
+
+  const imageHtml = images.length
+    ? `<img class="gift-img" data-gift="${escapeHtml(gift.nft_address)}" alt="${name}" loading="lazy" decoding="async" referrerpolicy="no-referrer">`
+    : "";
+
+  return `<article class="card ${isNew ? "is-new" : ""}">
+    <div class="image-wrap">
+      <div class="image-placeholder">تصویر گیفت</div>
+      ${imageHtml}
+      ${number !== null ? `<span class="gift-number">#${number}</span>` : ""}
+      ${isNew ? `<span class="new-badge">جدید</span>` : ""}
+    </div>
+
+    <div class="card-body">
+      <h3 class="gift-name" title="${name}">${name}</h3>
+      <span class="collection-tag">${escapeHtml(gift.collection_name || "بدون مجموعه")}</span>
+      <div class="traits">${traits}</div>
+
+      <div class="card-info">
+        <div>
+          <div class="price-label">اجاره روزانه</div>
+          <div class="price-value">${formatToman(toman)}</div>
+          <div class="telegram-fee">${formatFeeNote()}</div>
+        </div>
+        <div class="duration">
+          حداکثر مدت اجاره
+          ${escapeHtml(formatDuration(gift.max_duration))}
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn btn-rent" type="button"
+          data-view="${escapeHtml(gift.nft_address)}">مشاهده و اجاره</button>
+      </div>
+    </div>
+  </article>`;
 }
-​function fillBackdropSelect() {
-const counts = new Map();
-giftMap.forEach(g => { if (g._backdrop) counts.set(g._backdrop, (counts.get(g._backdrop) || 0) + 1); });
-const cur = el.backdrop.value;
-el.backdrop.innerHTML = '<option value="">همه رنگ‌ها</option>';
-[...counts.entries()].sort((a, b) => a[0].localeCompare(b[0])).forEach(([name, count]) => {
-const opt = document.createElement("option");
-opt.value = name;
-opt.textContent = ${name} (${count.toLocaleString("fa-IR")});
-el.backdrop.appendChild(opt);
-});
-el.backdrop.value = counts.has(cur) ? cur : "";
+
+function hydrateImages(root = document) {
+  root.querySelectorAll("img.gift-img[data-gift]").forEach(img => {
+    if (img.getAttribute("src")) return;
+    const urls = imageSources.get(img.dataset.gift);
+    if (urls && urls.length) {
+      img.dataset.idx = "0";
+      img.setAttribute("src", urls[0]);
+    }
+  });
 }
-​function resolveCollection(gift) {
-const addr = gift.collection_address || gift.collection?.address;
-let found = addr ? collectionByAddress.get(addr) : null;
-if (!found) {
-for (const k of candidateKeys(getGiftBaseName(gift))) {
-if (collectionByKey.has(k)) { found = collectionByKey.get(k); break; }
+
+function getRentUrl(gift, days = null, total = null) {
+  let message =
+    `سلام، می‌خواهم گیفت ${gift.nft_name || "Gift"} را اجاره کنم.\n` +
+    `کالکشن: ${gift.collection_name || ""}`;
+
+  if (days !== null && total !== null) {
+    message +=
+      `\nمدت اجاره: ${days.toLocaleString("fa-IR")} روز` +
+      `\nمبلغ نهایی: ${formatToman(total)} (با کارمزد تلگرام)`;
+  }
+
+  return `https://t.me/${CONFIG.TELEGRAM_USERNAME}?text=${encodeURIComponent(message)}`;
 }
+
+/* ===================== ماشین حساب اجاره ===================== */
+function getMaxDays(gift) {
+  const seconds = toNumber(gift.max_duration);
+  if (seconds === null || seconds <= 0) return null;
+  return Math.max(1, Math.floor(seconds / 86400));
 }
-gift.collection_name = found ? found.name : (getGiftBaseName(gift) || "نامشخص");
-gift.collection_address = found ? found.address : "";
+
+function clampDays(value, max) {
+  let days = Math.floor(Number(value));
+  if (!Number.isFinite(days) || days < 1) days = 1;
+  if (max && days > max) days = max;
+  return days;
 }
-​function prepareGift(gift, prev, isNew) {
-if (!gift) return null;
-resolveCollection(gift);
-gift._searchText = normalizeText([gift.nft_name, gift.nft_address, gift.collection_name, ...Object.values(getAttributes(gift))].join(" "));
-gift._backdrop = getBackdrop(gift);
-if (prev?._newUntil) gift._newUntil = prev._newUntil;
-if (isNew) gift._newUntil = Date.now() + CONFIG.NEW_BADGE_MS;
-return gift;
+
+function updateCalc(normalize = false) {
+  if (!currentGift) return;
+
+  const max = getMaxDays(currentGift);
+  const days = clampDays(el.calcDays.value, max);
+
+  const typed = el.calcDays.value;
+  if (normalize || (typed !== "" && Number(typed) !== days)) {
+    el.calcDays.value = days;
+  }
+
+  // ✅ removeAttribute جای set به ""
+  if (max) el.calcDays.max = max;
+  else el.calcDays.removeAttribute("max");
+
+  el.calcHint.textContent = max
+    ? `حداکثر ${max.toLocaleString("fa-IR")} روز قابل اجاره است`
+    : "";
+
+  const daily = getPriceToman(currentGift);
+  const fee = CONFIG.TELEGRAM_FEE_TOMAN;
+
+  if (daily === null) {
+    el.calcRentLabel.textContent = "اجاره";
+    el.calcRent.textContent = "نامشخص";
+    el.calcFee.textContent = formatToman(fee);
+    el.calcTotal.textContent = "نامشخص";
+    el.modalRentLink.href = getRentUrl(currentGift);
+    return;
+  }
+
+  const rent = daily * days;
+  const total = rent + fee;
+
+  el.calcRentLabel.textContent =
+    `اجاره (${days.toLocaleString("fa-IR")} روز × ${daily.toLocaleString("fa-IR")})`;
+  el.calcRent.textContent = formatToman(rent);
+  el.calcFee.textContent = formatToman(fee);
+  el.calcTotal.textContent = formatToman(total);
+
+  el.modalRentLink.href = getRentUrl(currentGift, days, total);
 }
-​async function fullSync(initial = false) {
-if (syncing) return;
-syncing = true;
-try {
-let cursor = null;
-const seen = new Set();
-let loadedAny = false;
-​for (let page = 0; page < CONFIG.MAX_PAGES; page++) {
-try {
-const payload = await apiGet("/gifts", { limit: CONFIG.LIMIT, ...(cursor ? { cursor } : {}) });
-const records = extractRecords(payload);
-if (!records.length) break;
-​records.forEach(g => {
-if (!g) return;
-g.nft_address = g.nft_address || g.address;
-if (!g.nft_address) return;
-const old = giftMap.get(g.nft_address);
-const prep = prepareGift(g, old, !initial && !old);
-if (prep) {
-giftMap.set(g.nft_address, prep);
-loadedAny = true;
+
+function stepDays(delta) {
+  const max = getMaxDays(currentGift || {});
+  el.calcDays.value = clampDays(
+    (Number(el.calcDays.value) || 1) + delta,
+    max
+  );
+  updateCalc(true);
 }
-});
-​if (initial || loadedAny) refresh();
-​const next = getNextCursor(payload, cursor);
-if (!next || seen.has(next)) break;
-seen.add(next);
-cursor = next;
-​await new Promise(r => setTimeout(r, 50));
-} catch (err) {
-console.warn("Page fetch error:", err);
-break;
+
+function updateShowingText() {
+  el.showing.textContent = filteredGifts.length
+    ? `${visibleCount.toLocaleString("fa-IR")} از ${filteredGifts.length.toLocaleString("fa-IR")} گیفت`
+    : "بدون نتیجه";
 }
+
+function renderGifts(count) {
+  if (filteredGifts.length === 0) {
+    el.grid.innerHTML = `
+      <div class="empty">
+        <strong>گیفتی پیدا نشد!</strong>
+        <p>عبارت جست‌وجو، کالکشن یا رنگ بک‌گراند را تغییر بده.</p>
+      </div>`;
+    visibleCount = 0;
+    updateShowingText();
+    return;
+  }
+
+  const target = Math.min(Math.max(count, CONFIG.PAGE_SIZE), filteredGifts.length);
+  el.grid.innerHTML = filteredGifts.slice(0, target).map(createCard).join("");
+  visibleCount = target;
+  hydrateImages(el.grid);
+  updateShowingText();
 }
-​if (giftMap.size === 0) {
-throw new Error("سرور پاسخی نداد یا لیست گیفت‌ها خالی است.");
+
+function renderMore() {
+  if (visibleCount >= filteredGifts.length) return;
+
+  const next = filteredGifts.slice(visibleCount, visibleCount + CONFIG.PAGE_SIZE);
+  el.grid.insertAdjacentHTML("beforeend", next.map(createCard).join(""));
+  visibleCount += next.length;
+  hydrateImages(el.grid);
+  updateShowingText();
 }
-} catch (e) {
-if (initial && giftMap.size === 0) {
-el.grid.innerHTML =  <div class="error"> <strong>خطا در ارتباط با سرور (یا مسدود شدن CORS)</strong> <p>${escapeHtml(e.message)}</p> <button type="button" onclick="start()">تلاش مجدد</button> </div>;
-el.showing.textContent = "خطا در اتصال";
+
+function refresh() {
+  fillBackdropSelect();
+  applyFilters();
+  renderGifts(visibleCount || CONFIG.PAGE_SIZE);
 }
-} finally {
-syncing = false;
-refresh();
+
+function refreshFromStart() {
+  applyFilters();
+  renderGifts(CONFIG.PAGE_SIZE);
 }
+
+function showError(error) {
+  el.grid.innerHTML = `
+    <div class="error">
+      <strong>دریافت اطلاعات با مشکل مواجه شد.</strong>
+      <p>${escapeHtml(error.message)}</p>
+      <p>آدرس Worker در تنظیمات (API_BASE) و توکن را بررسی کن.</p>
+    </div>`;
+  el.showing.textContent = "خطا در دریافت اطلاعات";
 }
-​async function fastPoll() {
-if (syncing || document.hidden || giftMap.size === 0) return;
-try {
-const payload = await apiGet("/gifts", { limit: CONFIG.LIMIT });
-let added = 0;
-extractRecords(payload).forEach(g => {
-if (!g) return;
-g.nft_address = g.nft_address || g.address;
-if (!g.nft_address || giftMap.has(g.nft_address)) return;
-const prep = prepareGift(g, null, true);
-if (prep) { giftMap.set(g.nft_address, prep); added++; }
-});
-if (added) { refresh(); showToast(${added} گیفت جدید اضافه شد); }
-} catch (e) {}
+
+let toastTimer;
+function showToast(text) {
+  el.toast.textContent = text;
+  el.toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.toast.classList.remove("show"), 3500);
 }
-​function applyFilters() {
-const q = normalizeText(el.search.value);
-const col = el.collection.value;
-const back = el.backdrop.value;
-​filteredGifts = [...giftMap.values()].filter(g => {
-if (!g) return false;
-if (q && !g._searchText.includes(q)) return false;
-if (col && g.collection_address !== col) return false;
-if (back && g._backdrop !== back) return false;
-return true;
-});
-​const mode = el.sort.value;
-const cmp = (k, dir) => (a, b) => {
-const x = toNumber(a[k]), y = toNumber(b[k]);
-if (x === null && y === null) return 0;
-if (x === null) return 1; if (y === null) return -1;
-return dir === "asc" ? x - y : y - x;
-};
-​const sorters = {
-"newest": cmp("listed_at", "desc"),
-"oldest": cmp("listed_at", "asc"),
-"price-asc": (a, b) => (getPriceToman(a) ?? Infinity) - (getPriceToman(b) ?? Infinity),
-"price-desc": (a, b) => (getPriceToman(b) ?? -Infinity) - (getPriceToman(a) ?? -Infinity),
-"duration-asc": cmp("max_duration", "asc"),
-"duration-desc": cmp("max_duration", "desc"),
-"number-asc": (a, b) => (getGiftNumber(a) ?? Infinity) - (getGiftNumber(b) ?? Infinity),
-"number-desc": (a, b) => (getGiftNumber(b) ?? -Infinity) - (getGiftNumber(a) ?? -Infinity),
-};
-​filteredGifts.sort(sorters[mode] || sorters.newest);
+
+/* ===================== مودال و انیمیشن ===================== */
+function destroyAnimation() {
+  if (lottieInstance) {
+    lottieInstance.destroy();
+    lottieInstance = null;
+  }
+  el.modalStage.innerHTML = "";
 }
-​function createCard(gift) {
-const name = escapeHtml(gift.nft_name || "Gift");
-const num = getGiftNumber(gift);
-const traits = Object.entries(getAttributes(gift)).map(([k, v]) => <span class="trait">${escapeHtml(k)}: ${escapeHtml(v)}</span>).join("");
-const images = getImageCandidates(gift);
-if (images.length) imageSources.set(gift.nft_address, images);
-​return <article class="card"> <div class="image-wrap"> <div class="image-placeholder">تصویر گیفت</div> ${images.length ?<img class="gift-img" data-gift="${escapeHtml(gift.nft_address)}" alt="" loading="lazy" referrerpolicy="no-referrer">: ""} ${num !== null ?<span class="gift-number">#${num}</span> : ""} </div> <div class="card-body"> <h3 class="gift-name" title="${name}">${name}</h3> <span class="collection-tag">${escapeHtml(gift.collection_name)}</span> <div class="traits">${traits}</div> <div class="card-info"> <div> <div class="price-label">اجاره روزانه</div> <div class="price-value">${formatToman(getPriceToman(gift))}</div> <div class="telegram-fee">${formatFeeNote()}</div> </div> <div class="duration">مدت اجاره<br>${escapeHtml(formatDuration(gift))}</div> </div> <div class="card-actions"> <button class="btn btn-rent" type="button" data-view="${escapeHtml(gift.nft_address)}">مشاهده و اجاره</button> </div> </div> </article>;
+
+function showStaticImage(gift) {
+  const images = imageSources.get(gift.nft_address) || getImageCandidates(gift);
+
+  if (!images.length) {
+    el.modalStage.innerHTML = `<span class="stage-msg">پیش‌نمایش در دسترس نیست</span>`;
+    return;
+  }
+
+  el.modalStage.innerHTML = `<img alt="${escapeHtml(gift.nft_name || "")}" referrerpolicy="no-referrer">`;
+
+  const img = el.modalStage.querySelector("img");
+  let index = 0;
+
+  const tryNext = () => {
+    if (index >= images.length) {
+      img.remove();
+      el.modalStage.innerHTML = `<span class="stage-msg">پیش‌نمایش در دسترس نیست</span>`;
+      return;
+    }
+    img.setAttribute("src", images[index++]);
+  };
+
+  img.addEventListener("error", tryNext);
+  tryNext();
 }
-​function hydrateImages(root = document) {
-root.querySelectorAll("img.gift-img[data-gift]").forEach(img => {
-if (img.getAttribute("src")) return;
-const urls = imageSources.get(img.dataset.gift);
-if (urls?.length) img.setAttribute("src", urls[0]);
-});
+
+function playAnimation(gift) {
+  const candidates = getAnimationCandidates(gift);
+
+  if (!candidates.length || typeof lottie === "undefined") {
+    showStaticImage(gift);
+    return;
+  }
+
+  el.modalStage.innerHTML = `<span class="stage-msg">در حال بارگذاری انیمیشن...</span>`;
+
+  const container = document.createElement("div");
+  container.className = "anim";
+
+  let index = 0;
+
+  const tryLoad = () => {
+    if (index >= candidates.length) {
+      destroyAnimation();
+      showStaticImage(gift);
+      return;
+    }
+
+    if (lottieInstance) lottieInstance.destroy();
+    container.innerHTML = "";
+
+    lottieInstance = lottie.loadAnimation({
+      container,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+      path: candidates[index++],
+    });
+
+    lottieInstance.addEventListener("DOMLoaded", () => {
+      el.modalStage.innerHTML = "";
+      el.modalStage.appendChild(container);
+    });
+
+    lottieInstance.addEventListener("data_failed", tryLoad);
+  };
+
+  tryLoad();
 }
-​function renderGifts(count) {
-if (!filteredGifts.length) {
-if (giftMap.size === 0) return; // در حال بارگذاری اولیه
-el.grid.innerHTML = <div class="empty"><strong>گیفتی پیدا نشد!</strong></div>;
-visibleCount = 0;
-el.showing.textContent = "بدون نتیجه";
-return;
+
+function openModal(address) {
+  const gift = giftMap.get(address);
+  if (!gift) return;
+
+  destroyAnimation();
+
+  lastFocused = document.activeElement;
+
+  el.modalTitle.textContent = gift.nft_name || "Gift";
+  el.modalCollection.textContent = `کالکشن: ${gift.collection_name || "---"}`;
+
+  el.modalTraits.innerHTML = Object.entries(getAttributes(gift))
+    .map(([k, v]) => `<span class="trait">${escapeHtml(k)}: ${escapeHtml(v)}</span>`)
+    .join("");
+
+  el.modalPrice.textContent = formatToman(getPriceToman(gift));
+  el.modalFee.textContent = formatFeeNote();
+  el.modalDuration.textContent = `حداکثر مدت اجاره: ${formatDuration(gift.max_duration)}`;
+
+  el.modalTgLink.href = getTelegramUrl(gift);
+
+  currentGift = gift;
+  el.calcDays.value = 1;
+  updateCalc(true);
+
+  el.modal.classList.add("open");
+  el.modal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+
+  playAnimation(gift);
+
+  // ✅ فوکوس روی دکمه بستن برای دسترسی‌پذیری
+  requestAnimationFrame(() => $("modalClose").focus());
 }
-const target = Math.min(Math.max(count, CONFIG.PAGE_SIZE), filteredGifts.length);
-let html = "";
-for (let i = 0; i < target; i++) html += createCard(filteredGifts[i]);
-el.grid.innerHTML = html;
-visibleCount = target;
-hydrateImages(el.grid);
-el.showing.textContent = ${visibleCount.toLocaleString("fa-IR")} از ${filteredGifts.length.toLocaleString("fa-IR")} گیفت;
+
+function closeModal() {
+  if (!el.modal.classList.contains("open")) return;
+
+  el.modal.classList.remove("open");
+  el.modal.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("modal-open");
+  currentGift = null;
+  destroyAnimation();
+
+  // ✅ برگرداندن فوکوس به عنصر قبلی
+  if (lastFocused && typeof lastFocused.focus === "function") {
+    lastFocused.focus();
+  }
+  lastFocused = null;
 }
-​function renderMore() {
-if (visibleCount >= filteredGifts.length) return;
-const next = filteredGifts.slice(visibleCount, visibleCount + CONFIG.PAGE_SIZE);
-let html = "";
-next.forEach(g => html += createCard(g));
-el.grid.insertAdjacentHTML("beforeend", html);
-visibleCount += next.length;
-hydrateImages(el.grid);
-el.showing.textContent = ${visibleCount.toLocaleString("fa-IR")} از ${filteredGifts.length.toLocaleString("fa-IR")} گیفت;
+
+// ✅ Focus trap داخل مودال
+function trapFocus(event) {
+  if (event.key !== "Tab") return;
+
+  const focusable = el.modalBox.querySelectorAll(
+    'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  );
+  if (!focusable.length) return;
+
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+
+  if (event.shiftKey && document.activeElement === first) {
+    last.focus();
+    event.preventDefault();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    first.focus();
+    event.preventDefault();
+  }
 }
-​function refresh() {
-fillBackdropSelect();
-applyFilters();
-renderGifts(visibleCount || CONFIG.PAGE_SIZE);
-}
-​function refreshFromStart() {
-applyFilters();
-renderGifts(CONFIG.PAGE_SIZE);
-}
-​function clampDays(val, min, max) {
-let d = Math.floor(Number(val));
-if (!Number.isFinite(d) || d < min) d = min;
-if (max && d > max) d = max;
-return d;
-}
-​function updateCalc(normalize = false) {
-if (!currentGift) return;
-const b = getDayBounds(currentGift);
-const days = clampDays(el.calcDays.value, b.minDays, b.maxDays);
-if (normalize || Number(el.calcDays.value) !== days) el.calcDays.value = days;
-​el.calcDays.min = b.minDays;
-el.calcDays.max = b.maxDays || "";
-el.calcHint.textContent = b.maxDays ? مجاز بین ${b.minDays} تا ${b.maxDays} روز : حداقل ${b.minDays} روز;
-​const daily = getPriceToman(currentGift);
-const fee = CONFIG.TELEGRAM_FEE_TOMAN;
-if (daily === null) {
-el.calcRent.textContent = "نامشخص";
-el.calcTotal.textContent = "نامشخص";
-return;
-}
-const rent = daily * days;
-el.calcRentLabel.textContent = اجاره (${days} روز × ${daily.toLocaleString("fa-IR")});
-el.calcRent.textContent = formatToman(rent);
-el.calcFee.textContent = formatToman(fee);
-el.calcTotal.textContent = formatToman(rent + fee);
-​let msg = سلام، می‌خواهم گیفت ${currentGift.nft_name} را برای ${days} روز اجاره کنم. مبلغ نهایی: ${formatToman(rent + fee)};
-el.modalRentLink.href = https://t.me/${CONFIG.TELEGRAM_USERNAME}?text=${encodeURIComponent(msg)};
-}
-​// Events
+
+/* ===================== رویدادها ===================== */
+// ✅ debounce فقط برای جست‌وجو
 el.search.addEventListener("input", debounce(refreshFromStart, 200));
 el.sort.addEventListener("change", refreshFromStart);
 el.collection.addEventListener("change", refreshFromStart);
 el.backdrop.addEventListener("change", refreshFromStart);
-​el.calcDays.addEventListener("input", () => updateCalc(false));
-el.calcMinus.addEventListener("click", () => { el.calcDays.value = Number(el.calcDays.value) - 1; updateCalc(true); });
-el.calcPlus.addEventListener("click", () => { el.calcDays.value = Number(el.calcDays.value) + 1; updateCalc(true); });
-​el.grid.addEventListener("click", e => {
-const btn = e.target.closest("[data-view]");
-if (btn) openModal(btn.dataset.view);
+
+el.calcDays.addEventListener("input", () => updateCalc(false));
+el.calcDays.addEventListener("change", () => updateCalc(true));
+el.calcDays.addEventListener("blur", () => updateCalc(true));
+el.calcMinus.addEventListener("click", () => stepDays(-1));
+el.calcPlus.addEventListener("click", () => stepDays(1));
+
+el.grid.addEventListener("click", event => {
+  const viewBtn = event.target.closest("[data-view]");
+  if (viewBtn) openModal(viewBtn.dataset.view);
 });
-​$("modalClose").addEventListener("click", closeModal);
+
+$("modalClose").addEventListener("click", closeModal);
 el.modalBackBtn.addEventListener("click", closeModal);
-el.modal.addEventListener("click", e => { if (e.target === el.modal) closeModal(); });
-​window.addEventListener("scroll", () => {
-if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 600) renderMore();
+
+el.modal.addEventListener("click", event => {
+  if (event.target === el.modal) closeModal();
+});
+
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") closeModal();
+});
+
+el.modalBox.addEventListener("keydown", trapFocus);
+
+el.grid.addEventListener("error", event => {
+  const img = event.target;
+  if (!(img instanceof HTMLImageElement) || !img.classList.contains("gift-img")) return;
+
+  const urls = imageSources.get(img.dataset.gift) || [];
+  const nextIdx = parseInt(img.dataset.idx || "0", 10) + 1;
+
+  if (nextIdx < urls.length) {
+    img.dataset.idx = String(nextIdx);
+    img.setAttribute("src", urls[nextIdx]);
+  } else {
+    img.remove();
+  }
+}, true);
+
+// ✅ throttle با requestAnimationFrame برای اسکرول
+let scrollTicking = false;
+window.addEventListener("scroll", () => {
+  if (scrollTicking) return;
+  scrollTicking = true;
+
+  requestAnimationFrame(() => {
+    scrollTicking = false;
+
+    if (visibleCount >= filteredGifts.length) return;
+
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 600) {
+      renderMore();
+    }
+  });
 }, { passive: true });
-​async function start() {
-el.grid.innerHTML = <div class="loading">در حال ارتباط با سرور و بارگذاری گیفت‌ها...</div>;
-await loadCollections();
-await fullSync(true);
-setInterval(fastPoll, CONFIG.FAST_POLL_MS);
-setInterval(() => { if (!document.hidden) fullSync(false); }, CONFIG.FULL_SYNC_MS);
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) fastPoll();
+});
+
+/* ===================== شروع ===================== */
+async function start(retryCount = 0) {
+  try {
+    await loadCollections();
+  } catch (error) {
+    console.error("collections:", error);
+    showError(error);
+
+    // ✅ تلاش مجدد با backoff
+    if (retryCount < 3) {
+      const delay = 3000 * (retryCount + 1);
+      setTimeout(() => start(retryCount + 1), delay);
+    }
+    return;
+  }
+
+  await fullSync(true);
+
+  setInterval(fastPoll, CONFIG.FAST_POLL_MS);
+
+  setInterval(() => {
+    if (!document.hidden) fullSync(false);
+  }, CONFIG.FULL_SYNC_MS);
+
+  // ✅ فقط اگر کالکشن‌ها تغییر کرده باشند refresh می‌شود
+  setInterval(() => {
+    loadCollections()
+      .then(changed => { if (changed) refresh(); })
+      .catch(() => {});
+  }, 600000);
 }
-​start();
+
+start();
 </script>
+
 </body>
 </html>
