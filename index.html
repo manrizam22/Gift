@@ -495,11 +495,11 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
 </div>
 
 <!-- مودال فیلترها (کالکشن و رنگ) -->
-<div class="filter-modal" id="filterModal">
-  <div class="filter-box">
+<div class="filter-modal" id="filterModal" aria-hidden="true">
+  <div class="filter-box" role="dialog" aria-modal="true" aria-labelledby="filterHeaderTitle">
     <div class="filter-header">
-      <h2>فیلترها</h2>
-      <button class="filter-close" id="closeFilterModal">✕</button>
+      <h2 id="filterHeaderTitle">فیلترها</h2>
+      <button class="filter-close" id="closeFilterModal" aria-label="بستن">✕</button>
     </div>
     
     <div class="filter-search-box">
@@ -539,88 +539,35 @@ const CONFIG = {
 
 const FEE_NOTE_TEXT = `+ ${CONFIG.TELEGRAM_FEE_TOMAN.toLocaleString("fa-IR")} تومان کارمزد تلگرام به مبلغ کل اضافه می‌شود`;
 
-// ✅ نقشه رنگ دقیق و رسمی تلگرام (شامل رنگ‌های جدید)
+// ✅ نقشه رنگ دقیق و رسمی تلگرام
 const TELEGRAM_BACKDROP_COLORS = {
-  "amber": "#d9b245",
-  "aquamarine": "#60b196",
-  "azure blue": "#5cb0ca",
-  "battleship grey": "#8b8b84",
-  "black": "#353637",
-  "burgundy": "#a15d65",
-  "burnt sienna": "#d66f3c",
-  "camo green": "#74934c",
-  "cappuccino": "#b1907e",
-  "caramel": "#cf9832",
-  "carmine": "#df574a",
-  "carrot juice": "#da9666",
-  "celtic blue": "#45b7ed",
-  "chestnut": "#bd6e53",
-  "chocolate": "#a36d58",
-  "cobalt blue": "#6087ce",
-  "copper": "#cf8656",
-  "coral red": "#d9886a",
-  "cyberpunk": "#858df2",
-  "dark lilac": "#b07ca4",
-  "dark green": "#506341",
-  "deep cyan": "#30b4a9",
-  "desert sand": "#b29e81",
-  "electric indigo": "#a67ff2",
-  "electric purple": "#c970c7",
-  "emerald": "#77c585",
-  "english violet": "#af84b9",
-  "fandango": "#e189b5",
-  "feldgrau": "#889187",
-  "fire engine": "#ef5e4f",
-  "french blue": "#5b9ac3",
-  "french violet": "#c160e6",
-  "grape": "#9c73c0",
-  "gunmetal": "#4b5c62",
-  "gunship green": "#548964",
-  "hunter green": "#8dac77",
-  "indigo dye": "#537890",
-  "ivory white": "#bab6b0",
-  "jade green": "#54c39b",
-  "khaki green": "#abae6f",
-  "lavender": "#b688e3",
-  "lemongrass": "#acb85a",
-  "light olive": "#c1ae64",
-  "malachite": "#94b457",
-  "marine blue": "#4d679a",
-  "midnight blue": "#5b6884",
-  "mexican pink": "#e26591",
-  "mint green": "#7ecb82",
-  "moonstone": "#7db0b3",
-  "mystic pearl": "#d08a6d",
-  "mustard": "#d3970d",
-  "navy blue": "#6b9ddc",
-  "neon blue": "#7494f8",
-  "onyx black": "#4c5153",
-  "old gold": "#b58c38",
-  "orange": "#d0993a",
-  "pacific cyan": "#59bca6",
-  "pacific green": "#6dc692",
-  "persimmon": "#e6a55a",
-  "pine green": "#6aa87c",
-  "pistachio": "#96af7b",
-  "platinum": "#b0aca5",
-  "pure gold": "#cbaa40",
-  "ranger green": "#5f7849",
-  "rifle green": "#64695c",
-  "purple": "#ad6bad",
-  "raspberry": "#de7a85",
-  "roman silver": "#a3a8b5",
-  "rosewood": "#b67976",
-  "sapphire": "#58a3c8",
-  "seal brown": "#664d45",
-  "satin gold": "#be9b47",
-  "shamrock green": "#89b062",
-  "silver blue": "#7fa3b7",
-  "sky blue": "#58b2c8",
-  "steel grey": "#96a1ab",
-  "strawberry": "#dd8d6f",
-  "tactical pine": "#43816a",
-  "tomato": "#e74c3c",
-  "turquoise": "#5dbeb6"
+  "amber": "#d9b245", "aquamarine": "#60b196", "azure blue": "#5cb0ca",
+  "battleship grey": "#8b8b84", "black": "#353637", "burgundy": "#a15d65",
+  "burnt sienna": "#d66f3c", "camo green": "#74934c", "cappuccino": "#b1907e",
+  "caramel": "#cf9832", "carmine": "#df574a", "carrot juice": "#da9666",
+  "celtic blue": "#45b7ed", "chestnut": "#bd6e53", "chocolate": "#a36d58",
+  "cobalt blue": "#6087ce", "copper": "#cf8656", "coral red": "#d9886a",
+  "cyberpunk": "#858df2", "dark lilac": "#b07ca4", "dark green": "#506341",
+  "deep cyan": "#30b4a9", "desert sand": "#b29e81", "electric indigo": "#a67ff2",
+  "electric purple": "#c970c7", "emerald": "#77c585", "english violet": "#af84b9",
+  "fandango": "#e189b5", "feldgrau": "#889187", "fire engine": "#ef5e4f",
+  "french blue": "#5b9ac3", "french violet": "#c160e6", "grape": "#9c73c0",
+  "gunmetal": "#4b5c62", "gunship green": "#548964", "hunter green": "#8dac77",
+  "indigo dye": "#537890", "ivory white": "#bab6b0", "jade green": "#54c39b",
+  "khaki green": "#abae6f", "lavender": "#b688e3", "lemongrass": "#acb85a",
+  "light olive": "#c1ae64", "malachite": "#94b457", "marine blue": "#4d679a",
+  "midnight blue": "#5b6884", "mexican pink": "#e26591", "mint green": "#7ecb82",
+  "moonstone": "#7db0b3", "mystic pearl": "#d08a6d", "mustard": "#d3970d",
+  "navy blue": "#6b9ddc", "neon blue": "#7494f8", "onyx black": "#4c5153",
+  "old gold": "#b58c38", "orange": "#d0993a", "pacific cyan": "#59bca6",
+  "pacific green": "#6dc692", "persimmon": "#e6a55a", "pine green": "#6aa87c",
+  "pistachio": "#96af7b", "platinum": "#b0aca5", "pure gold": "#cbaa40",
+  "ranger green": "#5f7849", "rifle green": "#64695c", "purple": "#ad6bad",
+  "raspberry": "#de7a85", "roman silver": "#a3a8b5", "rosewood": "#b67976",
+  "sapphire": "#58a3c8", "seal brown": "#664d45", "satin gold": "#be9b47",
+  "shamrock green": "#89b062", "silver blue": "#7fa3b7", "sky blue": "#58b2c8",
+  "steel grey": "#96a1ab", "strawberry": "#dd8d6f", "tactical pine": "#43816a",
+  "tomato": "#e74c3c", "turquoise": "#5dbeb6"
 };
 
 /* ===================== وضعیت ===================== */
@@ -630,6 +577,7 @@ let collectionByAddress = new Map();
 let collectionByKey = new Map();
 
 const collectionImageCache = new Map();
+const backdropColorCache = new Map(); // ✅ کش برای رنگ‌ها جهت افزایش سرعت
 
 let filteredGifts = [];
 let visibleCount = 0;
@@ -751,17 +699,11 @@ function getBackdrop(gift) {
 function getBackdropColor(gift) {
   const attrs = getAttributes(gift);
   
-  if (attrs.center_color) {
-    return `#${Number(attrs.center_color).toString(16).padStart(6, '0')}`;
-  }
-  if (attrs.edge_color) {
-    return `#${Number(attrs.edge_color).toString(16).padStart(6, '0')}`;
-  }
+  if (attrs.center_color) return `#${Number(attrs.center_color).toString(16).padStart(6, '0')}`;
+  if (attrs.edge_color) return `#${Number(attrs.edge_color).toString(16).padStart(6, '0')}`;
 
   const name = getBackdrop(gift).toLowerCase().trim();
-  if (TELEGRAM_BACKDROP_COLORS[name]) {
-    return TELEGRAM_BACKDROP_COLORS[name];
-  }
+  if (TELEGRAM_BACKDROP_COLORS[name]) return TELEGRAM_BACKDROP_COLORS[name];
 
   return "#888888";
 }
@@ -938,6 +880,15 @@ function prepareGift(gift, previous, isNew) {
   gift._searchText = buildSearchText(gift);
   gift._backdrop = getBackdrop(gift);
   
+  // ✅ محاسبه و ذخیره قیمت و شماره برای افزایش سرعت مرتب‌سازی
+  gift._priceToman = getPriceToman(gift);
+  gift._number = getGiftNumber(gift);
+
+  // ✅ ذخیره رنگ در کش برای استفاده در فیلترها بدون افت سرعت
+  if (gift._backdrop && !backdropColorCache.has(gift._backdrop)) {
+      backdropColorCache.set(gift._backdrop, getBackdropColor(gift));
+  }
+
   if (gift.collection_address && !collectionImageCache.has(gift.collection_address)) {
     const images = getImageCandidates(gift);
     if (images.length) collectionImageCache.set(gift.collection_address, images[0]);
@@ -1090,6 +1041,8 @@ function updateFilterButtonTexts() {
 
 function sortGifts() {
   const mode = el.sort.value;
+  
+  // ✅ استفاده از مقادیر ذخیره‌شده (_priceToman و _number) برای سرعت بالاتر
   const cmp = (key, dir) => (a, b) => {
     const x = toNumber(a[key]), y = toNumber(b[key]);
     if (x === null && y === null) return 0;
@@ -1101,12 +1054,12 @@ function sortGifts() {
   const sorters = {
     "newest": cmp("listed_at", "desc"),
     "oldest": cmp("listed_at", "asc"),
-    "price-asc": (a, b) => (getPriceToman(a) ?? Infinity) - (getPriceToman(b) ?? Infinity),
-    "price-desc": (a, b) => (getPriceToman(b) ?? -Infinity) - (getPriceToman(a) ?? -Infinity),
+    "price-asc": (a, b) => (a._priceToman ?? Infinity) - (b._priceToman ?? Infinity),
+    "price-desc": (a, b) => (b._priceToman ?? -Infinity) - (a._priceToman ?? -Infinity),
     "duration-asc": cmp("max_duration", "asc"),
     "duration-desc": cmp("max_duration", "desc"),
-    "number-asc": (a, b) => (getGiftNumber(a) ?? Infinity) - (getGiftNumber(b) ?? Infinity),
-    "number-desc": (a, b) => (getGiftNumber(b) ?? -Infinity) - (getGiftNumber(a) ?? -Infinity),
+    "number-asc": (a, b) => (a._number ?? Infinity) - (b._number ?? Infinity),
+    "number-desc": (a, b) => (b._number ?? -Infinity) - (a._number ?? -Infinity),
   };
 
   filteredGifts.sort(sorters[mode] || sorters.newest);
@@ -1119,11 +1072,11 @@ function sortGifts() {
 
 function createCard(gift) {
   const name = escapeHtml(gift.nft_name || "Gift");
-  const number = getGiftNumber(gift);
+  const number = gift._number;
   const isNew = gift._newUntil && gift._newUntil > Date.now();
   const traits = Object.entries(getAttributes(gift))
     .map(([k, v]) => `<span class="trait">${escapeHtml(k)}: ${escapeHtml(v)}</span>`).join("");
-  const toman = getPriceToman(gift);
+  const toman = gift._priceToman;
   const images = getImageCandidates(gift);
 
   if (images.length) imageSources.set(gift.nft_address, images);
@@ -1204,7 +1157,7 @@ function updateCalc(normalize = false) {
   else el.calcDays.removeAttribute("max");
 
   el.calcHint.textContent = max ? `حداکثر ${max.toLocaleString("fa-IR")} روز قابل اجاره است` : "";
-  const daily = getPriceToman(currentGift);
+  const daily = currentGift._priceToman;
   const fee = CONFIG.TELEGRAM_FEE_TOMAN;
 
   if (daily === null) {
@@ -1359,7 +1312,7 @@ function openModal(address) {
   el.modalCollection.textContent = `کالکشن: ${gift.collection_name || "---"}`;
   el.modalTraits.innerHTML = Object.entries(getAttributes(gift))
     .map(([k, v]) => `<span class="trait">${escapeHtml(k)}: ${escapeHtml(v)}</span>`).join("");
-  el.modalPrice.textContent = formatToman(getPriceToman(gift));
+  el.modalPrice.textContent = formatToman(gift._priceToman);
   el.modalFee.textContent = FEE_NOTE_TEXT;
   el.modalDuration.textContent = `حداکثر مدت اجاره: ${formatDuration(gift.max_duration)}`;
   el.modalTgLink.href = getTelegramUrl(gift);
@@ -1394,6 +1347,17 @@ function trapFocus(event) {
   else if (!event.shiftKey && document.activeElement === last) { first.focus(); event.preventDefault(); }
 }
 
+// ✅ فوکوس‌ترپ برای مودال فیلترها
+function trapFilterFocus(event) {
+  if (event.key !== "Tab") return;
+  const focusable = el.filterModal.querySelectorAll('button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])');
+  if (!focusable.length) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (event.shiftKey && document.activeElement === first) { last.focus(); event.preventDefault(); }
+  else if (!event.shiftKey && document.activeElement === last) { first.focus(); event.preventDefault(); }
+}
+
 /* ===================== مودال فیلترها ===================== */
 function openFilterModal(type) {
   renderFilterContent();
@@ -1407,6 +1371,7 @@ function openFilterModal(type) {
   }
 
   el.filterModal.classList.add("open");
+  el.filterModal.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
   
   setTimeout(() => {
@@ -1418,6 +1383,7 @@ function openFilterModal(type) {
 
 function closeFilterModal() {
   el.filterModal.classList.remove("open");
+  el.filterModal.setAttribute("aria-hidden", "true");
   if (!el.modal.classList.contains("open")) {
     document.body.classList.remove("modal-open");
   }
@@ -1485,8 +1451,8 @@ function renderFilterContent() {
       filteredBackdrops.forEach(name => {
         const count = backCounts.get(name) || 0;
         const isChecked = selectedBackdrops.has(name) ? 'checked' : '';
-        const sampleGift = [...giftMap.values()].find(g => g._backdrop === name);
-        const color = sampleGift ? getBackdropColor(sampleGift) : "#888888";
+        // ✅ استفاده از کش برای رنگ‌ها (بسیار سریع‌تر)
+        const color = backdropColorCache.get(name) || "#888888";
         
         html += `
           <label class="filter-item">
@@ -1513,17 +1479,18 @@ function renderFilterContent() {
   el.filterContent.innerHTML = html;
 }
 
-function applyFilterModalChanges() {
-  selectedCollections.clear();
-  document.querySelectorAll('.col-checkbox:checked').forEach(cb => {
-    selectedCollections.add(cb.value);
-  });
-  
-  selectedBackdrops.clear();
-  document.querySelectorAll('.back-checkbox:checked').forEach(cb => {
-    selectedBackdrops.add(cb.value);
-  });
+// ✅ ذخیره آنی تیک‌ها و رفع مشکل از دست رفتن State
+el.filterContent.addEventListener("change", (e) => {
+  if (e.target.classList.contains('col-checkbox')) {
+    if (e.target.checked) selectedCollections.add(e.target.value);
+    else selectedCollections.delete(e.target.value);
+  } else if (e.target.classList.contains('back-checkbox')) {
+    if (e.target.checked) selectedBackdrops.add(e.target.value);
+    else selectedBackdrops.delete(e.target.value);
+  }
+});
 
+function applyFilterModalChanges() {
   closeFilterModal();
   refreshFromStart();
 }
@@ -1563,8 +1530,18 @@ el.grid.addEventListener("click", event => {
 $("modalClose").addEventListener("click", closeModal);
 el.modalBackBtn.addEventListener("click", closeModal);
 el.modal.addEventListener("click", event => { if (event.target === el.modal) closeModal(); });
-document.addEventListener("keydown", event => { if (event.key === "Escape") closeModal(); });
+document.addEventListener("keydown", event => { 
+    if (event.key === "Escape") {
+        closeModal();
+        closeFilterModal();
+    } 
+});
 el.modalBox.addEventListener("keydown", trapFocus);
+el.filterModal.addEventListener("keydown", trapFilterFocus);
+
+// ✅ بستن مودال بعد از کلیک روی لینک‌های تلگرام
+el.modalRentLink.addEventListener("click", closeModal);
+el.modalTgLink.addEventListener("click", closeModal);
 
 el.grid.addEventListener("error", event => {
   const img = event.target;
