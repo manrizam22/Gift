@@ -539,8 +539,7 @@ const CONFIG = {
 
 const FEE_NOTE_TEXT = `+ ${CONFIG.TELEGRAM_FEE_TOMAN.toLocaleString("fa-IR")} تومان کارمزد تلگرام به مبلغ کل اضافه می‌شود`;
 
-// ✅ نقشه رنگ دقیق و رسمی تلگرام (بر اساس get-color.com و مستندات API)
-// منبع: https://get-color.com/giftbackgrounds/ و https://core.telegram.org/constructor/starGiftAttributeBackdrop
+// ✅ نقشه رنگ دقیق و رسمی تلگرام (شامل رنگ‌های جدید)
 const TELEGRAM_BACKDROP_COLORS = {
   "amber": "#d9b245",
   "aquamarine": "#60b196",
@@ -617,7 +616,11 @@ const TELEGRAM_BACKDROP_COLORS = {
   "shamrock green": "#89b062",
   "silver blue": "#7fa3b7",
   "sky blue": "#58b2c8",
-  "tomato": "#e74c3c"
+  "steel grey": "#96a1ab",
+  "strawberry": "#dd8d6f",
+  "tactical pine": "#43816a",
+  "tomato": "#e74c3c",
+  "turquoise": "#5dbeb6"
 };
 
 /* ===================== وضعیت ===================== */
@@ -745,11 +748,9 @@ function getBackdrop(gift) {
   return String(attrs[key] ?? "").replace(/\s*(.*?)\s*$/, "$1").trim();
 }
 
-// ✅ دریافت رنگ دقیق: اولویت با داده مستقیم API، سپس نقشه رسمی تلگرام
 function getBackdropColor(gift) {
   const attrs = getAttributes(gift);
   
-  // ۱. اگر API مستقیماً رنگ مرکز یا لبه را برگرداند (طبق مستندات رسمی)
   if (attrs.center_color) {
     return `#${Number(attrs.center_color).toString(16).padStart(6, '0')}`;
   }
@@ -757,13 +758,11 @@ function getBackdropColor(gift) {
     return `#${Number(attrs.edge_color).toString(16).padStart(6, '0')}`;
   }
 
-  // ۲. جستجو در نقشه رنگ رسمی تلگرام
   const name = getBackdrop(gift).toLowerCase().trim();
   if (TELEGRAM_BACKDROP_COLORS[name]) {
     return TELEGRAM_BACKDROP_COLORS[name];
   }
 
-  // ۳. اگر هیچ‌کدام پیدا نشد، رنگ خنثی و ثابت (نه خاکستری، نه تصادفی)
   return "#888888";
 }
 
@@ -1486,7 +1485,6 @@ function renderFilterContent() {
       filteredBackdrops.forEach(name => {
         const count = backCounts.get(name) || 0;
         const isChecked = selectedBackdrops.has(name) ? 'checked' : '';
-        // برای نمایش در لیست، از یک نمونه گیفت با این رنگ استفاده می‌کنیم
         const sampleGift = [...giftMap.values()].find(g => g._backdrop === name);
         const color = sampleGift ? getBackdropColor(sampleGift) : "#888888";
         
