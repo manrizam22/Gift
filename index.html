@@ -539,7 +539,7 @@ const CONFIG = {
 
 const FEE_NOTE_TEXT = `+ ${CONFIG.TELEGRAM_FEE_TOMAN.toLocaleString("fa-IR")} تومان کارمزد تلگرام به مبلغ کل اضافه می‌شود`;
 
-// ✅ دیکشنری کامل رنگ‌های شناخته شده تلگرام
+// ✅ دیکشنری دقیق و کامل تمام رنگ‌های تلگرام
 const COLOR_MAP = {
   "tomato": "#e74c3c",
   "mustard": "#f1c40f",
@@ -577,7 +577,7 @@ const COLOR_MAP = {
   "gunship green": "#3e4b3e",
   "hunter green": "#355e3b",
   "indigo dye": "#00416a",
-  "ivory white": "#e4e4d0",
+  "ivory white": "#fffff0",
   "jade green": "#00a86b",
   "khaki green": "#8f9779",
   "lavender": "#b57edc",
@@ -585,11 +585,84 @@ const COLOR_MAP = {
   "midnight blue": "#191970",
   "mint green": "#98ff98",
   "moonstone": "#3aa8c1",
-  "mystic pearl": "#d5c9d6",
+  "mystic pearl": "#eae0c8",
   "navy blue": "#000080",
   "neon blue": "#1b03a3",
   "old gold": "#cfb53b",
   "onyx black": "#353839",
+  "pale brown": "#987654",
+  "pale violet": "#ccccff",
+  "pastel blue": "#aec6cf",
+  "pastel green": "#77dd77",
+  "pastel orange": "#ffb347",
+  "pastel pink": "#ffd1dc",
+  "pastel purple": "#b39eb5",
+  "pastel red": "#ff6961",
+  "pastel yellow": "#fdfd96",
+  "peach": "#ffe5b4",
+  "pearl": "#f0ead6",
+  "peridot": "#e6e200",
+  "persian blue": "#1c39bb",
+  "pewter": "#8e918f",
+  "pine green": "#01796f",
+  "pink": "#ffc0cb",
+  "platinum": "#e5e4e2",
+  "plum": "#8e4585",
+  "powder blue": "#b0e0e6",
+  "puce": "#cc8899",
+  "pumpkin": "#ff7518",
+  "purple": "#800080",
+  "quartz": "#a99a86",
+  "raspberry": "#e30b5c",
+  "red": "#ff0000",
+  "rose": "#ff007f",
+  "rose gold": "#b76e79",
+  "rosewood": "#65000b",
+  "ruby": "#e0115f",
+  "rust": "#b7410e",
+  "saffron": "#f4c430",
+  "sage": "#bcb88a",
+  "salmon": "#fa8072",
+  "sand": "#c2b280",
+  "sapphire": "#0f52ba",
+  "scarlet": "#ff2400",
+  "sea green": "#2e8b57",
+  "sepia": "#704214",
+  "shadow": "#8a795d",
+  "silver": "#c0c0c0",
+  "sky blue": "#87ceeb",
+  "slate blue": "#6a5acd",
+  "slate grey": "#708090",
+  "snow": "#fffafa",
+  "spring green": "#00ff7f",
+  "steel blue": "#4682b4",
+  "straw": "#e4d96f",
+  "sunset orange": "#fd5e53",
+  "tan": "#d2b48c",
+  "taupe": "#483c32",
+  "teal": "#008080",
+  "thistle": "#d8bfd8",
+  "tiffany blue": "#0abab5",
+  "tiger orange": "#f96815",
+  "timberwolf": "#dbd7d2",
+  "topaz": "#ffc87c",
+  "turquoise": "#40e0d0",
+  "ultramarine": "#3f00ff",
+  "umber": "#635147",
+  "verdigris": "#43b3ae",
+  "vermilion": "#e34234",
+  "violet": "#8f00ff",
+  "viridian": "#40826d",
+  "wheat": "#f5deb3",
+  "white": "#ffffff",
+  "wine": "#722f37",
+  "wisteria": "#c9a0dc",
+  "yellow": "#ffff00",
+  "zaffre": "#0014a8",
+  "orange": "#ffa500",
+  "green": "#008000",
+  "blue": "#0000ff",
+  "brown": "#a52a2a",
   "default": "#9b97b1"
 };
 
@@ -718,27 +791,31 @@ function getBackdrop(gift) {
   return String(attrs[key] ?? "").replace(/\s*(.*?)\s*$/, "$1").trim();
 }
 
-// ✅ سیستم هوشمند تولید رنگ: هیچ رنگی خاکستری نمیمونه!
+// ✅ تشخیص رنگ: دقیق، بدون حدس اشتباه
 function getBackdropColor(name) {
-  if (!name) return COLOR_MAP["default"];
+  if (!name) return "#9b97b1";
   const key = name.toLowerCase().trim();
 
-  // ۱. بررسی دیکشنری اختصاصی
+  // ۱. دیکشنری کامل تلگرام
   if (COLOR_MAP[key]) return COLOR_MAP[key];
 
-  // ۲. بررسی رنگ‌های استاندارد CSS (با حذف فاصله‌ها)
-  const noSpaceKey = key.replace(/\s+/g, '');
+  // ۲. تلاش برای تجزیه در CSS
   const temp = document.createElement('div');
-  temp.style.color = noSpaceKey;
-  if (temp.style.color) return noSpaceKey;
+  temp.style.color = key;
+  if (temp.style.color) return key;
 
-  // ۳. اگر ناشناخته بود: تولید یک رنگ زیبا و ثابت بر اساس هش اسم
-  let hash = 0;
-  for (let i = 0; i < key.length; i++) {
-    hash = key.charCodeAt(i) + ((hash << 5) - hash);
+  // ۳. تست کلمه به کلمه (مثلا Ivory White -> White)
+  const words = key.split(/\s+/);
+  if (words.length > 1) {
+    temp.style.color = words[words.length - 1]; // کلمه آخر
+    if (temp.style.color) return temp.style.color;
+    
+    temp.style.color = words[0]; // کلمه اول
+    if (temp.style.color) return temp.style.color;
   }
-  const h = Math.abs(hash) % 360;
-  return `hsl(${h}, 65%, 55%)`; // رنگ زنده و یکتا
+
+  // ۴. اگر پیدا نشد، خاکستری پیش‌فرض (هرگز رنگ تصادفی نمی‌دهیم)
+  return "#9b97b1";
 }
 
 function getGiftNumber(gift) {
