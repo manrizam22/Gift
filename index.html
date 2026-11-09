@@ -176,8 +176,19 @@ header { padding: 25px 0 20px; }
   background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
 }
 
+/* ✅ استایل اسکلتون لودینگ (کارت‌های خاکستری متحرک) */
+.skeleton-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 17px; overflow: hidden; animation: pulse 1.5s infinite;
+}
+.skeleton-img { aspect-ratio: 1/1; background: #2a2640; }
+.skeleton-text { height: 14px; background: #2a2640; margin: 10px 13px; border-radius: 4px; }
+.skeleton-text.short { width: 50%; }
+@keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+
 footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px; text-align: center; color: var(--muted); font-size: 11px; }
 
+/* ---------- Modal و ماشین حساب ---------- */
 .modal { position: fixed; inset: 0; z-index: 100; display: none; align-items: center; justify-content: center; padding: 16px; background: #05040bd9; backdrop-filter: blur(6px); }
 .modal.open { display: flex; animation: fade .2s ease-out; }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
@@ -370,7 +381,11 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
   </div>
 
   <section class="grid" id="giftGrid">
-    <div class="loading">در حال دریافت گیفت‌ها...</div>
+    <!-- اسکلتون لودینگ اولیه -->
+    <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-text short"></div></div>
+    <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-text short"></div></div>
+    <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-text short"></div></div>
+    <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-text short"></div></div>
   </section>
 </main>
 
@@ -382,13 +397,10 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
 <div class="modal" id="giftModal" aria-hidden="true">
   <div class="modal-box" id="modalBox" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <button class="modal-close" id="modalClose" aria-label="بستن">✕</button>
-
     <div class="modal-stage" id="modalStage"></div>
-
     <h3 class="modal-title" id="modalTitle"></h3>
     <div class="modal-meta" id="modalCollection"></div>
     <div class="traits" id="modalTraits"></div>
-
     <div class="modal-price">
       <div>
         <div class="price-label">قیمت اجاره روزانه</div>
@@ -396,13 +408,9 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
       </div>
       <small class="telegram-fee" id="modalFee"></small>
     </div>
-
     <div class="modal-meta" id="modalDuration"></div>
-
-    <!-- ماشین حساب -->
     <div class="calc" id="rentCalculator">
       <div class="calc-title">ماشین حساب اجاره</div>
-
       <div class="calc-row">
         <label for="calcDays">تعداد روز اجاره</label>
         <div class="stepper">
@@ -412,18 +420,15 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
         </div>
       </div>
       <div class="calc-hint" id="calcHint"></div>
-
       <div class="calc-lines">
         <div><span id="calcRentLabel">اجاره</span><strong id="calcRent"></strong></div>
         <div><span>کارمزد تلگرام</span><strong id="calcFee"></strong></div>
       </div>
-
       <div class="calc-total">
         <span>مبلغ نهایی</span>
         <strong id="calcTotal"></strong>
       </div>
     </div>
-
     <div class="modal-actions">
       <a class="btn btn-rent" id="modalRentLink" target="_blank" rel="noopener">ارسال درخواست اجاره به پشتیبانی</a>
       <a class="btn btn-tg" id="modalTgLink" target="_blank" rel="noopener">مشاهده در تلگرام</a>
@@ -439,15 +444,10 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
       <h2 id="filterHeaderTitle">فیلترها</h2>
       <button class="filter-close" id="closeFilterModal" aria-label="بستن">✕</button>
     </div>
-    
     <div class="filter-search-box">
       <input type="text" id="filterSearchInput" placeholder="جستجوی کالکشن یا رنگ...">
     </div>
-
-    <div class="filter-content" id="filterContent">
-      <!-- به صورت داینامیک پر می‌شود -->
-    </div>
-
+    <div class="filter-content" id="filterContent"></div>
     <div class="filter-footer">
       <button class="btn-clear-modal" id="clearFiltersModalBtn">حذف فیلترها</button>
       <button class="btn-apply" id="applyFiltersBtn">اعمال فیلترها</button>
@@ -467,9 +467,9 @@ const CONFIG = {
   TON_TO_TOMAN_LOW: 900000,
   TON_TO_TOMAN_HIGH: 600000,
   LIMIT: 100,
-  MAX_PAGES: 500, // ✅ افزایش ظرفیت
+  MAX_PAGES: 500,
   FAST_POLL_MS: 8000,
-  FULL_SYNC_MS: 120000, // ✅ هر ۲ دقیقه
+  FULL_SYNC_MS: 120000,
   NEW_BADGE_MS: 120000,
   PAGE_SIZE: 24,
   TELEGRAM_USERNAME: "Mr_Rentify",
@@ -550,6 +550,45 @@ const el = {
   applyFiltersBtn: $("applyFiltersBtn"), globalClearFiltersBtn: $("globalClearFiltersBtn"), clearFiltersModalBtn: $("clearFiltersModalBtn"),
 };
 
+/* ===================== سیستم کش مرورگر (LocalStorage) ===================== */
+function saveCache() {
+  try {
+    // فقط فیلدهای ضروری رو ذخیره میکنیم تا حجم کم بشه
+    const minimalData = [...giftMap.values()].map(g => ({
+      nft_address: g.nft_address, nft_name: g.nft_name, collection_address: g.collection_address,
+      collection_name: g.collection_name, attributes: g.attributes, price_per_day: g.price_per_day,
+      max_duration: g.max_duration, listed_at: g.listed_at, image: g.image,
+      image_url: g.image_url, thumbnail: g.thumbnail, preview: g.preview, nft_image: g.nft_image,
+      metadata: g.metadata, lottie: g.lottie, lottie_url: g.lottie_url, animation: g.animation, animation_url: g.animation_url,
+      _backdrop: g._backdrop, _priceToman: g._priceToman, _number: g._number
+    }));
+    localStorage.setItem('tg_gifts_cache', JSON.stringify(minimalData));
+    console.log("Cache saved successfully.");
+  } catch (e) {
+    console.warn("Could not save cache (Quota exceeded?)", e);
+  }
+}
+
+function loadCache() {
+  try {
+    const raw = localStorage.getItem('tg_gifts_cache');
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    if (!Array.isArray(data) || data.length === 0) return false;
+    
+    data.forEach(gift => {
+      // بازسازی فیلدهای داخلی که در کش نبودن
+      gift._searchText = buildSearchText(gift);
+      giftMap.set(gift.nft_address, gift);
+    });
+    console.log(`Loaded ${giftMap.size} gifts from cache.`);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+/* ===================== توابع کمکی ===================== */
 function debounce(fn, ms = 200) {
   let timer;
   return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), ms); };
@@ -676,6 +715,7 @@ function formatToman(value) {
   return `${value.toLocaleString("fa-IR")} تومان`;
 }
 
+/* ===================== ارتباط با API ===================== */
 async function apiGet(path, params = {}) {
   params._t = Date.now();
   const query = new URLSearchParams(params).toString();
@@ -685,14 +725,13 @@ async function apiGet(path, params = {}) {
   return response.json();
 }
 
-async function apiGetWithRetry(path, params = {}, retries = 5) {
+async function apiGetWithRetry(path, params = {}, retries = 3) {
   let lastError;
   for (let i = 0; i < retries; i++) {
     try { return await apiGet(path, params); } 
     catch (error) {
       lastError = error;
-      console.warn(`Retry ${i+1}/${retries} for ${path}...`);
-      await new Promise(r => setTimeout(r, 1500 * (i + 1)));
+      await new Promise(r => setTimeout(r, 1000 * (i + 1)));
     }
   }
   throw lastError;
@@ -787,6 +826,7 @@ function buildSearchText(gift) {
   return normalizeText([gift.nft_name, gift.nft_address, gift.collection_name, ...Object.entries(getAttributes(gift)).flat()].join(" "));
 }
 
+/* ===================== همگام‌سازی ===================== */
 async function fullSync(isManual = false) {
   if (syncing) return;
   if (!isManual && isInteracting) return;
@@ -814,16 +854,10 @@ async function fullSync(isManual = false) {
         fresh.set(gift.nft_address, prepareGift(gift, old, false));
       });
 
-      if (!isManual && !isInteracting) {
-        for (const [key, val] of fresh) {
-          const old = giftMap.get(key);
-          if (old && old._newUntil) val._newUntil = old._newUntil;
-          giftMap.set(key, val);
-        }
-        if (page % 2 === 0) refresh();
-      } else if (isManual && page === 0) {
+      // آپدیت زنده در حین لود اولیه (اگر کش خالی بود، کم‌کم نشون بده)
+      if (giftMap.size === 0) {
         for (const [key, val] of fresh) giftMap.set(key, val);
-        refresh();
+        if (page % 2 === 0) refresh();
       }
 
       const next = getNextCursor(payload, cursor);
@@ -831,55 +865,57 @@ async function fullSync(isManual = false) {
       seenCursors.add(next);
       cursor = next;
       
-      await new Promise(r => setTimeout(r, 150));
+      // ✅ تاخیر بسیار کم (30ms) برای سرعت بالا
+      await new Promise(r => setTimeout(r, 30));
     }
 
     isSuccess = true;
   } catch (error) {
     console.error("[Sync Error]:", error);
     if (giftMap.size === 0) showError(error);
-    if (isManual) showToast("خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.");
+    if (isManual) showToast("خطا در دریافت اطلاعات.");
   } finally {
     if (isSuccess) {
       for (const key of giftMap.keys()) if (!fresh.has(key)) giftMap.delete(key);
       for (const key of imageSources.keys()) if (!giftMap.has(key)) imageSources.delete(key);
+      
+      // جایگزینی کل مپ با نسخه جدید
+      for (const [key, val] of fresh) {
+        const old = giftMap.get(key);
+        if (old && old._newUntil) val._newUntil = old._newUntil;
+        giftMap.set(key, val);
+      }
+      
+      saveCache(); // ✅ ذخیره در حافظه مرورگر
       if (isManual) showToast(`اطلاعات بروزرسانی شد (${fresh.size} گیفت)`);
-    }
-    for (const [key, val] of fresh) {
-      const old = giftMap.get(key);
-      if (old && old._newUntil) val._newUntil = old._newUntil;
-      giftMap.set(key, val);
     }
     syncing = false;
     if (isManual) el.refreshBtn.classList.remove("loading");
-    if (filteredGifts.length === 0) refresh();
+    refresh();
   }
 }
 
 async function fastPoll() {
   if (syncing || document.hidden || giftMap.size === 0 || isInteracting) return;
   try {
-    let cursor = null;
+    const payload = await apiGet("/gifts", { limit: CONFIG.LIMIT });
+    const records = extractRecords(payload);
     let added = 0;
-    for (let i = 0; i < 2; i++) {
-      const payload = await apiGet("/gifts", { limit: CONFIG.LIMIT, cursor: cursor || undefined });
-      const records = extractRecords(payload);
-      if (!records.length) break;
-      records.forEach(gift => {
-        if (!gift || !gift.nft_address || giftMap.has(gift.nft_address)) return;
-        giftMap.set(gift.nft_address, prepareGift(gift, null, true));
-        added++;
-      });
-      cursor = getNextCursor(payload, cursor);
-      if (!cursor) break;
-    }
+    records.forEach(gift => {
+      if (!gift || !gift.nft_address || giftMap.has(gift.nft_address)) return;
+      giftMap.set(gift.nft_address, prepareGift(gift, null, true));
+      added++;
+    });
     if (added) {
       refresh();
+      debouncedSaveCache();
       showToast(`${added.toLocaleString("fa-IR")} گیفت جدید اضافه شد`);
     }
   } catch (error) { console.error("fastPoll:", error); }
 }
+const debouncedSaveCache = debounce(saveCache, 2000);
 
+/* ===================== فیلتر و رندر ===================== */
 function applyFilters() {
   const query = normalizeText(el.search.value);
   filteredGifts = [...giftMap.values()].filter(gift => {
@@ -1033,7 +1069,7 @@ function updateShowingText() {
 
 function renderGifts(count) {
   if (filteredGifts.length === 0) {
-    if (syncing) el.grid.innerHTML = `<div class="loading">در حال دریافت اطلاعات از سرور...</div>`;
+    if (syncing) el.grid.innerHTML = `<div class="skeleton-card"><div class="skeleton-img"></div></div><div class="skeleton-card"><div class="skeleton-img"></div></div><div class="skeleton-card"><div class="skeleton-img"></div></div><div class="skeleton-card"><div class="skeleton-img"></div></div>`;
     else el.grid.innerHTML = `<div class="empty"><strong>گیفتی پیدا نشد!</strong><p>فیلترها یا عبارت جست‌وجو را تغییر بده.</p></div>`;
     visibleCount = 0; updateShowingText(); return;
   }
@@ -1308,14 +1344,28 @@ window.addEventListener("scroll", () => {
 
 document.addEventListener("visibilitychange", () => { if (!document.hidden) fastPoll(); });
 
+/* ===================== شروع ===================== */
 async function start(retryCount = 0) {
-  try { await loadCollections(); } 
+  // ✅ ۱. تلاش برای لود از حافظه (اگر کاربر قبلا سایت رو باز کرده باشه)
+  const hasCache = loadCache();
+  if (hasCache) {
+    // اگر کش وجود داشت، آنی نشون بده
+    refreshFromStart(); 
+  }
+
+  try { 
+    await loadCollections(); 
+  } 
   catch (error) {
-    console.error("collections:", error); showError(error);
+    console.error("collections:", error); 
+    if (!hasCache) showError(error);
     if (retryCount < 3) setTimeout(() => start(retryCount + 1), 3000 * (retryCount + 1));
     return;
   }
+
+  // ✅ ۲. در پس‌زمینه شروع به آپدیت از سرور کن
   await fullSync(false);
+  
   setInterval(fastPoll, CONFIG.FAST_POLL_MS);
   setInterval(() => { if (!document.hidden && !isInteracting) fullSync(false); }, CONFIG.FULL_SYNC_MS);
 }
