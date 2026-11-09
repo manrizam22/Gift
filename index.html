@@ -22,9 +22,7 @@
   --orange: #fb923c;
   --blue: #3b82f6;
 }
-
 * { box-sizing: border-box; }
-
 body {
   margin: 0;
   min-height: 100vh;
@@ -32,55 +30,36 @@ body {
   color: var(--text);
   font-family: Vazirmatn, sans-serif;
 }
-
 body.modal-open { overflow: hidden; }
-
 button, input, select { font: inherit; }
-
-/* 🚫 غیرفعال کردن منوی نگه داشتن و انتخاب متن */
 img, a, button {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
 }
-
 .container { width: min(1250px, calc(100% - 32px)); margin: auto; }
-
 header { padding: 25px 0 20px; }
-
 .topbar, .brand, .results-bar { display: flex; align-items: center; }
-
 .topbar { justify-content: space-between; gap: 15px; flex-wrap: wrap; }
-
 .brand { gap: 12px; }
-
 .brand-icon {
   width: 48px; height: 48px; display: grid; place-items: center;
   border-radius: 15px; background: linear-gradient(135deg, #a78bfa, #7c3aed); font-size: 24px;
 }
-
 .brand h1 { margin: 0; font-size: 20px; }
 .brand p { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
-
 .contact-link {
   text-decoration: none; color: white; background: #222034;
   border: 1px solid var(--border); padding: 10px 16px; border-radius: 12px; font-size: 13px;
 }
-
 .toolbar { margin-top: 24px; display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 12px; }
 .field { min-width: 0; }
 .field label { display: block; color: var(--muted); font-size: 12px; margin-bottom: 7px; }
-
 .control {
   width: 100%; height: 46px; border: 1px solid var(--border); outline: none;
   border-radius: 12px; background: var(--surface); color: var(--text); padding: 0 13px;
 }
-
 .control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px #a78bfa18; }
-
 .filter-trigger {
   display: flex; align-items: center; justify-content: space-between;
   cursor: pointer; user-select: none; transition: 0.2s;
@@ -88,12 +67,10 @@ header { padding: 25px 0 20px; }
 .filter-trigger:hover { border-color: #4b4468; }
 .filter-trigger .text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80%; }
 .filter-trigger.active { border-color: var(--primary); box-shadow: 0 0 0 3px #a78bfa18; }
-
 .results-bar { justify-content: space-between; gap: 12px; margin: 25px 0 15px; flex-wrap: wrap; }
 .results-title { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .results-bar strong { font-size: 16px; }
 .results-bar span { color: var(--muted); font-size: 12px; }
-
 .refresh-btn {
   background: var(--surface2); border: 1px solid var(--border); color: var(--text);
   border-radius: 8px; padding: 5px 10px; font-size: 12px; cursor: pointer;
@@ -102,85 +79,65 @@ header { padding: 25px 0 20px; }
 .refresh-btn:hover { background: var(--border); }
 .refresh-btn.loading svg { animation: spin 1s linear infinite; }
 @keyframes spin { 100% { transform: rotate(360deg); } }
-
-/* ✅ استایل دکمه حذف فیلترها */
 .clear-filters-btn {
   background: #ef444415; border: 1px solid #ef444450; color: #ef4444;
   border-radius: 8px; padding: 5px 10px; font-size: 12px; cursor: pointer;
-  display: none;
-  align-items: center; gap: 5px; transition: 0.2s;
+  display: none; align-items: center; gap: 5px; transition: 0.2s;
 }
 .clear-filters-btn:hover { background: #ef444430; }
 .clear-filters-btn.show { display: flex; }
-
 .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 17px; }
-
 .card {
   min-width: 0; overflow: hidden; background: var(--surface);
   border: 1px solid var(--border); border-radius: 17px; transition: border-color .2s, box-shadow .2s;
 }
-
 .image-wrap, .card-body { transition: transform .2s; }
 .card:hover { border-color: #8b5cf6aa; box-shadow: 0 12px 35px #0004; }
 .card:hover .image-wrap, .card:hover .card-body { transform: translateY(-4px); }
-
 .card.is-new { border-color: var(--orange); animation: newGlow 1.6s ease-out; }
 @keyframes newGlow { 0% { box-shadow: 0 0 0 0 #fb923c99; } 100% { box-shadow: 0 0 0 18px #fb923c00; } }
-
 .image-wrap {
   position: relative; aspect-ratio: 1 / 1; overflow: hidden;
   background: linear-gradient(145deg, #28243c, #171523);
   display: grid; place-items: center; border-radius: 17px 17px 0 0;
 }
-
 .image-placeholder { width: 100%; height: 100%; display: grid; place-items: center; color: #77728d; font-size: 12px; }
-
 .image-wrap img.gift-img {
   position: absolute; inset: 0; width: 100%; height: 100%;
   object-fit: contain; padding: 12px; z-index: 1; transition: transform .25s;
 }
 .card:hover .gift-img { transform: scale(1.06); }
-
 .gift-number {
   position: absolute; right: 10px; top: 10px; z-index: 2;
   background: #0c0b14df; border: 1px solid #ffffff20;
   padding: 4px 9px; border-radius: 8px; font-size: 10px; direction: ltr;
 }
-
 .new-badge {
   position: absolute; left: 10px; top: 10px; z-index: 2;
   background: var(--orange); color: #1a1020; font-weight: 800;
   padding: 3px 9px; border-radius: 8px; font-size: 10px;
 }
-
 .card-body { padding: 13px; }
-
 .gift-name {
   margin: 0; font-size: 14px; font-weight: 700; white-space: nowrap;
   overflow: hidden; text-overflow: ellipsis; direction: ltr; text-align: right;
 }
-
 .collection-tag {
   display: inline-block; margin-top: 9px; padding: 4px 8px; border-radius: 7px;
   background: #34d39912; color: #6ee7b7; border: 1px solid #34d39925; font-size: 10px;
   max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-
 .traits { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; min-height: 25px; }
 .trait { background: #a78bfa13; color: #c4b5fd; border: 1px solid #a78bfa25; padding: 3px 7px; border-radius: 7px; font-size: 10px; }
-
 .card-info {
   margin-top: 13px; padding-top: 11px; border-top: 1px solid var(--border);
   display: flex; justify-content: space-between; gap: 8px; align-items: center;
 }
-
 .price-label, .duration { color: var(--muted); font-size: 10px; }
 .price-value { margin-top: 3px; font-size: 13px; font-weight: 800; color: var(--green); }
 .telegram-fee { margin-top: 4px; font-size: 9px; font-weight: 600; color: var(--orange); line-height: 1.4; }
 .duration { text-align: left; }
-
 .card-actions { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 12px; }
-
 .btn {
   display: block; text-align: center; text-decoration: none; border-radius: 10px;
   padding: 10px; color: white; font-weight: 700; font-size: 12px; border: 0; cursor: pointer;
@@ -189,79 +146,67 @@ header { padding: 25px 0 20px; }
 .btn-view { background: #2a2640; border: 1px solid #4b4468; color: #ddd6fe; }
 .btn-rent { background: linear-gradient(120deg, #8b5cf6, #6d28d9); }
 .btn-tg { background: #229ed9; }
-
 .empty, .loading, .error {
   grid-column: 1 / -1; text-align: center; padding: 55px 15px; color: var(--muted);
   background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
 }
-
 footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px; text-align: center; color: var(--muted); font-size: 11px; }
 
-/* ---------- Modal و ماشین حساب ---------- */
+/* Modal */
 .modal {
   position: fixed; inset: 0; z-index: 100; display: none; align-items: center;
   justify-content: center; padding: 16px; background: #05040bd9; backdrop-filter: blur(6px);
 }
 .modal.open { display: flex; animation: fade .2s ease-out; }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
-
 .modal-box {
   position: relative; width: min(480px, 100%); max-height: calc(100vh - 32px);
   overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; background: var(--surface);
   border: 1px solid var(--border); border-radius: 22px; padding: 18px;
-  animation: pop .25s ease-out; scroll-behavior: smooth;
+  animation: pop .25s ease-out;
 }
 @keyframes pop { from { transform: translateY(20px) scale(.97); opacity: 0; } to { transform: none; opacity: 1; } }
-
 .modal-close {
   position: absolute; top: 12px; left: 12px; z-index: 5; width: 36px; height: 36px;
   border-radius: 50%; border: 1px solid var(--border); background: #0c0b14cc;
   color: white; font-size: 18px; cursor: pointer;
 }
-
 .modal-stage {
   position: relative; aspect-ratio: 1 / 1; max-width: min(100%, 34vh);
   margin-inline: auto; border-radius: 17px; overflow: hidden;
   background: radial-gradient(circle at 50% 40%, #3a2c63, #171523 75%);
   display: grid; place-items: center;
 }
-
 .modal-stage .anim, .modal-stage img {
   position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 10px;
 }
 .modal-stage .stage-msg { color: var(--muted); font-size: 12px; }
 .modal-title { margin: 16px 0 4px; font-size: 18px; direction: ltr; text-align: right; }
-
 .modal-price {
   margin: 14px 0; padding: 12px 14px; background: #34d39910; border: 1px solid #34d39930;
   border-radius: 12px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px 10px;
 }
 .modal-price strong { color: var(--green); font-size: 17px; }
-.modal-price .telegram-fee { flex: 1 1 100%; min-width: 0; margin: 0; font-size: 10px; line-height: 1.7; text-align: right; white-space: normal; overflow-wrap: break-word; }
+.modal-price .telegram-fee { flex: 1 1 100%; min-width: 0; margin: 0; font-size: 10px; line-height: 1.7; text-align: right; }
 .modal-meta { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
-
 .calc { margin-top: 12px; padding: 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; }
 .calc-title { font-size: 13px; font-weight: 700; margin-bottom: 12px; }
 .calc-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .calc-row label { color: var(--muted); font-size: 12px; }
-
 .stepper { display: flex; align-items: stretch; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface); direction: ltr; }
 .stepper button { width: 38px; border: 0; background: #2a2640; color: #ddd6fe; font-size: 18px; cursor: pointer; }
 .stepper button:hover { background: #342f50; }
 .stepper input { width: 62px; height: 38px; border: 0; outline: none; text-align: center; background: transparent; color: var(--text); font-weight: 700; -moz-appearance: textfield; }
 .stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-
 .calc-hint { min-height: 16px; margin-top: 6px; color: var(--muted); font-size: 11px; }
 .calc-lines { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); display: grid; gap: 7px; }
 .calc-lines div, .calc-total { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); }
 .calc-lines strong { color: var(--text); font-size: 12px; }
-
 .calc-total { margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: #34d39912; border: 1px solid #34d39935; color: var(--text); font-weight: 700; font-size: 13px; }
 .calc-total strong { color: var(--green); font-size: 16px; }
-
 .modal-actions { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 16px; }
 
-/* ---------- Toast ---------- */
+/* Toast */
 .toast {
   position: fixed; bottom: 20px; left: 50%; transform: translate(-50%, 30px); z-index: 200;
   background: #231f36; border: 1px solid var(--orange); color: white; padding: 11px 20px;
@@ -269,7 +214,7 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
-/* ---------- Custom Filter Modal ---------- */
+/* Filter Modal */
 .filter-modal {
   position: fixed; inset: 0; z-index: 150; display: none;
   background: #05040bd9; backdrop-filter: blur(4px);
@@ -279,7 +224,6 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
   .filter-modal { align-items: center; padding: 20px; }
 }
 .filter-modal.open { display: flex; animation: fade .2s ease-out; }
-
 .filter-box {
   background: var(--surface); width: 100%; max-width: 600px; height: 85vh;
   border-radius: 24px 24px 0 0; display: flex; flex-direction: column; animation: slideUp .3s ease-out;
@@ -288,35 +232,26 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
   .filter-box { height: 80vh; border-radius: 24px; max-height: 800px; }
 }
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
 .filter-header {
   display: flex; justify-content: space-between; align-items: center;
   padding: 16px 20px; border-bottom: 1px solid var(--border);
 }
 .filter-header h2 { margin: 0; font-size: 18px; font-weight: 700; }
 .filter-close { background: var(--surface2); border: none; color: var(--text); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; }
-
-.filter-search-box { padding: 12px 20px; border-bottom: 1px solid var(--border); background: var(--surface); }
+.filter-search-box { padding: 12px 20px; border-bottom: 1px solid var(--border); }
 .filter-search-box input {
   width: 100%; height: 42px; background: var(--surface2); border: 1px solid var(--border);
   border-radius: 10px; padding: 0 12px; color: var(--text); outline: none;
 }
 .filter-search-box input:focus { border-color: var(--primary); }
-
 .filter-content { flex: 1; overflow-y: auto; padding: 10px 20px; }
-
-.filter-section-title { font-size: 14px; font-weight: 700; margin: 15px 0 10px; color: var(--muted); display: flex; justify-content: space-between; }
-
+.filter-section-title { font-size: 14px; font-weight: 700; margin: 15px 0 10px; color: var(--muted); }
 .filter-item {
   display: flex; align-items: center; justify-content: space-between;
   padding: 12px 0; border-bottom: 1px solid #ffffff0a; cursor: pointer;
 }
 .filter-item:last-child { border-bottom: none; }
-.filter-item:hover { background: #ffffff05; border-radius: 8px; }
-
 .filter-item-left { display: flex; align-items: center; gap: 12px; }
-
-/* Custom Checkbox */
 .checkbox-wrapper { position: relative; width: 22px; height: 22px; }
 .checkbox-wrapper input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
 .checkmark {
@@ -329,37 +264,28 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
   border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
 }
 .checkbox-wrapper input:checked \~ .checkmark:after { display: block; }
-
-/* Collection icon/image */
 .filter-icon {
   width: 36px; height: 36px; border-radius: 8px; background: var(--surface2);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; overflow: hidden; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 16px; overflow: hidden; flex-shrink: 0;
 }
 .filter-icon img { width: 100%; height: 100%; object-fit: cover; }
-
-/* Color Circle */
 .color-circle {
   width: 24px; height: 24px; border-radius: 50%; display: inline-block;
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2); flex-shrink: 0;
 }
-
 .filter-item-text { font-size: 14px; font-weight: 500; }
 .filter-item-count { font-size: 12px; color: var(--muted); }
-
-.filter-footer { padding: 16px 20px; border-top: 1px solid var(--border); background: var(--surface); display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
+.filter-footer { padding: 16px 20px; border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
 .btn-apply { width: 100%; background: var(--blue); color: white; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 700; border: none; cursor: pointer; }
 .btn-apply:hover { background: #2563eb; }
-.btn-clear-modal { width: 100%; background: transparent; color: var(--muted); padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 700; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
-.btn-clear-modal:hover { background: var(--surface2); color: var(--text); }
+.btn-clear-modal { width: 100%; background: transparent; color: var(--muted); padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 700; border: 1px solid var(--border); cursor: pointer; }
 
-/* Responsive adjustments */
+/* Responsive */
 @media(max-width: 950px) {
   .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .toolbar { grid-template-columns: 1fr 1fr 1fr; }
   .search-field { grid-column: 1 / -1; }
 }
-
 @media(max-width: 650px) {
   .container { width: min(100% - 22px, 500px); }
   .toolbar { grid-template-columns: 1fr 1fr; }
@@ -372,20 +298,16 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
   .telegram-fee { font-size: 8px; }
   .duration { font-size: 9px; }
 }
-
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: .01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: .01ms !important;
-    scroll-behavior: auto !important;
   }
 }
 </style>
 </head>
-
 <body>
-
 <header>
   <div class="container">
     <div class="topbar">
@@ -396,18 +318,13 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
           <p>فروشگاه اجاره گیفت تلگرام</p>
         </div>
       </div>
-
-      <a class="contact-link" href="https://t.me/Mr_Rentify" target="_blank" rel="noopener">
-        ارتباط با پشتیبانی ↗
-      </a>
+      <a class="contact-link" href="https://t.me/Mr_Rentify" target="_blank" rel="noopener">ارتباط با پشتیبانی ↗</a>
     </div>
-
     <section class="toolbar">
       <div class="field search-field">
         <label for="searchInput">جست‌وجوی گیفت</label>
         <input id="searchInput" class="control" type="search" placeholder="نام یا شماره گیفت..." autocomplete="off">
       </div>
-
       <div class="field">
         <label for="sortSelect">مرتب‌سازی</label>
         <select id="sortSelect" class="control">
@@ -421,7 +338,6 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
           <option value="number-desc">شماره نزولی</option>
         </select>
       </div>
-
       <div class="field">
         <label>دسته‌بندی / کالکشن</label>
         <div class="control filter-trigger" id="collectionTrigger">
@@ -429,7 +345,6 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
         </div>
       </div>
-
       <div class="field">
         <label>رنگ بک‌گراند</label>
         <div class="control filter-trigger" id="backdropTrigger">
@@ -445,41 +360,32 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
   <div class="results-bar">
     <div class="results-title">
       <strong>گیفت‌ها</strong>
-      
-      <button id="manualRefreshBtn" class="refresh-btn" title="بروزرسانی کامل اطلاعات">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+      <button id="manualRefreshBtn" class="refresh-btn" title="بروزرسانی کامل">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
         بروزرسانی
       </button>
-
-      <button id="globalClearFiltersBtn" class="clear-filters-btn" title="حذف همه فیلترها">
+      <button id="globalClearFiltersBtn" class="clear-filters-btn" title="حذف فیلترها">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
         حذف فیلترها
       </button>
-
     </div>
     <span id="showingText" aria-live="polite">در حال دریافت اطلاعات...</span>
   </div>
-
   <section class="grid" id="giftGrid">
     <div class="loading">در حال دریافت گیفت‌ها...</div>
   </section>
 </main>
 
-<footer>
-  Telegram Gifts Marketplace · تمامی حقوق محفوظ است
-</footer>
+<footer>Telegram Gifts Marketplace · تمامی حقوق محفوظ است</footer>
 
-<!-- مودال مشاهده گیفت -->
+<!-- Modal گیفت -->
 <div class="modal" id="giftModal" aria-hidden="true">
-  <div class="modal-box" id="modalBox" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-box" id="modalBox" role="dialog" aria-modal="true">
     <button class="modal-close" id="modalClose" aria-label="بستن">✕</button>
-
     <div class="modal-stage" id="modalStage"></div>
-
     <h3 class="modal-title" id="modalTitle"></h3>
     <div class="modal-meta" id="modalCollection"></div>
     <div class="traits" id="modalTraits"></div>
-
     <div class="modal-price">
       <div>
         <div class="price-label">قیمت اجاره روزانه</div>
@@ -487,34 +393,27 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
       </div>
       <small class="telegram-fee" id="modalFee"></small>
     </div>
-
     <div class="modal-meta" id="modalDuration"></div>
-
-    <!-- ماشین حساب -->
     <div class="calc" id="rentCalculator">
       <div class="calc-title">ماشین حساب اجاره</div>
-
       <div class="calc-row">
         <label for="calcDays">تعداد روز اجاره</label>
         <div class="stepper">
-          <button type="button" id="calcMinus" aria-label="کم کردن یک روز">−</button>
+          <button type="button" id="calcMinus">−</button>
           <input id="calcDays" type="number" inputmode="numeric" min="1" step="1" value="1">
-          <button type="button" id="calcPlus" aria-label="اضافه کردن یک روز">+</button>
+          <button type="button" id="calcPlus">+</button>
         </div>
       </div>
       <div class="calc-hint" id="calcHint"></div>
-
       <div class="calc-lines">
         <div><span id="calcRentLabel">اجاره</span><strong id="calcRent"></strong></div>
         <div><span>کارمزد تلگرام</span><strong id="calcFee"></strong></div>
       </div>
-
       <div class="calc-total">
         <span>مبلغ نهایی</span>
         <strong id="calcTotal"></strong>
       </div>
     </div>
-
     <div class="modal-actions">
       <a class="btn btn-rent" id="modalRentLink" target="_blank" rel="noopener">ارسال درخواست اجاره به پشتیبانی</a>
       <a class="btn btn-tg" id="modalTgLink" target="_blank" rel="noopener">مشاهده در تلگرام</a>
@@ -523,22 +422,17 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
   </div>
 </div>
 
-<!-- مودال فیلترها (کالکشن و رنگ) -->
+<!-- Modal فیلتر -->
 <div class="filter-modal" id="filterModal" aria-hidden="true">
-  <div class="filter-box" role="dialog" aria-modal="true" aria-labelledby="filterHeaderTitle">
+  <div class="filter-box" role="dialog" aria-modal="true">
     <div class="filter-header">
       <h2 id="filterHeaderTitle">فیلترها</h2>
-      <button class="filter-close" id="closeFilterModal" aria-label="بستن">✕</button>
+      <button class="filter-close" id="closeFilterModal">✕</button>
     </div>
-    
     <div class="filter-search-box">
       <input type="text" id="filterSearchInput" placeholder="جستجوی کالکشن یا رنگ...">
     </div>
-
-    <div class="filter-content" id="filterContent">
-      <!-- به صورت داینامیک پر می‌شود -->
-    </div>
-
+    <div class="filter-content" id="filterContent"></div>
     <div class="filter-footer">
       <button class="btn-clear-modal" id="clearFiltersModalBtn">حذف فیلترها</button>
       <button class="btn-apply" id="applyFiltersBtn">اعمال فیلترها</button>
@@ -549,28 +443,25 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px;
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
-
 <script>
-/* ===================== تنظیمات ===================== */
 const CONFIG = {
   API_BASE: "https://gifts-proxy.marketappgiftreza.workers.dev",
   LOW_PRICE_LIMIT_NANO: 10000000,
   TON_TO_TOMAN_LOW: 900000,
   TON_TO_TOMAN_HIGH: 600000,
   LIMIT: 100,
-  MAX_PAGES: 120,          // افزایش یافته برای دریافت گیفت‌های بیشتر
-  FAST_POLL_MS: 8000,
-  FULL_SYNC_MS: 60000,
+  MAX_PAGES: 80,
+  FAST_POLL_MS: 10000,
+  FULL_SYNC_MS: 90000,
   NEW_BADGE_MS: 120000,
   PAGE_SIZE: 24,
   TELEGRAM_USERNAME: "Mr_Rentify",
   TELEGRAM_FEE_TOMAN: 40000,
-  PAGE_DELAY_MS: 180,      // تأخیر بین صفحات برای جلوگیری از rate-limit
+  PAGE_DELAY_MS: 120
 };
 
 const FEE_NOTE_TEXT = `+ ${CONFIG.TELEGRAM_FEE_TOMAN.toLocaleString("fa-IR")} تومان کارمزد تلگرام به مبلغ کل اضافه می‌شود`;
 
-// نقشه رنگ دقیق و رسمی تلگرام
 const TELEGRAM_BACKDROP_COLORS = {
   "amber": "#d9b245", "aquamarine": "#60b196", "azure blue": "#5cb0ca",
   "battleship grey": "#8b8b84", "black": "#353637", "burgundy": "#a15d65",
@@ -601,356 +492,241 @@ const TELEGRAM_BACKDROP_COLORS = {
   "tomato": "#e74c3c", "turquoise": "#5dbeb6"
 };
 
-/* ===================== وضعیت ===================== */
 let giftMap = new Map();
 let collections = [];
 let collectionByAddress = new Map();
 let collectionByKey = new Map();
-
 const collectionImageCache = new Map();
 const backdropColorCache = new Map();
-
 let filteredGifts = [];
 let visibleCount = 0;
 let syncing = false;
 let lottieInstance = null;
 let currentGift = null;
 let lastFocused = null;
-
 let isInteracting = false;
 let pendingRefresh = false;
-
-// وضعیت اصلی فیلترها
 const selectedCollections = new Set();
 const selectedBackdrops = new Set();
-
-// وضعیت موقت فیلترها
 let tempSelectedCollections = new Set();
 let tempSelectedBackdrops = new Set();
-
 const imageSources = new Map();
 const $ = id => document.getElementById(id);
 
 const el = {
-  grid: $("giftGrid"),
-  search: $("searchInput"),
-  sort: $("sortSelect"),
-  showing: $("showingText"),
-  toast: $("toast"),
-  modal: $("giftModal"),
-  modalBox: $("modalBox"),
-  modalStage: $("modalStage"),
-  modalTitle: $("modalTitle"),
-  modalCollection: $("modalCollection"),
-  modalTraits: $("modalTraits"),
-  modalPrice: $("modalPrice"),
-  modalFee: $("modalFee"),
-  calcDays: $("calcDays"),
-  calcMinus: $("calcMinus"),
-  calcPlus: $("calcPlus"),
-  calcHint: $("calcHint"),
-  calcRentLabel: $("calcRentLabel"),
-  calcRent: $("calcRent"),
-  calcFee: $("calcFee"),
-  calcTotal: $("calcTotal"),
-  modalDuration: $("modalDuration"),
-  modalTgLink: $("modalTgLink"),
-  modalRentLink: $("modalRentLink"),
-  modalBackBtn: $("modalBackBtn"),
-  rentCalculator: $("rentCalculator"),
-  refreshBtn: $("manualRefreshBtn"),
-  
-  collectionTrigger: $("collectionTrigger"),
-  collectionText: $("collectionText"),
-  backdropTrigger: $("backdropTrigger"),
-  backdropText: $("backdropText"),
-  filterModal: $("filterModal"),
-  filterContent: $("filterContent"),
-  filterSearchInput: $("filterSearchInput"),
-  closeFilterModal: $("closeFilterModal"),
-  applyFiltersBtn: $("applyFiltersBtn"),
-  
-  globalClearFiltersBtn: $("globalClearFiltersBtn"),
-  clearFiltersModalBtn: $("clearFiltersModalBtn"),
+  grid: $("giftGrid"), search: $("searchInput"), sort: $("sortSelect"), showing: $("showingText"),
+  toast: $("toast"), modal: $("giftModal"), modalBox: $("modalBox"), modalStage: $("modalStage"),
+  modalTitle: $("modalTitle"), modalCollection: $("modalCollection"), modalTraits: $("modalTraits"),
+  modalPrice: $("modalPrice"), modalFee: $("modalFee"), calcDays: $("calcDays"),
+  calcMinus: $("calcMinus"), calcPlus: $("calcPlus"), calcHint: $("calcHint"),
+  calcRentLabel: $("calcRentLabel"), calcRent: $("calcRent"), calcFee: $("calcFee"),
+  calcTotal: $("calcTotal"), modalDuration: $("modalDuration"), modalTgLink: $("modalTgLink"),
+  modalRentLink: $("modalRentLink"), modalBackBtn: $("modalBackBtn"),
+  refreshBtn: $("manualRefreshBtn"), collectionTrigger: $("collectionTrigger"),
+  collectionText: $("collectionText"), backdropTrigger: $("backdropTrigger"),
+  backdropText: $("backdropText"), filterModal: $("filterModal"), filterContent: $("filterContent"),
+  filterSearchInput: $("filterSearchInput"), closeFilterModal: $("closeFilterModal"),
+  applyFiltersBtn: $("applyFiltersBtn"), globalClearFiltersBtn: $("globalClearFiltersBtn"),
+  clearFiltersModalBtn: $("clearFiltersModalBtn")
 };
 
-/* ===================== توابع کمکی ===================== */
 function debounce(fn, ms = 200) {
-  let timer;
-  return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => fn(...args), ms);
-  };
+  let t;
+  return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
 }
-
-function startInteraction() { isInteracting = true; }
 function endInteraction() {
   isInteracting = false;
-  if (pendingRefresh) {
-    pendingRefresh = false;
-    refresh();
-  }
+  if (pendingRefresh) { pendingRefresh = false; refresh(); }
 }
-
-function normalizeText(value) {
-  return String(value ?? "").toLowerCase().replace(/ي/g, "ی").replace(/ك/g, "ک").replace(/\u200c/g, " ").trim();
+function normalizeText(v) {
+  return String(v ?? "").toLowerCase().replace(/ي/g, "ی").replace(/ك/g, "ک").replace(/\u200c/g, " ").trim();
 }
-
-function escapeHtml(value) {
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-  })[char]);
+function escapeHtml(v) {
+  return String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
 }
-
-function toNumber(value) {
-  if (value === null || value === undefined || value === "") return null;
-  const number = Number(value);
-  return Number.isFinite(number) ? number : null;
+function toNumber(v) {
+  if (v == null || v === "") return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
 }
-
-function formatDuration(seconds) {
-  const value = Number(seconds);
-  if (!Number.isFinite(value) || value <= 0) return "نامشخص";
-  const days = Math.floor(value / 86400);
-  if (days >= 1) return `${days.toLocaleString("fa-IR")} روز`;
-  const hours = Math.floor(value / 3600);
-  if (hours >= 1) return `${hours.toLocaleString("fa-IR")} ساعت`;
+function formatDuration(sec) {
+  const v = Number(sec);
+  if (!Number.isFinite(v) || v <= 0) return "نامشخص";
+  const d = Math.floor(v / 86400);
+  if (d >= 1) return `${d.toLocaleString("fa-IR")} روز`;
+  const h = Math.floor(v / 3600);
+  if (h >= 1) return `${h.toLocaleString("fa-IR")} ساعت`;
   return "کمتر از یک ساعت";
 }
-
-function getAttributes(gift) {
-  const result = {};
-  if (!Array.isArray(gift.attributes)) return result;
-  gift.attributes.forEach(attribute => {
-    if (!attribute || !attribute.trait_type) return;
-    result[attribute.trait_type] = attribute.value;
-  });
-  return result;
+function getAttributes(g) {
+  const r = {};
+  if (!Array.isArray(g.attributes)) return r;
+  g.attributes.forEach(a => { if (a?.trait_type) r[a.trait_type] = a.value; });
+  return r;
 }
-
-function getBackdrop(gift) {
-  const attrs = getAttributes(gift);
+function getBackdrop(g) {
+  const attrs = getAttributes(g);
   const key = Object.keys(attrs).find(k => /backdrop|background|بک/i.test(k));
-  if (!key) return "";
-  return String(attrs[key] ?? "").trim();
+  return key ? String(attrs[key] ?? "").trim() : "";
 }
-
-function getBackdropColor(gift) {
-  const attrs = getAttributes(gift);
-  
-  if (attrs.center_color) return `#${Number(attrs.center_color).toString(16).padStart(6, '0')}`;
-  if (attrs.edge_color) return `#${Number(attrs.edge_color).toString(16).padStart(6, '0')}`;
-
-  const name = getBackdrop(gift).toLowerCase().trim();
-  if (TELEGRAM_BACKDROP_COLORS[name]) return TELEGRAM_BACKDROP_COLORS[name];
-
-  return "#888888";
+function getBackdropColor(g) {
+  const attrs = getAttributes(g);
+  if (attrs.center_color) return `#${Number(attrs.center_color).toString(16).padStart(6, "0")}`;
+  if (attrs.edge_color) return `#${Number(attrs.edge_color).toString(16).padStart(6, "0")}`;
+  const name = getBackdrop(g).toLowerCase().trim();
+  return TELEGRAM_BACKDROP_COLORS[name] || "#888888";
 }
-
-function getGiftNumber(gift) {
-  const match = String(gift.nft_name || "").match(/#(\d+)/);
-  return match ? Number(match[1]) : null;
+function getGiftNumber(g) {
+  const m = String(g.nft_name || "").match(/#(\d+)/);
+  return m ? Number(m[1]) : null;
 }
-
-function getGiftBaseName(gift) {
-  const match = String(gift.nft_name || "").match(/^(.*?)\s#\d+/);
-  return match ? match[1].trim() : String(gift.nft_name || "").trim();
+function getGiftBaseName(g) {
+  const m = String(g.nft_name || "").match(/^(.*?)\s#\d+/);
+  return m ? m[1].trim() : String(g.nft_name || "").trim();
 }
-
-function getTelegramSlug(gift) {
-  const match = String(gift.nft_name || "").match(/^(.*?)\s#(\d+)/);
-  if (!match) return null;
-  const base = match[1].replace(/[^A-Za-z0-9]/g, "");
-  return base ? `\( {base}- \){match[2]}` : null;
+function getTelegramSlug(g) {
+  const m = String(g.nft_name || "").match(/^(.*?)\s#(\d+)/);
+  if (!m) return null;
+  const base = m[1].replace(/[^A-Za-z0-9]/g, "");
+  return base ? `\( {base}- \){m[2]}` : null;
 }
-
-function getTelegramUrl(gift) {
-  const slug = getTelegramSlug(gift);
-  return slug ? `https://t.me/nft/${slug}` : "https://t.me/";
+function getTelegramUrl(g) {
+  const s = getTelegramSlug(g);
+  return s ? `https://t.me/nft/${s}` : "https://t.me/";
 }
-
-function getFragmentSlug(gift) {
-  const slug = getTelegramSlug(gift);
-  return slug ? slug.toLowerCase() : null;
+function getFragmentSlug(g) {
+  const s = getTelegramSlug(g);
+  return s ? s.toLowerCase() : null;
 }
-
-function getImageCandidates(gift) {
-  const list = [
-    gift.image, gift.image_url, gift.thumbnail,
-    gift.preview, gift.nft_image,
-    gift.metadata && gift.metadata.image
-  ].filter(url => typeof url === "string" && /^https?:\/\//.test(url));
-
-  const slug = getFragmentSlug(gift);
+function getImageCandidates(g) {
+  const list = [g.image, g.image_url, g.thumbnail, g.preview, g.nft_image, g.metadata?.image]
+    .filter(u => typeof u === "string" && /^https?:\/\//.test(u));
+  const slug = getFragmentSlug(g);
   if (slug) {
-    list.push(
-      `https://nft.fragment.com/gift/${slug}.medium.jpg`,
-      `https://nft.fragment.com/gift/${slug}.webp`
-    );
+    list.push(`https://nft.fragment.com/gift/\( {slug}.medium.jpg`, `https://nft.fragment.com/gift/ \){slug}.webp`);
   }
   return list;
 }
-
-function getAnimationCandidates(gift) {
-  const list = [
-    gift.lottie, gift.lottie_url, gift.animation, gift.animation_url
-  ].filter(url => typeof url === "string" && /^https?:\/\/.+\.json/.test(url));
-  const slug = getFragmentSlug(gift);
+function getAnimationCandidates(g) {
+  const list = [g.lottie, g.lottie_url, g.animation, g.animation_url]
+    .filter(u => typeof u === "string" && /^https?:\/\/.+\.json/.test(u));
+  const slug = getFragmentSlug(g);
   if (slug) list.push(`https://nft.fragment.com/gift/${slug}.lottie.json`);
   return list;
 }
-
 function getCollectionImage(col) {
-  const colImg = col.image || col.image_url || col.thumbnail || col.preview;
-  if (colImg) return `<img src="${escapeHtml(colImg)}" loading="lazy" alt="" onerror="this.style.display='none'; this.parentElement.innerHTML='🎁';">`;
-
-  const cachedImg = collectionImageCache.get(col.address);
-  if (cachedImg) return `<img src="${escapeHtml(cachedImg)}" loading="lazy" alt="" onerror="this.style.display='none'; this.parentElement.innerHTML='🎁';">`;
-
-  return '🎁';
+  const img = col.image || col.image_url || col.thumbnail || col.preview;
+  if (img) return `<img src="${escapeHtml(img)}" loading="lazy" alt="" onerror="this.style.display='none';this.parentElement.innerHTML='🎁'">`;
+  const cached = collectionImageCache.get(col.address);
+  if (cached) return `<img src="${escapeHtml(cached)}" loading="lazy" alt="" onerror="this.style.display='none';this.parentElement.innerHTML='🎁'">`;
+  return "🎁";
 }
-
-/* ===================== قیمت ===================== */
-function getPriceToman(gift) {
-  const raw = toNumber(gift.price_per_day);
+function getPriceToman(g) {
+  const raw = toNumber(g.price_per_day);
   if (raw === null) return null;
   const rate = raw < CONFIG.LOW_PRICE_LIMIT_NANO ? CONFIG.TON_TO_TOMAN_LOW : CONFIG.TON_TO_TOMAN_HIGH;
   return Math.round((raw / 1e9) * rate);
 }
-
-function formatToman(value) {
-  if (value === null) return "نامشخص";
-  return `${value.toLocaleString("fa-IR")} تومان`;
+function formatToman(v) {
+  return v === null ? "نامشخص" : `${v.toLocaleString("fa-IR")} تومان`;
 }
 
-/* ===================== ارتباط با API ===================== */
 async function apiGet(path, params = {}) {
   params._t = Date.now();
-  const query = new URLSearchParams(params).toString();
-  const url = `\( {CONFIG.API_BASE} \){path}?${query}`;
-  
-  const response = await fetch(url, { method: "GET", cache: "no-store" });
-  if (!response.ok) throw new Error(`HTTP \( {response.status} ( \){path})`);
-  return response.json();
+  const q = new URLSearchParams(params).toString();
+  const res = await fetch(`\( {CONFIG.API_BASE} \){path}?${q}`, { cache: "no-store" });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
 }
-
-function extractRecords(payload) {
-  if (Array.isArray(payload)) return payload;
-  if (!payload || typeof payload !== "object") return [];
-  for (const key of ["items", "results", "gifts", "collections", "data"]) {
-    const value = payload[key];
-    if (Array.isArray(value)) return value;
-    if (value && typeof value === "object") {
-      const inner = extractRecords(value);
+function extractRecords(p) {
+  if (Array.isArray(p)) return p;
+  if (!p || typeof p !== "object") return [];
+  for (const k of ["items", "results", "gifts", "collections", "data"]) {
+    const v = p[k];
+    if (Array.isArray(v)) return v;
+    if (v && typeof v === "object") {
+      const inner = extractRecords(v);
       if (inner.length) return inner;
     }
   }
   return [];
 }
-
-function getNextCursor(payload, current) {
-  if (!payload || typeof payload !== "object") return null;
-  const candidates = [
-    payload.next_cursor, payload.next, payload.next_page, payload.cursor, payload.next_offset,
-    payload.pagination && payload.pagination.next_cursor,
-    payload.pagination && payload.pagination.next,
-    payload.meta && payload.meta.next_cursor,
-    payload.meta && payload.meta.next,
-    payload.meta && payload.meta.offset
+function getNextCursor(p, current) {
+  if (!p || typeof p !== "object") return null;
+  const cands = [
+    p.next_cursor, p.next, p.next_page, p.cursor, p.next_offset,
+    p.pagination?.next_cursor, p.pagination?.next,
+    p.meta?.next_cursor, p.meta?.next, p.meta?.offset
   ];
-  for (const value of candidates) {
-    if (value === null || value === undefined || value === false || value === "") continue;
-    if (typeof value === "string" || typeof value === "number") {
-      if (String(value) !== String(current || "")) return String(value);
-    }
+  for (const v of cands) {
+    if (v != null && v !== "" && v !== false && String(v) !== String(current || "")) return String(v);
   }
   return null;
 }
-
 function fetchGiftsPage(cursor) {
   const params = { limit: CONFIG.LIMIT };
   if (cursor) params.cursor = cursor;
   return apiGet("/gifts", params);
 }
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-/* ===================== کالکشن‌ها ===================== */
-function nameKey(name) {
-  return String(name || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-}
+function nameKey(n) { return String(n || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
 
 async function loadCollections() {
   const payload = await apiGet("/collections");
-  const list = extractRecords(payload).filter(c => c && c.address && c.name);
+  const list = extractRecords(payload).filter(c => c?.address && c?.name);
   const fresh = list.sort((a, b) => a.name.localeCompare(b.name));
-
   const same = fresh.length === collections.length && fresh.every((c, i) =>
-    c.address === collections[i]?.address && c.name === collections[i]?.name
-  );
+    c.address === collections[i]?.address && c.name === collections[i]?.name);
   if (same) return false;
-
   collections = fresh;
   collectionByAddress = new Map(collections.map(c => [c.address, c]));
   collectionByKey = new Map(collections.map(c => [nameKey(c.name), c]));
   return true;
 }
 
-function resolveCollection(gift) {
-  const address = gift.collection_address || (gift.collection && (gift.collection.address || gift.collection.collection_address));
-  let found = address ? collectionByAddress.get(address) : null;
-
+function resolveCollection(g) {
+  const addr = g.collection_address || g.collection?.address || g.collection?.collection_address;
+  let found = addr ? collectionByAddress.get(addr) : null;
   if (!found) {
-    const baseName = getGiftBaseName(gift);
-    const key = nameKey(baseName);
+    const base = getGiftBaseName(g);
+    const key = nameKey(base);
     if (key) {
       found = collectionByKey.get(key);
       if (!found) {
-        for (const [colKey, colObj] of collectionByKey.entries()) {
-          if (colKey.includes(key) || key.includes(colKey)) { found = colObj; break; }
+        for (const [k, obj] of collectionByKey) {
+          if (k.includes(key) || key.includes(k)) { found = obj; break; }
         }
       }
     }
   }
-  gift.collection_name = found ? found.name : getGiftBaseName(gift);
-  gift.collection_address = found ? found.address : "";
+  g.collection_name = found ? found.name : getGiftBaseName(g);
+  g.collection_address = found ? found.address : "";
 }
 
-function prepareGift(gift, previous, isNew) {
-  resolveCollection(gift);
-  gift._searchText = buildSearchText(gift);
-  gift._backdrop = getBackdrop(gift);
-  
-  gift._priceToman = getPriceToman(gift);
-  gift._number = getGiftNumber(gift);
-
-  if (gift._backdrop && !backdropColorCache.has(gift._backdrop)) {
-      backdropColorCache.set(gift._backdrop, getBackdropColor(gift));
+function prepareGift(g, prev, isNew) {
+  resolveCollection(g);
+  g._searchText = buildSearchText(g);
+  g._backdrop = getBackdrop(g);
+  g._priceToman = getPriceToman(g);
+  g._number = getGiftNumber(g);
+  if (g._backdrop && !backdropColorCache.has(g._backdrop)) {
+    backdropColorCache.set(g._backdrop, getBackdropColor(g));
   }
-
-  if (gift.collection_address && !collectionImageCache.has(gift.collection_address)) {
-    const images = getImageCandidates(gift);
-    if (images.length) collectionImageCache.set(gift.collection_address, images[0]);
+  if (g.collection_address && !collectionImageCache.has(g.collection_address)) {
+    const imgs = getImageCandidates(g);
+    if (imgs.length) collectionImageCache.set(g.collection_address, imgs[0]);
   }
-
-  if (previous && previous._newUntil) {
-    gift._newUntil = previous._newUntil;
-  } else if (isNew) {
-    gift._newUntil = Date.now() + CONFIG.NEW_BADGE_MS;
-  }
-  return gift;
+  if (prev?._newUntil) g._newUntil = prev._newUntil;
+  else if (isNew) g._newUntil = Date.now() + CONFIG.NEW_BADGE_MS;
+  return g;
 }
 
-function buildSearchText(gift) {
-  return normalizeText([
-    gift.nft_name, gift.nft_address, gift.collection_name,
-    ...Object.entries(getAttributes(gift)).flat()
-  ].join(" "));
+function buildSearchText(g) {
+  return normalizeText([g.nft_name, g.nft_address, g.collection_name, ...Object.entries(getAttributes(g)).flat()].join(" "));
 }
 
-/* ===================== همگام‌سازی (نسخه بهبود یافته) ===================== */
+/* ========== همگام‌سازی بهبود یافته ========== */
 async function fullSync(isManual = false) {
   if (syncing) return;
   if (!isManual && isInteracting) return;
@@ -964,228 +740,187 @@ async function fullSync(isManual = false) {
     let cursor = null;
     let totalFetched = 0;
     let pageCount = 0;
-    let emptyPages = 0;
+    let firstPageDone = false;
 
     for (let page = 0; page < CONFIG.MAX_PAGES; page++) {
-      const payload = await fetchGiftsPage(cursor);
-      const records = extractRecords(payload);
-      
-      if (!records.length) {
-        emptyPages++;
-        if (emptyPages >= 2) break; // دو صفحه خالی پشت سر هم → تمام
-        await sleep(CONFIG.PAGE_DELAY_MS);
-        continue;
-      }
-
-      emptyPages = 0;
-      totalFetched += records.length;
-      pageCount++;
-
-      records.forEach(gift => {
-        if (!gift || !gift.nft_address) return;
-        const old = giftMap.get(gift.nft_address);
-        fresh.set(gift.nft_address, prepareGift(gift, old, false));
-      });
-
-      // آپدیت تدریجی در همگام‌سازی خودکار (هر ۳ صفحه یکبار)
-      if (!isManual && !isInteracting && page % 3 === 0) {
-        for (const [key, val] of fresh) {
-          const old = giftMap.get(key);
-          if (old && old._newUntil) val._newUntil = old._newUntil;
-          giftMap.set(key, val);
-        }
-        refresh();
-      } else if (isManual && page === 0) {
-        for (const [key, val] of fresh) giftMap.set(key, val);
-        refresh();
-      }
-
-      const next = getNextCursor(payload, cursor);
-      
-      // اگر cursor تکراری بود، یکبار دیگر تلاش کن، بعد متوقف شو
-      if (!next) break;
-      
-      if (seenCursors.has(next)) {
-        console.warn("تکرار cursor شناسایی شد، توقف صفحه بندی");
+      let payload;
+      try {
+        payload = await fetchGiftsPage(cursor);
+      } catch (err) {
+        console.warn("خطا در صفحه", page, err);
+        if (page === 0) throw err;
         break;
       }
 
+      const records = extractRecords(payload);
+      if (!records.length) break;
+
+      totalFetched += records.length;
+      pageCount++;
+
+      records.forEach(g => {
+        if (!g?.nft_address) return;
+        const old = giftMap.get(g.nft_address);
+        fresh.set(g.nft_address, prepareGift(g, old, false));
+      });
+
+      // بعد از صفحه اول بلافاصله نمایش بده
+      if (!firstPageDone) {
+        firstPageDone = true;
+        for (const [k, v] of fresh) giftMap.set(k, v);
+        refresh();
+        el.showing.textContent = `در حال دریافت بیشتر... (${totalFetched.toLocaleString("fa-IR")})`;
+      } else if (page % 2 === 0) {
+        // آپدیت تدریجی
+        for (const [k, v] of fresh) {
+          const old = giftMap.get(k);
+          if (old?._newUntil) v._newUntil = old._newUntil;
+          giftMap.set(k, v);
+        }
+        if (!isInteracting) refresh();
+      }
+
+      const next = getNextCursor(payload, cursor);
+      if (!next || seenCursors.has(next)) break;
       seenCursors.add(next);
       cursor = next;
 
-      // تأخیر کوتاه برای جلوگیری از فشار به API
-      if (page < CONFIG.MAX_PAGES - 1) {
-        await sleep(CONFIG.PAGE_DELAY_MS);
-      }
+      if (page < CONFIG.MAX_PAGES - 1) await sleep(CONFIG.PAGE_DELAY_MS);
     }
 
-    // جایگزینی کامل داده‌ها
-    for (const key of giftMap.keys()) {
-      if (!fresh.has(key)) giftMap.delete(key);
+    // جایگزینی نهایی
+    for (const k of [...giftMap.keys()]) {
+      if (!fresh.has(k)) giftMap.delete(k);
     }
-    for (const [key, val] of fresh) {
-      const old = giftMap.get(key);
-      if (old && old._newUntil) val._newUntil = old._newUntil;
-      giftMap.set(key, val);
+    for (const [k, v] of fresh) {
+      const old = giftMap.get(k);
+      if (old?._newUntil) v._newUntil = old._newUntil;
+      giftMap.set(k, v);
     }
-    
-    // پاکسازی منابع تصویر گیفت‌های حذف شده
-    for (const key of imageSources.keys()) {
-      if (!giftMap.has(key)) imageSources.delete(key);
+    for (const k of [...imageSources.keys()]) {
+      if (!giftMap.has(k)) imageSources.delete(k);
     }
 
     refresh();
-    
     if (isManual) {
-      showToast(`بروزرسانی کامل: ${totalFetched.toLocaleString("fa-IR")} گیفت در ${pageCount} صفحه`);
+      showToast(`بروزرسانی کامل: ${totalFetched.toLocaleString("fa-IR")} گیفت`);
     }
-
-    console.log(`[fullSync] دریافت شد: ${totalFetched} گیفت در ${pageCount} صفحه`);
-
-  } catch (error) {
-    console.error("fullSync:", error);
-    if (giftMap.size === 0) showError(error);
+    console.log(`[fullSync] ${totalFetched} گیفت در ${pageCount} صفحه`);
+  } catch (err) {
+    console.error("fullSync error:", err);
+    if (giftMap.size === 0) showError(err);
     if (isManual) showToast("خطا در بروزرسانی");
   } finally {
     syncing = false;
     if (isManual) el.refreshBtn.classList.remove("loading");
-    if (filteredGifts.length === 0) refresh();
   }
 }
 
 async function fastPoll() {
   if (syncing || document.hidden || giftMap.size === 0 || isInteracting) return;
-
   try {
     const payload = await fetchGiftsPage(null);
     const records = extractRecords(payload);
     let added = 0;
-    
-    records.forEach(gift => {
-      if (!gift || !gift.nft_address || giftMap.has(gift.nft_address)) return;
-      giftMap.set(gift.nft_address, prepareGift(gift, null, true));
+    records.forEach(g => {
+      if (!g?.nft_address || giftMap.has(g.nft_address)) return;
+      giftMap.set(g.nft_address, prepareGift(g, null, true));
       added++;
     });
-
     if (added) {
       refresh();
-      showToast(`${added.toLocaleString("fa-IR")} گیفت جدید اضافه شد`);
+      showToast(`${added.toLocaleString("fa-IR")} گیفت جدید`);
     }
-  } catch (error) {
-    console.error("fastPoll:", error);
+  } catch (e) {
+    console.error("fastPoll:", e);
   }
 }
 
-/* ===================== فیلتر و رندر ===================== */
+/* ========== فیلتر و رندر ========== */
 function applyFilters() {
-  const query = normalizeText(el.search.value);
-  
-  filteredGifts = [...giftMap.values()].filter(gift => {
-    if (query && !gift._searchText.includes(query)) return false;
-    if (selectedCollections.size > 0 && !selectedCollections.has(gift.collection_address)) return false;
-    if (selectedBackdrops.size > 0 && !selectedBackdrops.has(gift._backdrop)) return false;
+  const q = normalizeText(el.search.value);
+  filteredGifts = [...giftMap.values()].filter(g => {
+    if (q && !g._searchText.includes(q)) return false;
+    if (selectedCollections.size && !selectedCollections.has(g.collection_address)) return false;
+    if (selectedBackdrops.size && !selectedBackdrops.has(g._backdrop)) return false;
     return true;
   });
-  
   updateFilterButtonTexts();
   sortGifts();
 }
 
 function updateFilterButtonTexts() {
-  if (selectedCollections.size === 0) {
-    el.collectionText.textContent = "همه کالکشن‌ها";
-  } else if (selectedCollections.size === 1) {
-    const addr = [...selectedCollections][0];
-    const col = collections.find(c => c.address === addr);
-    el.collectionText.textContent = col ? col.name : "1 کالکشن انتخاب شده";
-  } else {
-    el.collectionText.textContent = `${selectedCollections.size} کالکشن انتخاب شده`;
-  }
+  if (selectedCollections.size === 0) el.collectionText.textContent = "همه کالکشن‌ها";
+  else if (selectedCollections.size === 1) {
+    const c = collections.find(x => x.address === [...selectedCollections][0]);
+    el.collectionText.textContent = c ? c.name : "1 کالکشن";
+  } else el.collectionText.textContent = `${selectedCollections.size} کالکشن`;
 
-  if (selectedBackdrops.size === 0) {
-    el.backdropText.textContent = "همه رنگ‌ها";
-  } else if (selectedBackdrops.size === 1) {
-    el.backdropText.textContent = [...selectedBackdrops][0];
-  } else {
-    el.backdropText.textContent = `${selectedBackdrops.size} رنگ انتخاب شده`;
-  }
+  if (selectedBackdrops.size === 0) el.backdropText.textContent = "همه رنگ‌ها";
+  else if (selectedBackdrops.size === 1) el.backdropText.textContent = [...selectedBackdrops][0];
+  else el.backdropText.textContent = `${selectedBackdrops.size} رنگ`;
 
-  if (selectedCollections.size > 0 || selectedBackdrops.size > 0) {
-    el.globalClearFiltersBtn.classList.add("show");
-  } else {
-    el.globalClearFiltersBtn.classList.remove("show");
-  }
+  el.globalClearFiltersBtn.classList.toggle("show", selectedCollections.size > 0 || selectedBackdrops.size > 0);
 }
 
 function sortGifts() {
   const mode = el.sort.value;
-  
   const cmp = (key, dir) => (a, b) => {
     const x = toNumber(a[key]), y = toNumber(b[key]);
-    if (x === null && y === null) return 0;
-    if (x === null) return 1;
-    if (y === null) return -1;
+    if (x == null && y == null) return 0;
+    if (x == null) return 1;
+    if (y == null) return -1;
     return dir === "asc" ? x - y : y - x;
   };
-
   const sorters = {
-    "newest": cmp("listed_at", "desc"),
-    "oldest": cmp("listed_at", "asc"),
+    newest: cmp("listed_at", "desc"),
+    oldest: cmp("listed_at", "asc"),
     "price-asc": (a, b) => (a._priceToman ?? Infinity) - (b._priceToman ?? Infinity),
     "price-desc": (a, b) => (b._priceToman ?? -Infinity) - (a._priceToman ?? -Infinity),
     "duration-asc": cmp("max_duration", "asc"),
     "duration-desc": cmp("max_duration", "desc"),
     "number-asc": (a, b) => (a._number ?? Infinity) - (b._number ?? Infinity),
-    "number-desc": (a, b) => (b._number ?? -Infinity) - (a._number ?? -Infinity),
+    "number-desc": (a, b) => (b._number ?? -Infinity) - (a._number ?? -Infinity)
   };
-
   filteredGifts.sort(sorters[mode] || sorters.newest);
-
   if (mode === "newest") {
     const now = Date.now();
     filteredGifts.sort((a, b) => (b._newUntil > now ? 1 : 0) - (a._newUntil > now ? 1 : 0));
   }
 }
 
-function createCard(gift) {
-  const name = escapeHtml(gift.nft_name || "Gift");
-  const number = gift._number;
-  const isNew = gift._newUntil && gift._newUntil > Date.now();
-  const traits = Object.entries(getAttributes(gift))
+function createCard(g) {
+  const name = escapeHtml(g.nft_name || "Gift");
+  const num = g._number;
+  const isNew = g._newUntil && g._newUntil > Date.now();
+  const traits = Object.entries(getAttributes(g))
     .map(([k, v]) => `<span class="trait">${escapeHtml(k)}: ${escapeHtml(v)}</span>`).join("");
-  const toman = gift._priceToman;
-  const images = getImageCandidates(gift);
-
-  if (images.length) imageSources.set(gift.nft_address, images);
-
-  const imageHtml = images.length
-    ? `<img class="gift-img" data-gift="\( {escapeHtml(gift.nft_address)}" alt=" \){name}" loading="lazy" decoding="async" referrerpolicy="no-referrer" draggable="false">`
+  const images = getImageCandidates(g);
+  if (images.length) imageSources.set(g.nft_address, images);
+  const imgHtml = images.length
+    ? `<img class="gift-img" data-gift="\( {escapeHtml(g.nft_address)}" alt=" \){name}" loading="lazy" decoding="async" referrerpolicy="no-referrer" draggable="false">`
     : "";
-
   return `<article class="card ${isNew ? "is-new" : ""}">
     <div class="image-wrap">
       <div class="image-placeholder">تصویر گیفت</div>
-      ${imageHtml}
-      \( {number !== null ? `<span class="gift-number"># \){number}</span>` : ""}
+      ${imgHtml}
+      \( {num != null ? `<span class="gift-number"># \){num}</span>` : ""}
       ${isNew ? `<span class="new-badge">جدید</span>` : ""}
     </div>
     <div class="card-body">
       <h3 class="gift-name" title="\( {name}"> \){name}</h3>
-      <span class="collection-tag">${escapeHtml(gift.collection_name || "بدون مجموعه")}</span>
+      <span class="collection-tag">${escapeHtml(g.collection_name || "بدون مجموعه")}</span>
       <div class="traits">${traits}</div>
       <div class="card-info">
         <div>
           <div class="price-label">اجاره روزانه</div>
-          <div class="price-value">${formatToman(toman)}</div>
+          <div class="price-value">${formatToman(g._priceToman)}</div>
           <div class="telegram-fee">${FEE_NOTE_TEXT}</div>
         </div>
-        <div class="duration">
-          حداکثر مدت اجاره
-          ${escapeHtml(formatDuration(gift.max_duration))}
-        </div>
+        <div class="duration">حداکثر مدت اجاره<br>${escapeHtml(formatDuration(g.max_duration))}</div>
       </div>
       <div class="card-actions">
-        <button class="btn btn-rent" type="button" data-view="${escapeHtml(gift.nft_address)}">مشاهده و اجاره</button>
+        <button class="btn btn-rent" type="button" data-view="${escapeHtml(g.nft_address)}">مشاهده و اجاره</button>
       </div>
     </div>
   </article>`;
@@ -1195,49 +930,41 @@ function hydrateImages(root = document) {
   root.querySelectorAll("img.gift-img[data-gift]").forEach(img => {
     if (img.getAttribute("src")) return;
     const urls = imageSources.get(img.dataset.gift);
-    if (urls && urls.length) {
+    if (urls?.length) {
       img.dataset.idx = "0";
-      img.setAttribute("src", urls[0]);
+      img.src = urls[0];
     }
   });
 }
 
-function getRentUrl(gift, days = null, total = null) {
-  let message = `سلام، می‌خواهم گیفت ${gift.nft_name || "Gift"} را اجاره کنم.\n` + `کالکشن: ${gift.collection_name || ""}`;
-  if (days !== null && total !== null) {
-    message += `\nمدت اجاره: ${days.toLocaleString("fa-IR")} روز` + `\nمبلغ نهایی: ${formatToman(total)} (با کارمزد تلگرام)`;
+function getRentUrl(g, days = null, total = null) {
+  let msg = `سلام، می‌خواهم گیفت ${g.nft_name || "Gift"} را اجاره کنم.\nکالکشن: ${g.collection_name || ""}`;
+  if (days != null && total != null) {
+    msg += `\nمدت اجاره: ${days.toLocaleString("fa-IR")} روز\nمبلغ نهایی: ${formatToman(total)} (با کارمزد تلگرام)`;
   }
-  return `https://t.me/\( {CONFIG.TELEGRAM_USERNAME}?text= \){encodeURIComponent(message)}`;
+  return `https://t.me/\( {CONFIG.TELEGRAM_USERNAME}?text= \){encodeURIComponent(msg)}`;
 }
 
-function getMaxDays(gift) {
-  const seconds = toNumber(gift.max_duration);
-  if (seconds === null || seconds <= 0) return null;
-  return Math.max(1, Math.floor(seconds / 86400));
+function getMaxDays(g) {
+  const s = toNumber(g.max_duration);
+  return (s == null || s <= 0) ? null : Math.max(1, Math.floor(s / 86400));
 }
-
-function clampDays(value, max) {
-  let days = Math.floor(Number(value));
-  if (!Number.isFinite(days) || days < 1) days = 1;
-  if (max && days > max) days = max;
-  return days;
+function clampDays(v, max) {
+  let d = Math.floor(Number(v));
+  if (!Number.isFinite(d) || d < 1) d = 1;
+  if (max && d > max) d = max;
+  return d;
 }
-
 function updateCalc(normalize = false) {
   if (!currentGift) return;
   const max = getMaxDays(currentGift);
   const days = clampDays(el.calcDays.value, max);
-  const typed = el.calcDays.value;
-  if (normalize || (typed !== "" && Number(typed) !== days)) el.calcDays.value = days;
-
-  if (max) el.calcDays.max = max;
-  else el.calcDays.removeAttribute("max");
-
+  if (normalize || (el.calcDays.value !== "" && Number(el.calcDays.value) !== days)) el.calcDays.value = days;
+  if (max) el.calcDays.max = max; else el.calcDays.removeAttribute("max");
   el.calcHint.textContent = max ? `حداکثر ${max.toLocaleString("fa-IR")} روز قابل اجاره است` : "";
   const daily = currentGift._priceToman;
   const fee = CONFIG.TELEGRAM_FEE_TOMAN;
-
-  if (daily === null) {
+  if (daily == null) {
     el.calcRentLabel.textContent = "اجاره";
     el.calcRent.textContent = "نامشخص";
     el.calcFee.textContent = formatToman(fee);
@@ -1245,7 +972,6 @@ function updateCalc(normalize = false) {
     el.modalRentLink.href = getRentUrl(currentGift);
     return;
   }
-
   const rent = daily * days;
   const total = rent + fee;
   el.calcRentLabel.textContent = `اجاره (${days.toLocaleString("fa-IR")} روز × ${daily.toLocaleString("fa-IR")})`;
@@ -1254,7 +980,6 @@ function updateCalc(normalize = false) {
   el.calcTotal.textContent = formatToman(total);
   el.modalRentLink.href = getRentUrl(currentGift, days, total);
 }
-
 function stepDays(delta) {
   const max = getMaxDays(currentGift || {});
   el.calcDays.value = clampDays((Number(el.calcDays.value) || 1) + delta, max);
@@ -1262,22 +987,16 @@ function stepDays(delta) {
 }
 
 function updateShowingText() {
-  if (syncing && filteredGifts.length === 0) {
-    el.showing.textContent = "در حال دریافت اطلاعات...";
-  } else if (filteredGifts.length) {
-    el.showing.textContent = `${visibleCount.toLocaleString("fa-IR")} از ${filteredGifts.length.toLocaleString("fa-IR")} گیفت`;
-  } else {
-    el.showing.textContent = "بدون نتیجه";
-  }
+  if (syncing && filteredGifts.length === 0) el.showing.textContent = "در حال دریافت اطلاعات...";
+  else if (filteredGifts.length) el.showing.textContent = `${visibleCount.toLocaleString("fa-IR")} از ${filteredGifts.length.toLocaleString("fa-IR")} گیفت`;
+  else el.showing.textContent = "بدون نتیجه";
 }
 
 function renderGifts(count) {
-  if (filteredGifts.length === 0) {
-    if (syncing) {
-      el.grid.innerHTML = `<div class="loading">در حال دریافت اطلاعات از سرور...</div>`;
-    } else {
-      el.grid.innerHTML = `<div class="empty"><strong>گیفتی پیدا نشد!</strong><p>فیلترها یا عبارت جست‌وجو را تغییر بده.</p></div>`;
-    }
+  if (!filteredGifts.length) {
+    el.grid.innerHTML = syncing
+      ? `<div class="loading">در حال دریافت اطلاعات از سرور...</div>`
+      : `<div class="empty"><strong>گیفتی پیدا نشد!</strong><p>فیلترها یا عبارت جست‌وجو را تغییر بده.</p></div>`;
     visibleCount = 0;
     updateShowingText();
     return;
@@ -1288,7 +1007,6 @@ function renderGifts(count) {
   hydrateImages(el.grid);
   updateShowingText();
 }
-
 function renderMore() {
   if (visibleCount >= filteredGifts.length) return;
   const next = filteredGifts.slice(visibleCount, visibleCount + CONFIG.PAGE_SIZE);
@@ -1297,30 +1015,20 @@ function renderMore() {
   hydrateImages(el.grid);
   updateShowingText();
 }
-
 function refresh() {
-  if (isInteracting) {
-    pendingRefresh = true;
-    return;
-  }
+  if (isInteracting) { pendingRefresh = true; return; }
   applyFilters();
   renderGifts(visibleCount || CONFIG.PAGE_SIZE);
 }
-
 function refreshFromStart() {
-  if (isInteracting) {
-    pendingRefresh = true;
-    return;
-  }
+  if (isInteracting) { pendingRefresh = true; return; }
   applyFilters();
   renderGifts(CONFIG.PAGE_SIZE);
 }
-
-function showError(error) {
-  el.grid.innerHTML = `<div class="error"><strong>دریافت اطلاعات با مشکل مواجه شد.</strong><p>${escapeHtml(error.message)}</p><p>اتصال اینترنت خود را بررسی کنید.</p></div>`;
+function showError(err) {
+  el.grid.innerHTML = `<div class="error"><strong>دریافت اطلاعات با مشکل مواجه شد.</strong><p>${escapeHtml(err.message)}</p><p>اتصال اینترنت یا VPN خود را بررسی کنید.</p></div>`;
   el.showing.textContent = "خطا در دریافت اطلاعات";
 }
-
 let toastTimer;
 function showToast(text) {
   el.toast.textContent = text;
@@ -1329,80 +1037,76 @@ function showToast(text) {
   toastTimer = setTimeout(() => el.toast.classList.remove("show"), 3500);
 }
 
-/* ===================== مودال مشاهده گیفت ===================== */
+/* ========== Modal گیفت ========== */
 function destroyAnimation() {
   if (lottieInstance) { lottieInstance.destroy(); lottieInstance = null; }
   el.modalStage.innerHTML = "";
 }
-
-function showStaticImage(gift) {
-  const images = imageSources.get(gift.nft_address) || getImageCandidates(gift);
+function showStaticImage(g) {
+  const images = imageSources.get(g.nft_address) || getImageCandidates(g);
   if (!images.length) {
     el.modalStage.innerHTML = `<span class="stage-msg">پیش‌نمایش در دسترس نیست</span>`;
     return;
   }
-  el.modalStage.innerHTML = `<img alt="${escapeHtml(gift.nft_name || "")}" referrerpolicy="no-referrer" draggable="false">`;
+  el.modalStage.innerHTML = `<img alt="${escapeHtml(g.nft_name || "")}" referrerpolicy="no-referrer" draggable="false">`;
   const img = el.modalStage.querySelector("img");
-  let index = 0;
+  let i = 0;
   const tryNext = () => {
-    if (index >= images.length) {
+    if (i >= images.length) {
       img.remove();
       el.modalStage.innerHTML = `<span class="stage-msg">پیش‌نمایش در دسترس نیست</span>`;
       return;
     }
-    img.setAttribute("src", images[index++]);
+    img.src = images[i++];
   };
   img.addEventListener("error", tryNext);
   tryNext();
 }
-
-function playAnimation(gift) {
-  const candidates = getAnimationCandidates(gift);
-  if (!candidates.length || typeof lottie === "undefined") {
-    showStaticImage(gift);
+function playAnimation(g) {
+  const cands = getAnimationCandidates(g);
+  if (!cands.length || typeof lottie === "undefined") {
+    showStaticImage(g);
     return;
   }
   el.modalStage.innerHTML = `<span class="stage-msg">در حال بارگذاری انیمیشن...</span>`;
   const container = document.createElement("div");
   container.className = "anim";
-  let index = 0;
-
+  let i = 0;
   const tryLoad = () => {
-    if (index >= candidates.length) { destroyAnimation(); showStaticImage(gift); return; }
+    if (i >= cands.length) { destroyAnimation(); showStaticImage(g); return; }
     if (lottieInstance) lottieInstance.destroy();
     container.innerHTML = "";
-    lottieInstance = lottie.loadAnimation({
-      container, renderer: "svg", loop: true, autoplay: true, path: candidates[index++],
+    lottieInstance = lottie.loadAnimation({ container, renderer: "svg", loop: true, autoplay: true, path: cands[i++] });
+    lottieInstance.addEventListener("DOMLoaded", () => {
+      el.modalStage.innerHTML = "";
+      el.modalStage.appendChild(container);
     });
-    lottieInstance.addEventListener("DOMLoaded", () => { el.modalStage.innerHTML = ""; el.modalStage.appendChild(container); });
     lottieInstance.addEventListener("data_failed", tryLoad);
   };
   tryLoad();
 }
-
-function openModal(address) {
-  const gift = giftMap.get(address);
-  if (!gift) return;
+function openModal(addr) {
+  const g = giftMap.get(addr);
+  if (!g) return;
   destroyAnimation();
   lastFocused = document.activeElement;
-  el.modalTitle.textContent = gift.nft_name || "Gift";
-  el.modalCollection.textContent = `کالکشن: ${gift.collection_name || "---"}`;
-  el.modalTraits.innerHTML = Object.entries(getAttributes(gift))
+  el.modalTitle.textContent = g.nft_name || "Gift";
+  el.modalCollection.textContent = `کالکشن: ${g.collection_name || "---"}`;
+  el.modalTraits.innerHTML = Object.entries(getAttributes(g))
     .map(([k, v]) => `<span class="trait">${escapeHtml(k)}: ${escapeHtml(v)}</span>`).join("");
-  el.modalPrice.textContent = formatToman(gift._priceToman);
+  el.modalPrice.textContent = formatToman(g._priceToman);
   el.modalFee.textContent = FEE_NOTE_TEXT;
-  el.modalDuration.textContent = `حداکثر مدت اجاره: ${formatDuration(gift.max_duration)}`;
-  el.modalTgLink.href = getTelegramUrl(gift);
-  currentGift = gift;
+  el.modalDuration.textContent = `حداکثر مدت اجاره: ${formatDuration(g.max_duration)}`;
+  el.modalTgLink.href = getTelegramUrl(g);
+  currentGift = g;
   el.calcDays.value = 1;
   updateCalc(true);
   el.modal.classList.add("open");
   el.modal.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
-  playAnimation(gift);
+  playAnimation(g);
   requestAnimationFrame(() => $("modalClose").focus());
 }
-
 function closeModal() {
   if (!el.modal.classList.contains("open")) return;
   el.modal.classList.remove("open");
@@ -1410,249 +1114,159 @@ function closeModal() {
   document.body.classList.remove("modal-open");
   currentGift = null;
   destroyAnimation();
-  if (lastFocused && typeof lastFocused.focus === "function") lastFocused.focus();
+  if (lastFocused?.focus) lastFocused.focus();
   lastFocused = null;
 }
-
-function trapFocus(event) {
-  if (event.key !== "Tab") return;
-  const focusable = el.modalBox.querySelectorAll('button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])');
-  if (!focusable.length) return;
-  const first = focusable[0];
-  const last = focusable[focusable.length - 1];
-  if (event.shiftKey && document.activeElement === first) { last.focus(); event.preventDefault(); }
-  else if (!event.shiftKey && document.activeElement === last) { first.focus(); event.preventDefault(); }
+function trapFocus(e) {
+  if (e.key !== "Tab") return;
+  const list = el.modalBox.querySelectorAll('button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])');
+  if (!list.length) return;
+  const first = list[0], last = list[list.length - 1];
+  if (e.shiftKey && document.activeElement === first) { last.focus(); e.preventDefault(); }
+  else if (!e.shiftKey && document.activeElement === last) { first.focus(); e.preventDefault(); }
+}
+function trapFilterFocus(e) {
+  if (e.key !== "Tab") return;
+  const list = el.filterModal.querySelectorAll('button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])');
+  if (!list.length) return;
+  const first = list[0], last = list[list.length - 1];
+  if (e.shiftKey && document.activeElement === first) { last.focus(); e.preventDefault(); }
+  else if (!e.shiftKey && document.activeElement === last) { first.focus(); e.preventDefault(); }
 }
 
-function trapFilterFocus(event) {
-  if (event.key !== "Tab") return;
-  const focusable = el.filterModal.querySelectorAll('button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])');
-  if (!focusable.length) return;
-  const first = focusable[0];
-  const last = focusable[focusable.length - 1];
-  if (event.shiftKey && document.activeElement === first) { last.focus(); event.preventDefault(); }
-  else if (!event.shiftKey && document.activeElement === last) { first.focus(); event.preventDefault(); }
-}
-
-/* ===================== مودال فیلترها ===================== */
+/* ========== Modal فیلتر ========== */
 function openFilterModal(type) {
   tempSelectedCollections = new Set(selectedCollections);
   tempSelectedBackdrops = new Set(selectedBackdrops);
-
   renderFilterContent();
-  
-  if (type === 'collection') {
-    el.collectionTrigger.classList.add('active');
-    el.backdropTrigger.classList.remove('active');
-  } else {
-    el.backdropTrigger.classList.add('active');
-    el.collectionTrigger.classList.remove('active');
-  }
-
+  el.collectionTrigger.classList.toggle("active", type === "collection");
+  el.backdropTrigger.classList.toggle("active", type === "backdrop");
   el.filterModal.classList.add("open");
   el.filterModal.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
-  
   setTimeout(() => {
-    const targetId = type === 'collection' ? 'section-collection' : 'section-backdrop';
-    const targetEl = document.getElementById(targetId);
-    if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 100);
+    const id = type === "collection" ? "section-collection" : "section-backdrop";
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, 80);
 }
-
 function closeFilterModal() {
   el.filterModal.classList.remove("open");
   el.filterModal.setAttribute("aria-hidden", "true");
-  if (!el.modal.classList.contains("open")) {
-    document.body.classList.remove("modal-open");
-  }
-  el.collectionTrigger.classList.remove('active');
-  el.backdropTrigger.classList.remove('active');
+  if (!el.modal.classList.contains("open")) document.body.classList.remove("modal-open");
+  el.collectionTrigger.classList.remove("active");
+  el.backdropTrigger.classList.remove("active");
 }
-
 function renderFilterContent() {
-  const query = normalizeText(el.filterSearchInput.value);
-  
-  const colCounts = new Map();
-  const backCounts = new Map();
-  
+  const q = normalizeText(el.filterSearchInput.value);
+  const colCounts = new Map(), backCounts = new Map();
   giftMap.forEach(g => {
-    if (g.collection_address) {
-      colCounts.set(g.collection_address, (colCounts.get(g.collection_address) || 0) + 1);
-    }
-    if (g._backdrop) {
-      backCounts.set(g._backdrop, (backCounts.get(g._backdrop) || 0) + 1);
-    }
+    if (g.collection_address) colCounts.set(g.collection_address, (colCounts.get(g.collection_address) || 0) + 1);
+    if (g._backdrop) backCounts.set(g._backdrop, (backCounts.get(g._backdrop) || 0) + 1);
   });
-
-  let html = '';
-
-  // بخش کالکشن‌ها
-  if (collections.length > 0) {
-    const filteredCollections = collections.filter(c => !query || normalizeText(c.name).includes(query));
-    
-    if (filteredCollections.length > 0) {
-      html += `<div id="section-collection">`;
-      html += `<div class="filter-section-title">کالکشن‌ها (${filteredCollections.length})</div>`;
-      
-      filteredCollections.forEach(c => {
+  let html = "";
+  if (collections.length) {
+    const filtered = collections.filter(c => !q || normalizeText(c.name).includes(q));
+    if (filtered.length) {
+      html += `<div id="section-collection"><div class="filter-section-title">کالکشن‌ها (${filtered.length})</div>`;
+      filtered.forEach(c => {
         const count = colCounts.get(c.address) || 0;
-        const isChecked = tempSelectedCollections.has(c.address) ? 'checked' : '';
-        const imageHtml = getCollectionImage(c);
-        
-        html += `
-          <label class="filter-item">
-            <div class="filter-item-left">
-              <div class="checkbox-wrapper">
-                <input type="checkbox" class="col-checkbox" value="${escapeHtml(c.address)}" ${isChecked}>
-                <span class="checkmark"></span>
-              </div>
-              <div class="filter-icon">${imageHtml}</div>
-              <span class="filter-item-text">${escapeHtml(c.name)}</span>
-            </div>
-            <span class="filter-item-count">${count.toLocaleString('fa-IR')}</span>
-          </label>
-        `;
+        const checked = tempSelectedCollections.has(c.address) ? "checked" : "";
+        html += `<label class="filter-item"><div class="filter-item-left">
+          <div class="checkbox-wrapper"><input type="checkbox" class="col-checkbox" value="${escapeHtml(c.address)}" ${checked}><span class="checkmark"></span></div>
+          <div class="filter-icon">${getCollectionImage(c)}</div>
+          <span class="filter-item-text">${escapeHtml(c.name)}</span></div>
+          <span class="filter-item-count">${count.toLocaleString("fa-IR")}</span></label>`;
       });
       html += `</div>`;
     }
   }
-
-  // بخش رنگ‌ها
-  const backdrops = [...backCounts.keys()].sort((a, b) => a.localeCompare(b));
-  if (backdrops.length > 0) {
-    const filteredBackdrops = backdrops.filter(name => !query || normalizeText(name).includes(query));
-    
-    if (filteredBackdrops.length > 0) {
-      html += `<div id="section-backdrop" style="margin-top: 30px;">`;
-      html += `<div class="filter-section-title">رنگ بک‌گراند (${filteredBackdrops.length})</div>`;
-      
-      filteredBackdrops.forEach(name => {
+  const backs = [...backCounts.keys()].sort((a, b) => a.localeCompare(b));
+  if (backs.length) {
+    const filtered = backs.filter(n => !q || normalizeText(n).includes(q));
+    if (filtered.length) {
+      html += `<div id="section-backdrop" style="margin-top:30px"><div class="filter-section-title">رنگ بک‌گراند (${filtered.length})</div>`;
+      filtered.forEach(name => {
         const count = backCounts.get(name) || 0;
-        const isChecked = tempSelectedBackdrops.has(name) ? 'checked' : '';
-        const color = backdropColorCache.get(name) || "#888888";
-        
-        html += `
-          <label class="filter-item">
-            <div class="filter-item-left">
-              <div class="checkbox-wrapper">
-                <input type="checkbox" class="back-checkbox" value="${escapeHtml(name)}" ${isChecked}>
-                <span class="checkmark"></span>
-              </div>
-              <div class="color-circle" style="background-color: ${color};"></div>
-              <span class="filter-item-text">${escapeHtml(name)}</span>
-            </div>
-            <span class="filter-item-count">${count.toLocaleString('fa-IR')}</span>
-          </label>
-        `;
+        const checked = tempSelectedBackdrops.has(name) ? "checked" : "";
+        const color = backdropColorCache.get(name) || "#888";
+        html += `<label class="filter-item"><div class="filter-item-left">
+          <div class="checkbox-wrapper"><input type="checkbox" class="back-checkbox" value="${escapeHtml(name)}" ${checked}><span class="checkmark"></span></div>
+          <div class="color-circle" style="background-color:${color}"></div>
+          <span class="filter-item-text">${escapeHtml(name)}</span></div>
+          <span class="filter-item-count">${count.toLocaleString("fa-IR")}</span></label>`;
       });
       html += `</div>`;
     }
   }
-
-  if (!html) {
-    html = `<div style="text-align:center; padding: 40px; color:var(--muted);">موردی یافت نشد.</div>`;
-  }
-
+  if (!html) html = `<div style="text-align:center;padding:40px;color:var(--muted)">موردی یافت نشد.</div>`;
   el.filterContent.innerHTML = html;
 }
-
-// تغییرات فقط در حافظه موقت
-el.filterContent.addEventListener("change", (e) => {
-  if (e.target.classList.contains('col-checkbox')) {
-    if (e.target.checked) tempSelectedCollections.add(e.target.value);
-    else tempSelectedCollections.delete(e.target.value);
-  } else if (e.target.classList.contains('back-checkbox')) {
-    if (e.target.checked) tempSelectedBackdrops.add(e.target.value);
-    else tempSelectedBackdrops.delete(e.target.value);
+el.filterContent.addEventListener("change", e => {
+  if (e.target.classList.contains("col-checkbox")) {
+    e.target.checked ? tempSelectedCollections.add(e.target.value) : tempSelectedCollections.delete(e.target.value);
+  } else if (e.target.classList.contains("back-checkbox")) {
+    e.target.checked ? tempSelectedBackdrops.add(e.target.value) : tempSelectedBackdrops.delete(e.target.value);
   }
 });
-
 function applyFilterModalChanges() {
   selectedCollections.clear();
-  tempSelectedCollections.forEach(val => selectedCollections.add(val));
-
+  tempSelectedCollections.forEach(v => selectedCollections.add(v));
   selectedBackdrops.clear();
-  tempSelectedBackdrops.forEach(val => selectedBackdrops.add(val));
-
+  tempSelectedBackdrops.forEach(v => selectedBackdrops.add(v));
   closeFilterModal();
   refreshFromStart();
 }
-
-/* ===================== رویدادها ===================== */
-document.addEventListener('contextmenu', event => event.preventDefault());
-
-el.collectionTrigger.addEventListener("click", () => openFilterModal('collection'));
-el.backdropTrigger.addEventListener("click", () => openFilterModal('backdrop'));
-el.closeFilterModal.addEventListener("click", closeFilterModal);
-el.applyFiltersBtn.addEventListener("click", applyFilterModalChanges);
-el.filterSearchInput.addEventListener("input", debounce(renderFilterContent, 250));
-
-el.filterModal.addEventListener("click", e => {
-  if (e.target === el.filterModal) closeFilterModal();
-});
-
-el.search.addEventListener("input", () => {
-  endInteraction();
-  debouncedRefresh();
-});
-const debouncedRefresh = debounce(() => { refreshFromStart(); }, 300);
-
-el.sort.addEventListener("change", () => { refreshFromStart(); });
-
-el.refreshBtn.addEventListener("click", () => { fullSync(true); });
-
-// عملکرد دکمه‌های حذف فیلتر
 function clearAllFilters() {
   tempSelectedCollections.clear();
   tempSelectedBackdrops.clear();
   selectedCollections.clear();
   selectedBackdrops.clear();
-  
   closeFilterModal();
   refreshFromStart();
 }
 
+/* ========== رویدادها ========== */
+document.addEventListener("contextmenu", e => e.preventDefault());
+el.collectionTrigger.addEventListener("click", () => openFilterModal("collection"));
+el.backdropTrigger.addEventListener("click", () => openFilterModal("backdrop"));
+el.closeFilterModal.addEventListener("click", closeFilterModal);
+el.applyFiltersBtn.addEventListener("click", applyFilterModalChanges);
+el.filterSearchInput.addEventListener("input", debounce(renderFilterContent, 250));
+el.filterModal.addEventListener("click", e => { if (e.target === el.filterModal) closeFilterModal(); });
+el.search.addEventListener("input", () => { endInteraction(); debouncedRefresh(); });
+const debouncedRefresh = debounce(() => refreshFromStart(), 300);
+el.sort.addEventListener("change", () => refreshFromStart());
+el.refreshBtn.addEventListener("click", () => fullSync(true));
 el.globalClearFiltersBtn.addEventListener("click", clearAllFilters);
 el.clearFiltersModalBtn.addEventListener("click", clearAllFilters);
-
 el.calcDays.addEventListener("input", () => updateCalc(false));
 el.calcDays.addEventListener("change", () => updateCalc(true));
 el.calcDays.addEventListener("blur", () => updateCalc(true));
 el.calcMinus.addEventListener("click", () => stepDays(-1));
 el.calcPlus.addEventListener("click", () => stepDays(1));
-
-el.grid.addEventListener("click", event => {
-  const viewBtn = event.target.closest("[data-view]");
-  if (viewBtn) openModal(viewBtn.dataset.view);
+el.grid.addEventListener("click", e => {
+  const btn = e.target.closest("[data-view]");
+  if (btn) openModal(btn.dataset.view);
 });
-
 $("modalClose").addEventListener("click", closeModal);
 el.modalBackBtn.addEventListener("click", closeModal);
-el.modal.addEventListener("click", event => { if (event.target === el.modal) closeModal(); });
-document.addEventListener("keydown", event => { 
-    if (event.key === "Escape") {
-        closeModal();
-        closeFilterModal();
-    } 
+el.modal.addEventListener("click", e => { if (e.target === el.modal) closeModal(); });
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") { closeModal(); closeFilterModal(); }
 });
 el.modalBox.addEventListener("keydown", trapFocus);
 el.filterModal.addEventListener("keydown", trapFilterFocus);
-
 el.modalRentLink.addEventListener("click", closeModal);
 el.modalTgLink.addEventListener("click", closeModal);
-
-el.grid.addEventListener("error", event => {
-  const img = event.target;
+el.grid.addEventListener("error", e => {
+  const img = e.target;
   if (!(img instanceof HTMLImageElement) || !img.classList.contains("gift-img")) return;
   const urls = imageSources.get(img.dataset.gift) || [];
-  const nextIdx = parseInt(img.dataset.idx || "0", 10) + 1;
-  if (nextIdx < urls.length) {
-    img.dataset.idx = String(nextIdx);
-    img.setAttribute("src", urls[nextIdx]);
-  } else {
-    img.remove();
-  }
+  const next = parseInt(img.dataset.idx || "0", 10) + 1;
+  if (next < urls.length) {
+    img.dataset.idx = String(next);
+    img.src = urls[next];
+  } else img.remove();
 }, true);
 
 let scrollTicking = false;
@@ -1670,27 +1284,22 @@ document.addEventListener("visibilitychange", () => {
   if (!document.hidden) fastPoll();
 });
 
-/* ===================== شروع ===================== */
-async function start(retryCount = 0) {
+/* ========== شروع ========== */
+async function start(retry = 0) {
   try {
     await loadCollections();
-  } catch (error) {
-    console.error("collections:", error);
-    showError(error);
-    if (retryCount < 3) {
-      const delay = 3000 * (retryCount + 1);
-      setTimeout(() => start(retryCount + 1), delay);
-    }
+  } catch (err) {
+    console.error("collections:", err);
+    showError(err);
+    if (retry < 3) setTimeout(() => start(retry + 1), 3000 * (retry + 1));
     return;
   }
-
   await fullSync(false);
   setInterval(fastPoll, CONFIG.FAST_POLL_MS);
   setInterval(() => {
     if (!document.hidden && !isInteracting) fullSync(false);
   }, CONFIG.FULL_SYNC_MS);
 }
-
 start();
 </script>
 </body>
