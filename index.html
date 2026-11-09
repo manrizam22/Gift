@@ -20,6 +20,7 @@
   --primary: #a78bfa;
   --green: #34d399;
   --orange: #fb923c;
+  --blue: #3b82f6;
 }
 
 * { box-sizing: border-box; }
@@ -113,8 +114,28 @@ header { padding: 25px 0 20px; }
   box-shadow: 0 0 0 3px #a78bfa18;
 }
 
-.control::placeholder { color: #77728d; }
-select.control { cursor: pointer; }
+/* --- دکمه‌های بازکننده فیلتر --- */
+.filter-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  transition: 0.2s;
+}
+.filter-trigger:hover {
+  border-color: #4b4468;
+}
+.filter-trigger .text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80%;
+}
+.filter-trigger.active {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px #a78bfa18;
+}
 
 .results-bar {
   justify-content: space-between;
@@ -146,14 +167,8 @@ select.control { cursor: pointer; }
   transition: 0.2s;
 }
 
-.refresh-btn:hover {
-  background: var(--border);
-}
-
-.refresh-btn.loading svg {
-  animation: spin 1s linear infinite;
-}
-
+.refresh-btn:hover { background: var(--border); }
+.refresh-btn.loading svg { animation: spin 1s linear infinite; }
 @keyframes spin { 100% { transform: rotate(360deg); } }
 
 .grid {
@@ -171,9 +186,7 @@ select.control { cursor: pointer; }
   transition: border-color .2s, box-shadow .2s;
 }
 
-.image-wrap, .card-body {
-  transition: transform .2s;
-}
+.image-wrap, .card-body { transition: transform .2s; }
 
 .card:hover {
   border-color: #8b5cf6aa;
@@ -181,9 +194,7 @@ select.control { cursor: pointer; }
 }
 
 .card:hover .image-wrap,
-.card:hover .card-body {
-  transform: translateY(-4px);
-}
+.card:hover .card-body { transform: translateY(-4px); }
 
 .card.is-new {
   border-color: var(--orange);
@@ -206,207 +217,100 @@ select.control { cursor: pointer; }
 }
 
 .image-placeholder {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-  color: #77728d;
-  font-size: 12px;
+  width: 100%; height: 100%;
+  display: grid; place-items: center;
+  color: #77728d; font-size: 12px;
 }
 
 .image-wrap img.gift-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  padding: 12px;
-  z-index: 1;
-  transition: transform .25s;
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: contain; padding: 12px;
+  z-index: 1; transition: transform .25s;
 }
 
 .card:hover .gift-img { transform: scale(1.06); }
 
 .gift-number {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  z-index: 2;
-  background: #0c0b14df;
-  border: 1px solid #ffffff20;
-  padding: 4px 9px;
-  border-radius: 8px;
-  font-size: 10px;
-  direction: ltr;
+  position: absolute; right: 10px; top: 10px; z-index: 2;
+  background: #0c0b14df; border: 1px solid #ffffff20;
+  padding: 4px 9px; border-radius: 8px;
+  font-size: 10px; direction: ltr;
 }
 
 .new-badge {
-  position: absolute;
-  left: 10px;
-  top: 10px;
-  z-index: 2;
-  background: var(--orange);
-  color: #1a1020;
-  font-weight: 800;
-  padding: 3px 9px;
-  border-radius: 8px;
-  font-size: 10px;
+  position: absolute; left: 10px; top: 10px; z-index: 2;
+  background: var(--orange); color: #1a1020;
+  font-weight: 800; padding: 3px 9px;
+  border-radius: 8px; font-size: 10px;
 }
 
 .card-body { padding: 13px; }
 
 .gift-name {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 700;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  direction: ltr;
-  text-align: right;
+  margin: 0; font-size: 14px; font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  direction: ltr; text-align: right;
 }
 
 .collection-tag {
-  display: inline-block;
-  margin-top: 9px;
-  padding: 4px 8px;
-  border-radius: 7px;
-  background: #34d39912;
-  color: #6ee7b7;
-  border: 1px solid #34d39925;
-  font-size: 10px;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  display: inline-block; margin-top: 9px; padding: 4px 8px;
+  border-radius: 7px; background: #34d39912; color: #6ee7b7;
+  border: 1px solid #34d39925; font-size: 10px;
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 
-.traits {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 10px;
-  min-height: 25px;
-}
-
-.trait {
-  background: #a78bfa13;
-  color: #c4b5fd;
-  border: 1px solid #a78bfa25;
-  padding: 3px 7px;
-  border-radius: 7px;
-  font-size: 10px;
-}
+.traits { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; min-height: 25px; }
+.trait { background: #a78bfa13; color: #c4b5fd; border: 1px solid #a78bfa25; padding: 3px 7px; border-radius: 7px; font-size: 10px; }
 
 .card-info {
-  margin-top: 13px;
-  padding-top: 11px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  align-items: center;
+  margin-top: 13px; padding-top: 11px; border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; gap: 8px; align-items: center;
 }
 
 .price-label, .duration { color: var(--muted); font-size: 10px; }
-
-.price-value {
-  margin-top: 3px;
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--green);
-}
-
-.telegram-fee {
-  margin-top: 4px;
-  font-size: 9px;
-  font-weight: 600;
-  color: var(--orange);
-  line-height: 1.4;
-}
-
+.price-value { margin-top: 3px; font-size: 13px; font-weight: 800; color: var(--green); }
+.telegram-fee { margin-top: 4px; font-size: 9px; font-weight: 600; color: var(--orange); line-height: 1.4; }
 .duration { text-align: left; }
 
-.card-actions {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 8px;
-  margin-top: 12px;
-}
-
+.card-actions { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 12px; }
 .btn {
-  display: block;
-  text-align: center;
-  text-decoration: none;
-  border-radius: 10px;
-  padding: 10px;
-  color: white;
-  font-weight: 700;
-  font-size: 12px;
-  border: 0;
-  cursor: pointer;
+  display: block; text-align: center; text-decoration: none;
+  border-radius: 10px; padding: 10px; color: white;
+  font-weight: 700; font-size: 12px; border: 0; cursor: pointer;
 }
-
 .btn:hover { filter: brightness(1.15); }
-
-.btn-view {
-  background: #2a2640;
-  border: 1px solid #4b4468;
-  color: #ddd6fe;
-}
-
+.btn-view { background: #2a2640; border: 1px solid #4b4468; color: #ddd6fe; }
 .btn-rent { background: linear-gradient(120deg, #8b5cf6, #6d28d9); }
 .btn-tg { background: #229ed9; }
 
 .empty, .loading, .error {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 55px 15px;
-  color: var(--muted);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
+  grid-column: 1 / -1; text-align: center; padding: 55px 15px;
+  color: var(--muted); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 16px;
 }
 
 footer {
-  border-top: 1px solid var(--border);
-  padding: 22px 0;
-  margin-top: 40px;
-  text-align: center;
-  color: var(--muted);
-  font-size: 11px;
+  border-top: 1px solid var(--border); padding: 22px 0;
+  margin-top: 40px; text-align: center; color: var(--muted); font-size: 11px;
 }
 
-/* ---------- Modal ---------- */
+/* ---------- Modal و ماشین حساب ---------- */
 .modal {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  background: #05040bd9;
-  backdrop-filter: blur(6px);
+  position: fixed; inset: 0; z-index: 100; display: none;
+  align-items: center; justify-content: center; padding: 16px;
+  background: #05040bd9; backdrop-filter: blur(6px);
 }
 
 .modal.open { display: flex; animation: fade .2s ease-out; }
-
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 
 .modal-box {
-  position: relative;
-  width: min(480px, 100%);
-  max-height: calc(100vh - 32px);
-  overflow-y: auto;
-  overflow-x: hidden;
-  overscroll-behavior: contain;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 22px;
-  padding: 18px;
-  animation: pop .25s ease-out;
-  scroll-behavior: smooth;
+  position: relative; width: min(480px, 100%);
+  max-height: calc(100vh - 32px); overflow-y: auto; overflow-x: hidden;
+  overscroll-behavior: contain; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 22px;
+  padding: 18px; animation: pop .25s ease-out; scroll-behavior: smooth;
 }
 
 @keyframes pop {
@@ -415,200 +319,187 @@ footer {
 }
 
 .modal-close {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  z-index: 5;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: #0c0b14cc;
-  color: white;
-  font-size: 18px;
-  cursor: pointer;
+  position: absolute; top: 12px; left: 12px; z-index: 5;
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid var(--border); background: #0c0b14cc;
+  color: white; font-size: 18px; cursor: pointer;
 }
 
 .modal-stage {
-  position: relative;
-  aspect-ratio: 1 / 1;
-  max-width: min(100%, 34vh);
-  margin-inline: auto;
-  border-radius: 17px;
-  overflow: hidden;
+  position: relative; aspect-ratio: 1 / 1; max-width: min(100%, 34vh);
+  margin-inline: auto; border-radius: 17px; overflow: hidden;
   background: radial-gradient(circle at 50% 40%, #3a2c63, #171523 75%);
-  display: grid;
-  place-items: center;
+  display: grid; place-items: center;
 }
 
-.modal-stage .anim,
-.modal-stage img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  padding: 10px;
+.modal-stage .anim, .modal-stage img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: contain; padding: 10px;
 }
 
-.modal-stage .stage-msg {
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.modal-title {
-  margin: 16px 0 4px;
-  font-size: 18px;
-  direction: ltr;
-  text-align: right;
-}
+.modal-stage .stage-msg { color: var(--muted); font-size: 12px; }
+.modal-title { margin: 16px 0 4px; font-size: 18px; direction: ltr; text-align: right; }
 
 .modal-price {
-  margin: 14px 0;
-  padding: 12px 14px;
-  background: #34d39910;
-  border: 1px solid #34d39930;
-  border-radius: 12px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 6px 10px;
+  margin: 14px 0; padding: 12px 14px; background: #34d39910;
+  border: 1px solid #34d39930; border-radius: 12px;
+  display: flex; flex-wrap: wrap; justify-content: space-between;
+  align-items: center; gap: 6px 10px;
 }
 
 .modal-price strong { color: var(--green); font-size: 17px; }
-
-.modal-price .telegram-fee {
-  flex: 1 1 100%;
-  min-width: 0;
-  margin: 0;
-  font-size: 10px;
-  line-height: 1.7;
-  text-align: right;
-  white-space: normal;
-  overflow-wrap: break-word;
-}
-
+.modal-price .telegram-fee { flex: 1 1 100%; min-width: 0; margin: 0; font-size: 10px; line-height: 1.7; text-align: right; white-space: normal; overflow-wrap: break-word; }
 .modal-meta { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
 
-/* ---------- ماشین حساب اجاره ---------- */
-.calc {
-  margin-top: 12px;
-  padding: 14px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-}
-
+.calc { margin-top: 12px; padding: 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; }
 .calc-title { font-size: 13px; font-weight: 700; margin-bottom: 12px; }
-
-.calc-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
+.calc-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .calc-row label { color: var(--muted); font-size: 12px; }
 
-.stepper {
-  display: flex;
-  align-items: stretch;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  overflow: hidden;
-  background: var(--surface);
-  direction: ltr;
-}
-
-.stepper button {
-  width: 38px;
-  border: 0;
-  background: #2a2640;
-  color: #ddd6fe;
-  font-size: 18px;
-  cursor: pointer;
-}
-
+.stepper { display: flex; align-items: stretch; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface); direction: ltr; }
+.stepper button { width: 38px; border: 0; background: #2a2640; color: #ddd6fe; font-size: 18px; cursor: pointer; }
 .stepper button:hover { background: #342f50; }
-
-.stepper input {
-  width: 62px;
-  height: 38px;
-  border: 0;
-  outline: none;
-  text-align: center;
-  background: transparent;
-  color: var(--text);
-  font-weight: 700;
-  -moz-appearance: textfield;
-}
-
-.stepper input::-webkit-outer-spin-button,
-.stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.stepper input { width: 62px; height: 38px; border: 0; outline: none; text-align: center; background: transparent; color: var(--text); font-weight: 700; -moz-appearance: textfield; }
+.stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
 .calc-hint { min-height: 16px; margin-top: 6px; color: var(--muted); font-size: 11px; }
-
-.calc-lines {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px dashed var(--border);
-  display: grid;
-  gap: 7px;
-}
-
-.calc-lines div,
-.calc-total {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  font-size: 12px;
-  color: var(--muted);
-}
-
+.calc-lines { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); display: grid; gap: 7px; }
+.calc-lines div, .calc-total { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); }
 .calc-lines strong { color: var(--text); font-size: 12px; }
 
-.calc-total {
-  margin-top: 10px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  background: #34d39912;
-  border: 1px solid #34d39935;
-  color: var(--text);
-  font-weight: 700;
-  font-size: 13px;
-}
-
+.calc-total { margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: #34d39912; border: 1px solid #34d39935; color: var(--text); font-weight: 700; font-size: 13px; }
 .calc-total strong { color: var(--green); font-size: 16px; }
 
-.modal-actions {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-  margin-top: 16px;
-}
+.modal-actions { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 16px; }
 
 /* ---------- Toast ---------- */
 .toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translate(-50%, 30px);
-  z-index: 200;
-  background: #231f36;
-  border: 1px solid var(--orange);
-  color: white;
-  padding: 11px 20px;
-  border-radius: 12px;
-  font-size: 13px;
-  opacity: 0;
-  pointer-events: none;
-  transition: .3s;
+  position: fixed; bottom: 20px; left: 50%; transform: translate(-50%, 30px);
+  z-index: 200; background: #231f36; border: 1px solid var(--orange);
+  color: white; padding: 11px 20px; border-radius: 12px;
+  font-size: 13px; opacity: 0; pointer-events: none; transition: .3s;
 }
-
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
+/* ---------- Custom Filter Modal ---------- */
+.filter-modal {
+  position: fixed; inset: 0; z-index: 150; display: none;
+  background: #05040bd9; backdrop-filter: blur(4px);
+  align-items: flex-end; /* موبایل از پایین بیاد */
+  justify-content: center;
+}
+@media(min-width: 650px) {
+  .filter-modal { align-items: center; padding: 20px; }
+}
+.filter-modal.open { display: flex; animation: fade .2s ease-out; }
+
+.filter-box {
+  background: var(--surface);
+  width: 100%; max-width: 600px;
+  height: 85vh; /* ارتفاع برای موبایل */
+  border-radius: 24px 24px 0 0;
+  display: flex; flex-direction: column;
+  animation: slideUp .3s ease-out;
+}
+@media(min-width: 650px) {
+  .filter-box { height: 80vh; border-radius: 24px; max-height: 800px; }
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+.filter-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+}
+.filter-header h2 { margin: 0; font-size: 18px; font-weight: 700; }
+.filter-close {
+  background: var(--surface2); border: none; color: var(--text);
+  width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+}
+
+.filter-search-box {
+  padding: 12px 20px; border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.filter-search-box input {
+  width: 100%; height: 42px; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 0 12px; color: var(--text); outline: none;
+}
+.filter-search-box input:focus { border-color: var(--primary); }
+
+.filter-content {
+  flex: 1; overflow-y: auto; padding: 10px 20px;
+}
+
+.filter-section-title {
+  font-size: 14px; font-weight: 700; margin: 15px 0 10px;
+  color: var(--muted); display: flex; justify-content: space-between;
+}
+
+.filter-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0; border-bottom: 1px solid #ffffff0a;
+  cursor: pointer;
+}
+.filter-item:last-child { border-bottom: none; }
+.filter-item:hover { background: #ffffff05; border-radius: 8px; }
+
+.filter-item-left {
+  display: flex; align-items: center; gap: 12px;
+}
+
+/* Custom Checkbox */
+.checkbox-wrapper {
+  position: relative; width: 22px; height: 22px;
+}
+.checkbox-wrapper input {
+  position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0;
+}
+.checkmark {
+  position: absolute; top: 0; left: 0; height: 22px; width: 22px;
+  background-color: transparent; border: 2px solid var(--muted);
+  border-radius: 6px; transition: 0.2s;
+}
+.checkbox-wrapper input:checked ~ .checkmark {
+  background-color: var(--blue); border-color: var(--blue);
+}
+.checkmark:after {
+  content: ""; position: absolute; display: none;
+  left: 6px; top: 2px; width: 5px; height: 10px;
+  border: solid white; border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.checkbox-wrapper input:checked ~ .checkmark:after { display: block; }
+
+/* Collection icon/image */
+.filter-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: var(--surface2); display: flex; align-items: center; justify-content: center;
+  font-size: 16px; overflow: hidden;
+}
+.filter-icon img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Color Circle */
+.color-circle {
+  width: 24px; height: 24px; border-radius: 50%; display: inline-block;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2);
+}
+
+.filter-item-text { font-size: 14px; font-weight: 500; }
+.filter-item-count { font-size: 12px; color: var(--muted); }
+
+.filter-footer {
+  padding: 16px 20px; border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+.btn-apply {
+  width: 100%; background: var(--blue); color: white;
+  padding: 14px; border-radius: 12px; font-size: 16px;
+  font-weight: 700; border: none; cursor: pointer;
+}
+.btn-apply:hover { background: #2563eb; }
+
+/* Responsive adjustments */
 @media(max-width: 950px) {
   .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .toolbar { grid-template-columns: 1fr 1fr 1fr; }
@@ -618,8 +509,7 @@ footer {
 @media(max-width: 650px) {
   .container { width: min(100% - 22px, 500px); }
   .toolbar { grid-template-columns: 1fr 1fr; }
-  .search-field,
-  .backdrop-field { grid-column: 1 / -1; }
+  .search-field { grid-column: 1 / -1; }
   .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .card-body { padding: 10px; }
   .gift-name { font-size: 12px; }
@@ -627,13 +517,6 @@ footer {
   .price-value { font-size: 11px; }
   .telegram-fee { font-size: 8px; }
   .duration { font-size: 9px; }
-}
-
-@media(max-width: 360px) {
-  .grid { gap: 8px; }
-  .toolbar { grid-template-columns: 1fr; }
-  .search-field,
-  .backdrop-field { grid-column: auto; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -685,18 +568,21 @@ footer {
         </select>
       </div>
 
+      <!-- دکمه‌های باز کردن فیلتر -->
       <div class="field">
-        <label for="collectionFilter">دسته‌بندی / کالکشن</label>
-        <select id="collectionFilter" class="control">
-          <option value="">همه کالکشن‌ها</option>
-        </select>
+        <label>دسته‌بندی / کالکشن</label>
+        <div class="control filter-trigger" id="collectionTrigger">
+          <span class="text" id="collectionText">همه کالکشن‌ها</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
       </div>
 
-      <div class="field backdrop-field">
-        <label for="backdropFilter">رنگ بک‌گراند</label>
-        <select id="backdropFilter" class="control">
-          <option value="">همه رنگ‌ها</option>
-        </select>
+      <div class="field">
+        <label>رنگ بک‌گراند</label>
+        <div class="control filter-trigger" id="backdropTrigger">
+          <span class="text" id="backdropText">همه رنگ‌ها</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
       </div>
     </section>
   </div>
@@ -777,6 +663,28 @@ footer {
   </div>
 </div>
 
+<!-- مودال فیلترها (کالکشن و رنگ) -->
+<div class="filter-modal" id="filterModal">
+  <div class="filter-box">
+    <div class="filter-header">
+      <h2>فیلترها</h2>
+      <button class="filter-close" id="closeFilterModal">✕</button>
+    </div>
+    
+    <div class="filter-search-box">
+      <input type="text" id="filterSearchInput" placeholder="جستجوی کالکشن یا رنگ...">
+    </div>
+
+    <div class="filter-content" id="filterContent">
+      <!-- به صورت داینامیک پر می‌شود -->
+    </div>
+
+    <div class="filter-footer">
+      <button class="btn-apply" id="applyFiltersBtn">اعمال فیلترها</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
@@ -800,6 +708,32 @@ const CONFIG = {
 
 const FEE_NOTE_TEXT = `+ ${CONFIG.TELEGRAM_FEE_TOMAN.toLocaleString("fa-IR")} تومان کارمزد تلگرام به مبلغ کل اضافه می‌شود`;
 
+// نقشه رنگ‌ها برای نمایش دایره‌های رنگی
+const COLOR_MAP = {
+  "tomato": "#e74c3c",
+  "mustard": "#f1c40f",
+  "carmine": "#c0392b",
+  "ranger green": "#27ae60",
+  "marine blue": "#2980b9",
+  "feldgrau": "#4f5d4e",
+  "french violet": "#8e44ad",
+  "amber": "#f59e0b",
+  "aquamarine": "#00ced1",
+  "azure blue": "#007fff",
+  "battleship grey": "#848482",
+  "black": "#000000",
+  "burgundy": "#800020",
+  "burnt sienna": "#e97451",
+  "camo green": "#78866b",
+  "cappuccino": "#c2a98d",
+  "caramel": "#c68e17",
+  "carrot juice": "#ed9121",
+  "clover green": "#3ea055",
+  "cotton candy": "#ffbcd9",
+  "crimson": "#dc143c",
+  "default": "#9b97b1"
+};
+
 /* ===================== وضعیت ===================== */
 let giftMap = new Map();
 let collections = [];
@@ -816,6 +750,10 @@ let lastFocused = null;
 let isInteracting = false;
 let pendingRefresh = false;
 
+// مجموعه‌های انتخاب شده (برای فیلتر چندانتخابی)
+const selectedCollections = new Set();
+const selectedBackdrops = new Set();
+
 const imageSources = new Map();
 const $ = id => document.getElementById(id);
 
@@ -823,8 +761,6 @@ const el = {
   grid: $("giftGrid"),
   search: $("searchInput"),
   sort: $("sortSelect"),
-  collection: $("collectionFilter"),
-  backdrop: $("backdropFilter"),
   showing: $("showingText"),
   toast: $("toast"),
   modal: $("giftModal"),
@@ -849,6 +785,17 @@ const el = {
   modalBackBtn: $("modalBackBtn"),
   rentCalculator: $("rentCalculator"),
   refreshBtn: $("manualRefreshBtn"),
+  
+  // Filter Modal Elements
+  collectionTrigger: $("collectionTrigger"),
+  collectionText: $("collectionText"),
+  backdropTrigger: $("backdropTrigger"),
+  backdropText: $("backdropText"),
+  filterModal: $("filterModal"),
+  filterContent: $("filterContent"),
+  filterSearchInput: $("filterSearchInput"),
+  closeFilterModal: $("closeFilterModal"),
+  applyFiltersBtn: $("applyFiltersBtn"),
 };
 
 /* ===================== توابع کمکی ===================== */
@@ -910,6 +857,11 @@ function getBackdrop(gift) {
   const key = Object.keys(attrs).find(k => /backdrop|background|بک/i.test(k));
   if (!key) return "";
   return String(attrs[key] ?? "").replace(/\s*(.*?)\s*$/, "$1").trim();
+}
+
+function getBackdropColor(name) {
+  if (!name) return COLOR_MAP["default"];
+  return COLOR_MAP[name.toLowerCase().trim()] || COLOR_MAP["default"];
 }
 
 function getGiftNumber(gift) {
@@ -978,21 +930,13 @@ function formatToman(value) {
   return `${value.toLocaleString("fa-IR")} تومان`;
 }
 
-function formatFeeNote() {
-  return FEE_NOTE_TEXT;
-}
-
 /* ===================== ارتباط با API ===================== */
 async function apiGet(path, params = {}) {
-  params._t = Date.now(); // دور زدن کش
+  params._t = Date.now();
   const query = new URLSearchParams(params).toString();
   const url = `${CONFIG.API_BASE}${path}?${query}`;
   
-  const response = await fetch(url, { 
-    method: "GET",
-    cache: "no-store"
-  });
-  
+  const response = await fetch(url, { method: "GET", cache: "no-store" });
   if (!response.ok) throw new Error(`HTTP ${response.status} (${path})`);
   return response.json();
 }
@@ -1000,7 +944,6 @@ async function apiGet(path, params = {}) {
 function extractRecords(payload) {
   if (Array.isArray(payload)) return payload;
   if (!payload || typeof payload !== "object") return [];
-
   for (const key of ["items", "results", "gifts", "collections", "data"]) {
     const value = payload[key];
     if (Array.isArray(value)) return value;
@@ -1018,14 +961,10 @@ function getNextCursor(payload, current) {
     payload.next_cursor, payload.next, payload.next_page, payload.cursor, payload.next_offset,
     payload.pagination && payload.pagination.next_cursor,
     payload.pagination && payload.pagination.next,
-    payload.pagination && payload.pagination.offset,
-    payload.page_info && payload.page_info.next_cursor,
-    payload.page_info && payload.page_info.end_cursor,
     payload.meta && payload.meta.next_cursor,
     payload.meta && payload.meta.next,
     payload.meta && payload.meta.offset
   ];
-
   for (const value of candidates) {
     if (value === null || value === undefined || value === false || value === "") continue;
     if (typeof value === "string" || typeof value === "number") {
@@ -1059,63 +998,7 @@ async function loadCollections() {
   collections = fresh;
   collectionByAddress = new Map(collections.map(c => [c.address, c]));
   collectionByKey = new Map(collections.map(c => [nameKey(c.name), c]));
-  fillCollectionSelect();
   return true;
-}
-
-function fillCollectionSelect() {
-  if (isInteracting && document.activeElement === el.collection) return;
-  const current = el.collection.value;
-  el.collection.innerHTML = '<option value="">همه کالکشن‌ها</option>';
-  collections.forEach(collection => {
-    const option = document.createElement("option");
-    option.value = collection.address;
-    option.textContent = collection.name;
-    el.collection.appendChild(option);
-  });
-  el.collection.value = current;
-}
-
-function fillBackdropSelect() {
-  if (isInteracting && document.activeElement === el.backdrop) return;
-
-  const counts = new Map();
-  giftMap.forEach(gift => {
-    if (!gift._backdrop) return;
-    counts.set(gift._backdrop, (counts.get(gift._backdrop) || 0) + 1);
-  });
-
-  const current = el.backdrop.value;
-  const newOptions = [...counts.entries()].sort((a, b) => a[0].localeCompare(b[0]));
-  const currentOptions = Array.from(el.backdrop.options).slice(1); 
-  let needsUpdate = currentOptions.length !== newOptions.length;
-
-  if (!needsUpdate) {
-    for (let i = 0; i < newOptions.length; i++) {
-      const [name, count] = newOptions[i];
-      const expectedText = `${name} (${count.toLocaleString("fa-IR")})`;
-      if (currentOptions[i].value !== name || currentOptions[i].textContent !== expectedText) {
-        needsUpdate = true;
-        break;
-      }
-    }
-  }
-
-  if (!needsUpdate) {
-    if (el.backdrop.value !== (counts.has(current) ? current : "")) {
-        el.backdrop.value = counts.has(current) ? current : "";
-    }
-    return;
-  }
-
-  el.backdrop.innerHTML = '<option value="">همه رنگ‌ها</option>';
-  newOptions.forEach(([name, count]) => {
-    const option = document.createElement("option");
-    option.value = name;
-    option.textContent = `${name} (${count.toLocaleString("fa-IR")})`;
-    el.backdrop.appendChild(option);
-  });
-  el.backdrop.value = counts.has(current) ? current : "";
 }
 
 function resolveCollection(gift) {
@@ -1181,11 +1064,9 @@ async function fullSync(isManual = false) {
       records.forEach(gift => {
         if (!gift || !gift.nft_address) return;
         const old = giftMap.get(gift.nft_address);
-        // مهم: در لود کامل، تگ جدید نمی‌دهیم (false)
         fresh.set(gift.nft_address, prepareGift(gift, old, false));
       });
 
-      // ✅ لود تدریجی: به محض دریافت هر صفحه، به مپ اصلی اضافه و رندر می‌شود
       if (!isManual && !isInteracting) {
         for (const [key, val] of fresh) {
           const old = giftMap.get(key);
@@ -1205,20 +1086,14 @@ async function fullSync(isManual = false) {
       cursor = next;
     }
 
-    console.log(`FullSync: Total gifts fetched from API: ${totalFetched}`);
-
-    // پاکسازی آیتم‌های حذف شده
     for (const key of giftMap.keys()) {
       if (!fresh.has(key)) giftMap.delete(key);
     }
-    
-    // آپدیت نهایی
     for (const [key, val] of fresh) {
       const old = giftMap.get(key);
       if (old && old._newUntil) val._newUntil = old._newUntil;
       giftMap.set(key, val);
     }
-
     for (const key of imageSources.keys()) {
       if (!giftMap.has(key)) imageSources.delete(key);
     }
@@ -1233,13 +1108,12 @@ async function fullSync(isManual = false) {
   } finally {
     syncing = false;
     if (isManual) el.refreshBtn.classList.remove("loading");
-    if (filteredGifts.length === 0) refresh(); // برای پاک کردن حالت لودینگ در صورت خالی بودن
+    if (filteredGifts.length === 0) refresh();
   }
 }
 
 async function fastPoll() {
-  if (syncing || document.hidden || giftMap.size === 0) return;
-  if (isInteracting) return;
+  if (syncing || document.hidden || giftMap.size === 0 || isInteracting) return;
 
   try {
     const payload = await fetchGiftsPage(null);
@@ -1248,7 +1122,6 @@ async function fastPoll() {
     
     records.forEach(gift => {
       if (!gift || !gift.nft_address || giftMap.has(gift.nft_address)) return;
-      // ✅ تگ جدید فقط در پولینگ زنده (8 ثانیه) داده می‌شود (true)
       giftMap.set(gift.nft_address, prepareGift(gift, null, true));
       added++;
     });
@@ -1265,16 +1138,42 @@ async function fastPoll() {
 /* ===================== فیلتر و رندر ===================== */
 function applyFilters() {
   const query = normalizeText(el.search.value);
-  const collectionAddress = el.collection.value;
-  const backdrop = el.backdrop.value;
-
+  
   filteredGifts = [...giftMap.values()].filter(gift => {
     if (query && !gift._searchText.includes(query)) return false;
-    if (collectionAddress && gift.collection_address !== collectionAddress) return false;
-    if (backdrop && gift._backdrop !== backdrop) return false;
+    
+    // فیلتر چندانتخابی کالکشن
+    if (selectedCollections.size > 0 && !selectedCollections.has(gift.collection_address)) return false;
+    
+    // فیلتر چندانتخابی رنگ
+    if (selectedBackdrops.size > 0 && !selectedBackdrops.has(gift._backdrop)) return false;
+    
     return true;
   });
+  
+  // آپدیت متن دکمه‌ها
+  updateFilterButtonTexts();
   sortGifts();
+}
+
+function updateFilterButtonTexts() {
+  if (selectedCollections.size === 0) {
+    el.collectionText.textContent = "همه کالکشن‌ها";
+  } else if (selectedCollections.size === 1) {
+    const addr = [...selectedCollections][0];
+    const col = collections.find(c => c.address === addr);
+    el.collectionText.textContent = col ? col.name : "1 کالکشن انتخاب شده";
+  } else {
+    el.collectionText.textContent = `${selectedCollections.size} کالکشن انتخاب شده`;
+  }
+
+  if (selectedBackdrops.size === 0) {
+    el.backdropText.textContent = "همه رنگ‌ها";
+  } else if (selectedBackdrops.size === 1) {
+    el.backdropText.textContent = [...selectedBackdrops][0];
+  } else {
+    el.backdropText.textContent = `${selectedBackdrops.size} رنگ انتخاب شده`;
+  }
 }
 
 function sortGifts() {
@@ -1336,7 +1235,7 @@ function createCard(gift) {
         <div>
           <div class="price-label">اجاره روزانه</div>
           <div class="price-value">${formatToman(toman)}</div>
-          <div class="telegram-fee">${formatFeeNote()}</div>
+          <div class="telegram-fee">${FEE_NOTE_TEXT}</div>
         </div>
         <div class="duration">
           حداکثر مدت اجاره
@@ -1435,7 +1334,7 @@ function renderGifts(count) {
     if (syncing) {
       el.grid.innerHTML = `<div class="loading">در حال دریافت اطلاعات از سرور...</div>`;
     } else {
-      el.grid.innerHTML = `<div class="empty"><strong>گیفتی پیدا نشد!</strong><p>عبارت جست‌وجو، کالکشن یا رنگ بک‌گراند را تغییر بده.</p></div>`;
+      el.grid.innerHTML = `<div class="empty"><strong>گیفتی پیدا نشد!</strong><p>فیلترها یا عبارت جست‌وجو را تغییر بده.</p></div>`;
     }
     visibleCount = 0;
     updateShowingText();
@@ -1462,7 +1361,6 @@ function refresh() {
     pendingRefresh = true;
     return;
   }
-  fillBackdropSelect();
   applyFilters();
   renderGifts(visibleCount || CONFIG.PAGE_SIZE);
 }
@@ -1477,7 +1375,7 @@ function refreshFromStart() {
 }
 
 function showError(error) {
-  el.grid.innerHTML = `<div class="error"><strong>دریافت اطلاعات با مشکل مواجه شد.</strong><p>${escapeHtml(error.message)}</p><p>اتصال اینترنت خود را بررسی کنید (در صورت نیاز VPN را روشن/خاموش کنید).</p></div>`;
+  el.grid.innerHTML = `<div class="error"><strong>دریافت اطلاعات با مشکل مواجه شد.</strong><p>${escapeHtml(error.message)}</p><p>اتصال اینترنت خود را بررسی کنید.</p></div>`;
   el.showing.textContent = "خطا در دریافت اطلاعات";
 }
 
@@ -1489,7 +1387,7 @@ function showToast(text) {
   toastTimer = setTimeout(() => el.toast.classList.remove("show"), 3500);
 }
 
-/* ===================== مودال ===================== */
+/* ===================== مودال مشاهده گیفت ===================== */
 function destroyAnimation() {
   if (lottieInstance) { lottieInstance.destroy(); lottieInstance = null; }
   el.modalStage.innerHTML = "";
@@ -1550,7 +1448,7 @@ function openModal(address) {
   el.modalTraits.innerHTML = Object.entries(getAttributes(gift))
     .map(([k, v]) => `<span class="trait">${escapeHtml(k)}: ${escapeHtml(v)}</span>`).join("");
   el.modalPrice.textContent = formatToman(getPriceToman(gift));
-  el.modalFee.textContent = formatFeeNote();
+  el.modalFee.textContent = FEE_NOTE_TEXT;
   el.modalDuration.textContent = `حداکثر مدت اجاره: ${formatDuration(gift.max_duration)}`;
   el.modalTgLink.href = getTelegramUrl(gift);
   currentGift = gift;
@@ -1584,47 +1482,186 @@ function trapFocus(event) {
   else if (!event.shiftKey && document.activeElement === last) { first.focus(); event.preventDefault(); }
 }
 
+/* ===================== مودال فیلترها ===================== */
+function openFilterModal(type) { // type: 'collection' | 'backdrop'
+  renderFilterContent();
+  
+  if (type === 'collection') {
+    el.collectionTrigger.classList.add('active');
+    el.backdropTrigger.classList.remove('active');
+  } else {
+    el.backdropTrigger.classList.add('active');
+    el.collectionTrigger.classList.remove('active');
+  }
+
+  el.filterModal.classList.add("open");
+  document.body.classList.add("modal-open");
+  
+  // اسکرول به بخش مورد نظر
+  setTimeout(() => {
+    const targetId = type === 'collection' ? 'section-collection' : 'section-backdrop';
+    const targetEl = document.getElementById(targetId);
+    if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+function closeFilterModal() {
+  el.filterModal.classList.remove("open");
+  if (!el.modal.classList.contains("open")) {
+    document.body.classList.remove("modal-open");
+  }
+  el.collectionTrigger.classList.remove('active');
+  el.backdropTrigger.classList.remove('active');
+}
+
+function renderFilterContent() {
+  const query = normalizeText(el.filterSearchInput.value);
+  
+  // محاسبه تعداد گیفت‌ها برای هر کالکشن و رنگ
+  const colCounts = new Map();
+  const backCounts = new Map();
+  
+  giftMap.forEach(g => {
+    if (g.collection_address) {
+      colCounts.set(g.collection_address, (colCounts.get(g.collection_address) || 0) + 1);
+    }
+    if (g._backdrop) {
+      backCounts.set(g._backdrop, (backCounts.get(g._backdrop) || 0) + 1);
+    }
+  });
+
+  let html = '';
+
+  // --- بخش کالکشن‌ها ---
+  if (collections.length > 0) {
+    const filteredCollections = collections.filter(c => !query || normalizeText(c.name).includes(query));
+    
+    if (filteredCollections.length > 0) {
+      html += `<div id="section-collection">`;
+      html += `<div class="filter-section-title">کالکشن‌ها (${filteredCollections.length})</div>`;
+      
+      filteredCollections.forEach(c => {
+        const count = colCounts.get(c.address) || 0;
+        const isChecked = selectedCollections.has(c.address) ? 'checked' : '';
+        
+        html += `
+          <label class="filter-item">
+            <div class="filter-item-left">
+              <div class="checkbox-wrapper">
+                <input type="checkbox" class="col-checkbox" value="${escapeHtml(c.address)}" ${isChecked}>
+                <span class="checkmark"></span>
+              </div>
+              <div class="filter-icon">🎁</div>
+              <span class="filter-item-text">${escapeHtml(c.name)}</span>
+            </div>
+            <span class="filter-item-count">${count.toLocaleString('fa-IR')}</span>
+          </label>
+        `;
+      });
+      html += `</div>`;
+    }
+  }
+
+  // --- بخش رنگ‌ها ---
+  const backdrops = [...backCounts.keys()].sort((a, b) => a.localeCompare(b));
+  if (backdrops.length > 0) {
+    const filteredBackdrops = backdrops.filter(name => !query || normalizeText(name).includes(query));
+    
+    if (filteredBackdrops.length > 0) {
+      html += `<div id="section-backdrop" style="margin-top: 30px;">`;
+      html += `<div class="filter-section-title">رنگ بک‌گراند (${filteredBackdrops.length})</div>`;
+      
+      filteredBackdrops.forEach(name => {
+        const count = backCounts.get(name) || 0;
+        const isChecked = selectedBackdrops.has(name) ? 'checked' : '';
+        const color = getBackdropColor(name);
+        
+        html += `
+          <label class="filter-item">
+            <div class="filter-item-left">
+              <div class="checkbox-wrapper">
+                <input type="checkbox" class="back-checkbox" value="${escapeHtml(name)}" ${isChecked}>
+                <span class="checkmark"></span>
+              </div>
+              <div class="color-circle" style="background-color: ${color};"></div>
+              <span class="filter-item-text">${escapeHtml(name)}</span>
+            </div>
+            <span class="filter-item-count">${count.toLocaleString('fa-IR')}</span>
+          </label>
+        `;
+      });
+      html += `</div>`;
+    }
+  }
+
+  if (!html) {
+    html = `<div style="text-align:center; padding: 40px; color:var(--muted);">موردی یافت نشد.</div>`;
+  }
+
+  el.filterContent.innerHTML = html;
+}
+
+function applyFilterModalChanges() {
+  // خواندن مقادیر از دکمه‌های تیک‌خورده در لحظه اعمال
+  selectedCollections.clear();
+  document.querySelectorAll('.col-checkbox:checked').forEach(cb => {
+    selectedCollections.add(cb.value);
+  });
+  
+  selectedBackdrops.clear();
+  document.querySelectorAll('.back-checkbox:checked').forEach(cb => {
+    selectedBackdrops.add(cb.value);
+  });
+
+  closeFilterModal();
+  refreshFromStart();
+}
+
 /* ===================== رویدادها ===================== */
-[el.search, el.sort, el.collection, el.backdrop].forEach(input => {
-  input.addEventListener("pointerdown", startInteraction);
-  input.addEventListener("touchstart", startInteraction, { passive: true });
-  input.addEventListener("focus", startInteraction);
-  input.addEventListener("blur", endInteraction);
+// فیلترها
+el.collectionTrigger.addEventListener("click", () => openFilterModal('collection'));
+el.backdropTrigger.addEventListener("click", () => openFilterModal('backdrop'));
+el.closeFilterModal.addEventListener("click", closeFilterModal);
+el.applyFiltersBtn.addEventListener("click", applyFilterModalChanges);
+el.filterSearchInput.addEventListener("input", debounce(renderFilterContent, 200));
+
+// بستن مودال با کلیک روی پس‌زمینه
+el.filterModal.addEventListener("click", e => {
+  if (e.target === el.filterModal) closeFilterModal();
 });
 
+// جستجوی اصلی
 el.search.addEventListener("input", () => {
   endInteraction();
   debouncedRefresh();
 });
-const debouncedRefresh = debounce(() => {
-  refreshFromStart();
-}, 300);
+const debouncedRefresh = debounce(() => { refreshFromStart(); }, 300);
 
-el.sort.addEventListener("change", () => { endInteraction(); refreshFromStart(); });
-el.collection.addEventListener("change", () => { endInteraction(); refreshFromStart(); });
-el.backdrop.addEventListener("change", () => { endInteraction(); refreshFromStart(); });
+el.sort.addEventListener("change", () => { refreshFromStart(); });
 
-el.refreshBtn.addEventListener("click", () => {
-  fullSync(true);
-});
+el.refreshBtn.addEventListener("click", () => { fullSync(true); });
 
+// ماشین حساب
 el.calcDays.addEventListener("input", () => updateCalc(false));
 el.calcDays.addEventListener("change", () => updateCalc(true));
 el.calcDays.addEventListener("blur", () => updateCalc(true));
 el.calcMinus.addEventListener("click", () => stepDays(-1));
 el.calcPlus.addEventListener("click", () => stepDays(1));
 
+// کارت‌ها
 el.grid.addEventListener("click", event => {
   const viewBtn = event.target.closest("[data-view]");
   if (viewBtn) openModal(viewBtn.dataset.view);
 });
 
+// مودال گیفت
 $("modalClose").addEventListener("click", closeModal);
 el.modalBackBtn.addEventListener("click", closeModal);
 el.modal.addEventListener("click", event => { if (event.target === el.modal) closeModal(); });
 document.addEventListener("keydown", event => { if (event.key === "Escape") closeModal(); });
 el.modalBox.addEventListener("keydown", trapFocus);
 
+// تصاویر
 el.grid.addEventListener("error", event => {
   const img = event.target;
   if (!(img instanceof HTMLImageElement) || !img.classList.contains("gift-img")) return;
@@ -1638,6 +1675,7 @@ el.grid.addEventListener("error", event => {
   }
 }, true);
 
+// اسکرول نامتناهی
 let scrollTicking = false;
 window.addEventListener("scroll", () => {
   if (scrollTicking) return;
@@ -1669,15 +1707,9 @@ async function start(retryCount = 0) {
 
   await fullSync(false);
   setInterval(fastPoll, CONFIG.FAST_POLL_MS);
-
   setInterval(() => {
-    if (!document.hidden) fullSync(false);
+    if (!document.hidden && !isInteracting) fullSync(false);
   }, CONFIG.FULL_SYNC_MS);
-
-  setInterval(() => {
-    if (isInteracting) return;
-    loadCollections().then(changed => { if (changed) refresh(); }).catch(() => {});
-  }, 600000);
 }
 
 start();
