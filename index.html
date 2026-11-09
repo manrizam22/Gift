@@ -464,8 +464,8 @@ const CONFIG = {
   LOW_PRICE_LIMIT_NANO: 10000000,
   TON_TO_TOMAN_LOW: 900000,
   TON_TO_TOMAN_HIGH: 600000,
-  LIMIT: 1000,     // ✅ درخواست ۱۰۰۰ آیتم در هر بار
-  MAX_PAGES: 50,   
+  LIMIT: 100,      // ✅ برگرداندن به ۱۰۰ برای سازگاری کامل با Worker
+  MAX_PAGES: 100,  // ✅ حداکثر ۱۰,۰۰۰ گیفت
   FAST_POLL_MS: 8000,
   FULL_SYNC_MS: 180000,
   NEW_BADGE_MS: 120000,
@@ -838,7 +838,7 @@ function buildSearchText(gift) {
   return normalizeText([gift.nft_name, gift.nft_address, gift.collection_name, ...Object.entries(getAttributes(gift)).flat()].join(" "));
 }
 
-/* ===================== همگام‌سازی (رندر تدریجی و آنی) ===================== */
+/* ===================== همگام‌سازی (رندر تدریجی ایمن) ===================== */
 async function fullSync(isManual = false, hasCache = false) {
   if (syncing) return;
   if (!isManual && isInteracting) return;
@@ -853,31 +853,32 @@ async function fullSync(isManual = false, hasCache = false) {
     const seenCursors = new Set();
     let cursor = null;
     let pageCount = 0;
-    let firstRenderDone = false;
 
     for (let page = 0; page < CONFIG.MAX_PAGES; page++) {
       pageCount++;
       const payload = await fetchGiftsPage(cursor);
       const records = extractRecords(payload);
-      if (!records.length) break;
+      
+      // اگر دیتایی نیومد، یعنی به آخر لیست رسیدیم
+      if (!records.length) break; 
 
       records.forEach(gift => {
         if (!gift || !gift.nft_address) return;
         const old = giftMap.get(gift.nft_address);
         const prepared = prepareGift(gift, old, false);
         fresh.set(gift.nft_address, prepared);
+        
         if (!giftMap.has(gift.nft_address)) {
            giftMap.set(gift.nft_address, prepared);
         }
       });
 
-      // ✅ ترفند سرعت: به محض رسیدن اولین دسته، همون لحظه نشون بده
+      // ✅ رندر تدریجی: به محض رسیدن صفحه اول، لیست رو نشون بده
       if (!isInteracting) {
-         if (!firstRenderDone || !hasCache || isManual) {
-            refresh(); // رندر آنی
-            firstRenderDone = true;
+         if (page === 0 || isManual) {
+            refresh(); // صفحه اول یا رفرش دستی، سریع نشون بده
          } else if (pageCount % 5 === 0) {
-            refresh(); // آپدیت‌های بعدی هر 5 صفحه
+            refresh(); // بقیه صفحات هر ۵ تا یک بار آپدیت بشن (برای پرفورمنس)
          }
       }
 
@@ -886,15 +887,15 @@ async function fullSync(isManual = false, hasCache = false) {
       seenCursors.add(next);
       cursor = next;
       
-      // تاخیر صفر
-      await new Promise(r => setTimeout(r, 0));
+      // تاخیر خیلی کم برای جلوگیری از بلاک شدن Worker
+      await new Promise(r => setTimeout(r, 50));
     }
 
     isSuccess = true;
   } catch (error) {
     console.error("[Sync Error]:", error);
     if (giftMap.size === 0) showError(error);
-    if (isManual) showToast("خطا در دریافت اطلاعات.");
+    if (isManual) showToast("خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.");
   } finally {
     if (isSuccess) {
       for (const key of giftMap.keys()) if (!fresh.has(key)) giftMap.delete(key);
@@ -918,7 +919,7 @@ async function fullSync(isManual = false, hasCache = false) {
 async function fastPoll() {
   if (syncing || document.hidden || giftMap.size === 0 || isInteracting) return;
   try {
-    const payload = await apiGet("/gifts", { limit: 200 });
+    const payload = await apiGet("/gifts", { limit: 100 });
     const records = extractRecords(payload);
     let added = 0;
     records.forEach(gift => {
